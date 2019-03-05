@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.ConsultationType">
+
+    <resultMap id="consultationType" type="ConsultationType">
+        <id property="id" column="id" />
+        <result property="type" column="consultation_type" />
+    </resultMap>
+
+    <select id="getConsultationType" resultMap="consultationType">
+        SELECT
+            a.id,a.consultation_type
+        FROM
+            yqzj.zj_consultation_type a,
+            yqzj.zj_expert_consultation_type b
+        WHERE
+            a.id = b.consultation_type_id
+        AND
+            b.expert_id = #{expertId}
+    </select>
+</mapper>

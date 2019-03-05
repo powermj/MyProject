@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.MobileCloudRegionalInfo">
+
+	<!-- 省市一对多 -->
+	<resultMap type="com.zhxg.yqzj.entities.v1.MobileCloudRegionalInfo" id="MobileCloudRegionalInfos">
+		<result property="provinceId" column="uuid"/>
+		<result property="provinceName" column="province"/>
+		<collection property="citys" ofType="MobileCloudRegionalCityInfo" select="getAllCity" column="{provinceId=uuid}"/>
+	</resultMap>
+	<select id="getAllRegionalInfo" parameterType = "java.util.Map" resultMap="MobileCloudRegionalInfos">
+	  <![CDATA[
+		select 
+			T1.uuid,
+			T1.province
+		from 
+			yqht.b_locationinfo T1
+		where 
+			T1.parent_uuid = 0
+	  ]]>
+	</select>
+	<!-- 市县一对多 -->
+	<!-- <resultMap type="com.zhxg.yqzj.entities.v1.MobileCloudRegionalCityInfo" id="MobileCloudRegionalCityInfo">
+		<result property="cityId" column="cityId"/>
+		<result property="cityName" column="cityName"/>
+		<collection property="countys" ofType="MobileCloudRegionalCountyInfo" select="getAllCounty" column="{cityId=cityId}"/>
+	</resultMap> -->
+	<select id="getAllCity" parameterType="java.util.Map" resultType="MobileCloudRegionalCityInfo">
+		<![CDATA[
+			SELECT
+				T2.uuid as cityId,
+				T2.city as cityName
+			FROM
+				yqht.b_locationinfo T2
+			WHERE 
+				T2.parent_uuid = #{provinceId}
+		]]>
+	</select>
+	<!-- <select id="getAllCounty" parameterType="java.util.Map" resultType="MobileCloudRegionalCountyInfo">
+		<![CDATA[
+			SELECT
+				T2.uuid as countyId,
+				T2.county as countyName
+			FROM
+				yqht.b_locationinfo T2
+			WHERE 
+				T2.parent_uuid = #{cityId}
+		]]>
+	</select> -->
+	
+	<!-- 查询推荐专题地域词 -->
+	<resultMap type="com.zhxg.yqzj.entities.v1.MobileCloudRegionalInfo" id="SpecialRegionalInfos">
+		<result property="provinceId" column="uuid"/>
+		<result property="provinceName" column="province"/>
+		<result property="city" column="city"/>
+		<result property="county" column="county"/>
+	</resultMap>
+	<select id="getSpecialRegionalInfo" parameterType="java.util.Map" resultMap="SpecialRegionalInfos">
+		<![CDATA[
+			SELECT
+				T3.uuid,
+				T3.province,
+				T3.city,
+				T3.county
+			FROM
+				yqht.b_locationinfo T3
+			WHERE 
+				T3.parent_uuid = #{parentId}
+		]]>
+	</select>
+</mapper>

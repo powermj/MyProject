@@ -1,0 +1,1436 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhxg.yqzj.entities.v1.WkTValidationRef">
+  <resultMap id="BaseResultMap" type="WkTValidationRef">
+    <id column="KR_UUID" jdbcType="VARCHAR" property="krUuid" />
+    <result column="KV_UUID" jdbcType="VARCHAR" property="kvUuid" />
+    <result column="KR_INFOTYPE" jdbcType="VARCHAR" property="krInfotype" />
+    <result column="KR_KEYWORDID" jdbcType="VARCHAR" property="krKeywordid" />
+    <result column="KR_UID" jdbcType="INTEGER" property="krUid" />
+    <result column="KR_STATE" jdbcType="VARCHAR" property="krState" />
+    <result column="KR_CTIME" jdbcType="VARCHAR" property="krCtime" />
+    <result column="KR_ISLOCAL" jdbcType="VARCHAR" property="krIslocal" />
+    <result column="KV_FLAG" jdbcType="VARCHAR" property="kvFlag" />
+    <result column="ARG1" jdbcType="VARCHAR" property="arg1" />
+    <result column="ARG2" jdbcType="VARCHAR" property="arg2" />
+    <result column="ARG3" jdbcType="VARCHAR" property="arg3" />
+    <result column="KEYWORD" jdbcType="VARCHAR" property="keyword" />
+    <result column="ORIENTATION" jdbcType="VARCHAR" property="orientation" />
+    <result column="ISYJ" jdbcType="INTEGER" property="isyj" />
+    <result column="ISREAD" jdbcType="INTEGER" property="isread" />
+    <result column="ISMYATTENTION" jdbcType="INTEGER" property="ismyattention" />
+    <result column="ISFEEDBACK" jdbcType="INTEGER" property="isfeedback" />
+    <result column="ARG4" jdbcType="VARCHAR" property="arg4" />
+    <result column="ARG5" jdbcType="VARCHAR" property="arg5" />
+    <result column="KV_VISITCOUNT" jdbcType="INTEGER" property="kvVisitcount" />
+    <result column="KV_REPLY" jdbcType="INTEGER" property="kvReply" />
+    <result column="KV_SIMHASH" jdbcType="VARCHAR" property="kvSimhash" />
+    <result column="KV_WEBNAME" jdbcType="VARCHAR" property="kvWebname" />
+    <result column="KV_COLLECTTIME" jdbcType="VARCHAR" property="kvCollecttime" />
+    <result column="KV_SOURCETYPE" jdbcType="VARCHAR" property="kvSourcetype" />
+    <result column="KV_HOT" jdbcType="INTEGER" property="kvHot" />
+    <result column="KV_ISTF" jdbcType="INTEGER" property="kvIstf" />
+    <result column="KV_ISRD" jdbcType="INTEGER" property="kvIsrd" />
+    <result column="ISUSERMAIN" jdbcType="INTEGER" property="isusermain" />
+    <result column="ISMAINSIMHASH" jdbcType="INTEGER" property="ismainsimhash" />
+    <result column="KV_TITLE" jdbcType="VARCHAR" property="kvTitle" />
+    <result column="LOSTTIME" jdbcType="VARCHAR" property="losttime" />
+    <result column="KV_ORIEN_LEVEL" jdbcType="INTEGER" property="kvOrienLevel" />
+    <result column="NOISESTATUS" jdbcType="VARCHAR" property="noisestatus" />
+    <result column="KV_ABSTRACT" jdbcType="VARCHAR" property="kvAbstract" />
+    <result column="KV_URL" jdbcType="VARCHAR" property="kvUrl" />
+    <result column="KV_KEYWORD" jdbcType="VARCHAR" property="kvKeyword" />
+    <result column="KV_WBAUTHORPIC" jdbcType="VARCHAR" property="kvWbauthorpic" />
+    <result column="KV_AUTHOR" jdbcType="VARCHAR" property="kvAuthor" />
+    <result column="KR_GTIME" jdbcType="VARCHAR" property="krGtime" />
+    <result column="KV_ISPIC" jdbcType="TINYINT" property="kvIspic" />
+    <result column="KV_ISVIDEO" jdbcType="TINYINT" property="kvIsvideo" />
+    <result column="KV_IMGURL" jdbcType="VARCHAR" property="kvImgurl" />
+    <result column="KV_VEDEOURL" jdbcType="VARCHAR" property="kvVedeourl" />
+    <result column="KV_TITLEMATCH" jdbcType="VARCHAR" property="kvTitlematch" />
+    <result column="KV_MUSTWORDMININDEX" jdbcType="INTEGER" property="kvMustwordminindex" />
+    <result column="KV_KEYWORDSMININDEX" jdbcType="INTEGER" property="kvKeywordsminindex" />
+    <result column="KV_ONLYLOCAL" jdbcType="VARCHAR" property="kvOnlylocal" />
+    <result column="KV_WEIBOOVERTIME" jdbcType="VARCHAR" property="kvWeiboovertime" />
+    <result column="KV_WEIBOSIGNLOCALNOISE" jdbcType="VARCHAR" property="kvWeibosignlocalnoise" />
+    <result column="KV_WEIBOTOPICNOISE" jdbcType="VARCHAR" property="kvWeibotopicnoise" />
+    <result column="KV_WEIBOATNOISE" jdbcType="VARCHAR" property="kvWeiboatnoise" />
+    <result column="KV_DTCTIME" jdbcType="TIMESTAMP" property="kvDtctime" />
+    <result column="KV_DTTIME" jdbcType="TIMESTAMP" property="kvDttime" />
+    <result column="KV_WEBCHANNEL" jdbcType="VARCHAR" property="kvWebchannel" />
+    <result column="KV_HOTKEYWORD" jdbcType="VARCHAR" property="kvHotkeyword" />
+    <result column="KV_DOMAIN" jdbcType="VARCHAR" property="kvDomain" />
+    <result column="KV_SITEID" jdbcType="VARCHAR" property="kvSiteid" />
+    <result column="KV_INFORMATIONSTATE" jdbcType="VARCHAR" property="kvInformationstate" />
+    <result column="IMPORTANCE_WEIGHT" jdbcType="INTEGER" property="importanceWeight" />
+    <result column="KV_EXTEND_FIELD" jdbcType="OTHER" property="kvExtendField" />
+    <result column="KV_INPUTDATATYPE" jdbcType="BIT" property="kvInputdatatype" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+     ref.KR_UUID, ref.KV_UUID,  ref.KR_INFOTYPE,  ref.KR_KEYWORDID,  ref.KR_UID,  ref.KR_STATE,  ref.KR_CTIME,  ref.KR_ISLOCAL, 
+     ref.KV_FLAG,  ref.ARG1,  ref.ARG2,  ref.ARG3,  ref.KEYWORD,  ref.ORIENTATION,  ref.ISYJ,  ref.ISREAD,  ref.ISMYATTENTION,  ref.ISFEEDBACK, 
+     ref.ARG4, ref. ARG5,  ref.KV_VISITCOUNT,  ref.KV_REPLY,  ref.KV_SIMHASH,  ref.KV_WEBNAME,  ref.KV_COLLECTTIME,  ref.KV_SOURCETYPE, 
+     ref.KV_HOT,  ref.KV_ISTF,  ref.KV_ISRD,  ref.ISUSERMAIN,  ref.ISMAINSIMHASH,  ref.KV_TITLE,  ref.LOSTTIME,  ref.KV_ORIEN_LEVEL, 
+     ref.NOISESTATUS,    ref.KV_URL,  ref.KV_KEYWORD,  ref.KV_WBAUTHORPIC,  ref.KV_AUTHOR,  ref.KR_GTIME, 
+     ref.KV_ISPIC,  ref.KV_ISVIDEO,  ref.KV_IMGURL,  ref.KV_VEDEOURL,  ref.KV_TITLEMATCH,  ref.KV_MUSTWORDMININDEX, 
+     ref.KV_KEYWORDSMININDEX,  ref.KV_ONLYLOCAL,  ref.KV_WEIBOOVERTIME,  ref.KV_WEIBOSIGNLOCALNOISE,  ref.KV_WEIBOTOPICNOISE, 
+     ref.KV_WEIBOATNOISE,  ref.KV_DTCTIME,  ref.KV_DTTIME,  ref.KV_WEBCHANNEL,  ref.KV_HOTKEYWORD,  ref.KV_DOMAIN, 
+     ref.KV_SITEID,  ref.KV_INFORMATIONSTATE,    ref.IMPORTANCE_WEIGHT, 
+     ref.KV_EXTEND_FIELD,  ref.KV_INPUTDATATYPE
+  </sql>
+  
+  <sql id="refWhere">
+        <where>
+          <if test="null!=kvSimhashList and kvSimhashList.size>0">
+             and ref.KV_SIMHASH in
+             <foreach collection="kvSimhashList" item="simHash" separator="," open="(" close=")">
+                #{simHash}
+             </foreach> 
+        </if>
+           <if test="null!=kvUrlList and kvUrlList.size>0">
+             and ref.KV_URL in
+             <foreach collection="kvUrlList" item="url" separator="," open="(" close=")">
+                #{url}
+             </foreach> 
+        </if>
+        
+       <!--专题ID -->
+        <if test="null!=kkIdList and kkIdList.size>0">
+             and ref.KR_KEYWORDID in
+             <foreach collection="kkIdList" item="kkId" separator="," open="(" close=")">
+                #{kkId}
+             </foreach> 
+        </if>
+         <!--开始时间 -->
+        <if test="null!=startTime and ''!=startTime">
+             and ref.KR_CTIME >=#{startTime}
+        </if>
+         <!--结束时间 -->
+        <if test="null!=endTime and ''!=endTime">
+             and ref.KR_CTIME &lt;#{endTime}
+        </if>
+         <!--倾向性 -->
+        <if test="null!=orientationList and orientationList.size>0">
+             and ref.ORIENTATION in
+             <foreach collection="orientationList" item="orientation" separator="," open="(" close=")">
+                #{orientation}
+             </foreach> 
+        </if>
+        <!--媒体类型 -->
+        <if test="null!=kvSourcetypeList and kvSourcetypeList.size>0">
+             and ref.KV_SOURCETYPE in
+             <foreach collection="kvSourcetypeList" item="sourcetype" separator="," open="(" close=")">
+                #{sourcetype}
+             </foreach> 
+        </if>
+        <!--微博类型 -->
+        <if test="null!=wechatInfoTypeList and wechatInfoTypeList.size>0">
+             and (ref.KV_SOURCETYPE not in ('04','08') or ( ref.KV_SOURCETYPE in ('04','08') and JSON_EXTRACT(ref.KV_EXTEND_FIELD, '$.wechatInfoType') in 
+             <foreach collection="wechatInfoTypeList" item="wechatInfoType" separator="," open="(" close=")">
+                #{wechatInfoType}
+             </foreach> 
+             ))
+        </if>
+        <!--信源地域 -->
+        <if test="null!=region and region>0">
+           and wtif.REGION_ID =#{region}
+        </if>
+        <!--信源分级：1 A级网站 ，2 B级网站，3 C级网站infoSourceLevel -->
+        <if test="null!=infoSourceLevelList and infoSourceLevelList.size>0">
+           and JSON_EXTRACT(ref.KV_EXTEND_FIELD, '$.infoSourceLevel') in 
+            <foreach collection="infoSourceLevelList" item="infoSourceLevel" separator="," open="(" close=")">
+                #{infoSourceLevel}
+             </foreach> 
+        </if>
+        <!-- 浏览范围 -->
+        <if test="null!=isread and isread !='-1'">
+            and ref.ISREAD=#{isread}
+        </if>
+         <!-- 噪音过滤 -->
+        <if test='krState=="x" or krState=="1"'>
+            and ref.KR_STATE =#{krState}
+        </if>
+        <if test='krState=="jing"'>
+            and ref.KR_STATE ='1' and ref.ARG1='0'
+        </if>
+        <!-- 重要 -->
+        <if test="null!=importanceWeight and importanceWeight>0 ">
+            and IMPORTANCE_WEIGHT >#{importanceWeight}
+        </if>
+        <!-- 精准筛选 -->
+        <!--标题是否匹配 -->
+        <if test="null!=kvTitlematch and ''!=kvTitlematch">
+          and ref.KV_TITLEMATCH =#{kvTitlematch}
+        </if>
+        <!-- 是否唯一地域 -->
+        <if test='null!=kvOnlylocal and ""!=kvOnlylocal and "0"!=kvOnlylocal'>
+         and ref.KV_ONLYLOCAL = #{kvOnlylocal}
+        </if>
+        <!-- 关键词间最短距离  位置-->
+        <if test="null!=kvMustwordminindex and kvMustwordminindex>0">
+         and ref.KV_MUSTWORDMININDEX  &lt;=#{kvMustwordminindex}
+        </if>
+        <!--关键词间最短距离  词距范围-->
+        <if test="null!=kvKeywordsminindex and kvKeywordsminindex>0">
+         and ref.KV_KEYWORDSMININDEX>=0 and ref.KV_KEYWORDSMININDEX &lt;= #{kvKeywordsminindex}
+        </if>
+        <!--微博是否是早期数据  微博时间过滤 -->
+        <if test='null!=kvWeiboovertime and ""!=kvWeiboovertime and "0"!=kvWeiboovertime'>
+         and (ref.KV_SOURCETYPE not in ('04','08') or (ref.KV_SOURCETYPE in ('04','08') and ref.KV_WEIBOOVERTIME &lt;&gt; '1'))
+        </if>
+        <!--排除微博签到数据后，是否匹配用户专题  忽略微博位置信息中的关键词-->
+        <if test='null!=kvWeibosignlocalnoise and ""!=kvWeibosignlocalnoise and "0"!=kvWeibosignlocalnoise'>
+         and (ref.KV_SOURCETYPE not in ('04','08') or (ref.KV_SOURCETYPE in ('04','08') and ref.KV_WEIBOSIGNLOCALNOISE &lt;&gt; '1'))
+        </if>
+        <!-- 排除微博话题数据后，是否匹配用户专题   忽略微博话题信息中的关键词-->
+        <if test='null!=kvWeibotopicnoise and ""!=kvWeibotopicnoise and "0"!=kvWeibotopicnoise'>
+         and (ref.KV_SOURCETYPE not in ('04','08') or (ref.KV_SOURCETYPE in ('04','08') and ref.KV_WEIBOTOPICNOISE &lt;&gt;'1'))
+        </if>
+        <!-- 排除微博@数据后，是否匹配用户专题  忽略微博@信息中的关键词-->
+        <if test='null!=kvWeiboatnoise and ""!=kvWeiboatnoise and "0"!=kvWeiboatnoise'>
+         and (ref.KV_SOURCETYPE not in ('04','08') or (ref.KV_SOURCETYPE in ('04','08') and ref.KV_WEIBOATNOISE &lt;&gt; '1'))
+        </if>
+         <if test='ocr=="1"'>
+            and ref.kv_url REGEXP  REGEXP '#ocr$'
+         </if>
+          <if test='ocr=="0"'>
+            and ref.kv_url REGEXP  NOT REGEXP '#ocr$'
+         </if>
+         <if test="null!=tags and ''!=tags ">
+           and JSON_SEARCH(ref.KV_EXTEND_FIELD, 'one', #{tags} ,null,'$.tags[*].tag[*].tagid') is not null
+         </if>
+    </where>
+  </sql>
+  
+  <select id="getImportanceWeight" resultType="java.lang.String" parameterType="java.lang.Integer">
+	  SELECT 
+	       KU_VALUE
+      FROM
+        yqms2.WK_T_USERBASEINFO 
+      WHERE 
+         KU_TYPE = 'MS_importanceScore'
+  </select>
+  
+  <select id="getRefUrlOrhashList" resultMap="BaseResultMap" parameterType="com.zhxg.yqzj.entities.v1.WkTValidationRef">
+  	select  
+  	<if test="isRepeat==1">
+    	 ref.KV_SIMHASH,MAX(ref.KR_CTIME) KR_CTIME 
+    </if>
+    <if test="isRepeat!=1">
+    	 ref.KV_URL,MAX(ref.KR_CTIME) KR_CTIME 
+    </if>
+    from ${_OTHER_DBNAME}.WK_T_VALIDATION_REF ref
+    <if test="null!=region and region>0 ">
+    	left join ${_OTHER_DBNAME}.WK_T_INFO_REGION wtif
+        on ref.KV_UUID=wtif.KV_UUID
+    </if>
+    <include refid="refWhere"/>
+    <if test="isRepeat==1">
+    	group by ref.KV_SIMHASH
+    </if>
+    <if test="isRepeat!=1">
+    	group by ref.KV_URL
+    </if>
+    order by KR_CTIME desc  
+  </select>
+  
+  <select id="getGroupRankRefList" resultMap="BaseResultMap" parameterType="com.zhxg.yqzj.entities.v1.WkTValidationRef" >
+	SELECT 
+	 *
+	FROM 
+	(SELECT <include refid="Base_Column_List" />
+		<if test="isRepeat==1">
+	       ,IF(@tmp=ref.KV_SIMHASH,@rank:=@rank + 1,@rank:=1) AS new_rank,
+               @tmp:=ref.KV_SIMHASH AS tmp
+	    </if>
+	    <if test="isRepeat!=1">
+	       ,IF(@tmp=ref.KV_URL,@rank:=@rank + 1,@rank:=1) AS new_rank,
+                 @tmp:=ref.KV_URL AS tmp
+	    </if>
+		FROM 
+		   ${_OTHER_DBNAME}.WK_T_VALIDATION_REF ref 
+		<if test="null!=region and region>0 ">
+	        LEFT JOIN  ${_OTHER_DBNAME}.WK_T_INFO_REGION wtif
+	        ON ref.KV_UUID=wtif.KV_UUID
+        </if>
+	   <include refid="refWhere"/>
+		ORDER BY ref.KR_CTIME DESC) b
+	WHERE new_rank = 1 
+  </select>
+  
+  <select id="getRefList" resultMap="BaseResultMap" parameterType="com.zhxg.yqzj.entities.v1.WkTValidationRef">
+    select  
+      <include refid="Base_Column_List"/>
+    from ${_OTHER_DBNAME}.WK_T_VALIDATION_REF ref
+    <if test="null!=region and region>0 ">
+        left join ${_OTHER_DBNAME}.WK_T_INFO_REGION wtif
+        on ref.KV_UUID=wtif.KV_UUID
+    </if>
+    <include refid="refWhere"/>
+    order by ref.KR_CTIME  
+  </select>
+  
+  <select id="selectByExample" parameterType="com.zhxg.yqzj.entities.v1.WkTValidationRefExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    'true' as QUERYID,
+    <include refid="Base_Column_List" />
+    from ${_OTHER_DBNAME}.WK_T_VALIDATION_REF ref
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by  ref.${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from ${_OTHER_DBNAME}.WK_T_VALIDATION_REF ref
+    where KR_UUID = #{krUuid,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete ref from ${_DBNAME}.WK_T_VALIDATION_REF ref 
+    where KR_UUID = #{krUuid,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.zhxg.yqzj.entities.v1.WkTValidationRefExample">
+    delete ref from ${_DBNAME}.WK_T_VALIDATION_REF ref
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.zhxg.yqzj.entities.v1.WkTValidationRef">
+    insert into ${_OTHER_DBNAME}.WK_T_VALIDATION_REF ref (KR_UUID, KV_UUID, KR_INFOTYPE, 
+      KR_KEYWORDID, KR_UID, KR_STATE, 
+      KR_CTIME, KR_ISLOCAL, KV_FLAG, 
+      ARG1, ARG2, ARG3, KEYWORD, 
+      ORIENTATION, ISYJ, ISREAD, 
+      ISMYATTENTION, ISFEEDBACK, ARG4, 
+      ARG5, KV_VISITCOUNT, KV_REPLY, 
+      KV_SIMHASH, KV_WEBNAME, KV_COLLECTTIME, 
+      KV_SOURCETYPE, KV_HOT, KV_ISTF, 
+      KV_ISRD, ISUSERMAIN, ISMAINSIMHASH, 
+      KV_TITLE, LOSTTIME, KV_ORIEN_LEVEL, 
+      NOISESTATUS, KV_ABSTRACT, KV_URL, 
+      KV_KEYWORD, KV_WBAUTHORPIC, KV_AUTHOR, 
+      KR_GTIME, KV_ISPIC, KV_ISVIDEO, 
+      KV_IMGURL, KV_VEDEOURL, KV_TITLEMATCH, 
+      KV_MUSTWORDMININDEX, KV_KEYWORDSMININDEX, 
+      KV_ONLYLOCAL, KV_WEIBOOVERTIME, KV_WEIBOSIGNLOCALNOISE, 
+      KV_WEIBOTOPICNOISE, KV_WEIBOATNOISE, KV_DTCTIME, 
+      KV_DTTIME, KV_WEBCHANNEL, KV_HOTKEYWORD, 
+      KV_DOMAIN, KV_SITEID, KV_INFORMATIONSTATE, 
+      IMPORTANCE_WEIGHT, KV_EXTEND_FIELD, KV_INPUTDATATYPE
+      )
+    values (#{krUuid,jdbcType=VARCHAR}, #{kvUuid,jdbcType=VARCHAR}, #{krInfotype,jdbcType=VARCHAR}, 
+      #{krKeywordid,jdbcType=VARCHAR}, #{krUid,jdbcType=INTEGER}, #{krState,jdbcType=VARCHAR}, 
+      #{krCtime,jdbcType=VARCHAR}, #{krIslocal,jdbcType=VARCHAR}, #{kvFlag,jdbcType=VARCHAR}, 
+      #{arg1,jdbcType=VARCHAR}, #{arg2,jdbcType=VARCHAR}, #{arg3,jdbcType=VARCHAR}, #{keyword,jdbcType=VARCHAR}, 
+      #{orientation,jdbcType=VARCHAR}, #{isyj,jdbcType=INTEGER}, #{isread,jdbcType=INTEGER}, 
+      #{ismyattention,jdbcType=INTEGER}, #{isfeedback,jdbcType=INTEGER}, #{arg4,jdbcType=VARCHAR}, 
+      #{arg5,jdbcType=VARCHAR}, #{kvVisitcount,jdbcType=INTEGER}, #{kvReply,jdbcType=INTEGER}, 
+      #{kvSimhash,jdbcType=VARCHAR}, #{kvWebname,jdbcType=VARCHAR}, #{kvCollecttime,jdbcType=VARCHAR}, 
+      #{kvSourcetype,jdbcType=VARCHAR}, #{kvHot,jdbcType=INTEGER}, #{kvIstf,jdbcType=INTEGER}, 
+      #{kvIsrd,jdbcType=INTEGER}, #{isusermain,jdbcType=INTEGER}, #{ismainsimhash,jdbcType=INTEGER}, 
+      #{kvTitle,jdbcType=VARCHAR}, #{losttime,jdbcType=VARCHAR}, #{kvOrienLevel,jdbcType=INTEGER}, 
+      #{noisestatus,jdbcType=VARCHAR}, #{kvAbstract,jdbcType=VARCHAR}, #{kvUrl,jdbcType=VARCHAR}, 
+      #{kvKeyword,jdbcType=VARCHAR}, #{kvWbauthorpic,jdbcType=VARCHAR}, #{kvAuthor,jdbcType=VARCHAR}, 
+      #{krGtime,jdbcType=VARCHAR}, #{kvIspic,jdbcType=TINYINT}, #{kvIsvideo,jdbcType=TINYINT}, 
+      #{kvImgurl,jdbcType=VARCHAR}, #{kvVedeourl,jdbcType=VARCHAR}, #{kvTitlematch,jdbcType=VARCHAR}, 
+      #{kvMustwordminindex,jdbcType=INTEGER}, #{kvKeywordsminindex,jdbcType=INTEGER}, 
+      #{kvOnlylocal,jdbcType=VARCHAR}, #{kvWeiboovertime,jdbcType=VARCHAR}, #{kvWeibosignlocalnoise,jdbcType=VARCHAR}, 
+      #{kvWeibotopicnoise,jdbcType=VARCHAR}, #{kvWeiboatnoise,jdbcType=VARCHAR}, #{kvDtctime,jdbcType=TIMESTAMP}, 
+      #{kvDttime,jdbcType=TIMESTAMP}, #{kvWebchannel,jdbcType=VARCHAR}, #{kvHotkeyword,jdbcType=VARCHAR}, 
+      #{kvDomain,jdbcType=VARCHAR}, #{kvSiteid,jdbcType=VARCHAR}, #{kvInformationstate,jdbcType=VARCHAR}, 
+      #{importanceWeight,jdbcType=INTEGER}, #{kvExtendField,jdbcType=OTHER}, #{kvInputdatatype,jdbcType=BIT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.zhxg.yqzj.entities.v1.WkTValidationRef">
+    insert into ${_OTHER_DBNAME}.WK_T_VALIDATION_REF ref 
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="krUuid != null">
+        KR_UUID,
+      </if>
+      <if test="kvUuid != null">
+        KV_UUID,
+      </if>
+      <if test="krInfotype != null">
+        KR_INFOTYPE,
+      </if>
+      <if test="krKeywordid != null">
+        KR_KEYWORDID,
+      </if>
+      <if test="krUid != null">
+        KR_UID,
+      </if>
+      <if test="krState != null">
+        KR_STATE,
+      </if>
+      <if test="krCtime != null">
+        KR_CTIME,
+      </if>
+      <if test="krIslocal != null">
+        KR_ISLOCAL,
+      </if>
+      <if test="kvFlag != null">
+        KV_FLAG,
+      </if>
+      <if test="arg1 != null">
+        ARG1,
+      </if>
+      <if test="arg2 != null">
+        ARG2,
+      </if>
+      <if test="arg3 != null">
+        ARG3,
+      </if>
+      <if test="keyword != null">
+        KEYWORD,
+      </if>
+      <if test="orientation != null">
+        ORIENTATION,
+      </if>
+      <if test="isyj != null">
+        ISYJ,
+      </if>
+      <if test="isread != null">
+        ISREAD,
+      </if>
+      <if test="ismyattention != null">
+        ISMYATTENTION,
+      </if>
+      <if test="isfeedback != null">
+        ISFEEDBACK,
+      </if>
+      <if test="arg4 != null">
+        ARG4,
+      </if>
+      <if test="arg5 != null">
+        ARG5,
+      </if>
+      <if test="kvVisitcount != null">
+        KV_VISITCOUNT,
+      </if>
+      <if test="kvReply != null">
+        KV_REPLY,
+      </if>
+      <if test="kvSimhash != null">
+        KV_SIMHASH,
+      </if>
+      <if test="kvWebname != null">
+        KV_WEBNAME,
+      </if>
+      <if test="kvCollecttime != null">
+        KV_COLLECTTIME,
+      </if>
+      <if test="kvSourcetype != null">
+        KV_SOURCETYPE,
+      </if>
+      <if test="kvHot != null">
+        KV_HOT,
+      </if>
+      <if test="kvIstf != null">
+        KV_ISTF,
+      </if>
+      <if test="kvIsrd != null">
+        KV_ISRD,
+      </if>
+      <if test="isusermain != null">
+        ISUSERMAIN,
+      </if>
+      <if test="ismainsimhash != null">
+        ISMAINSIMHASH,
+      </if>
+      <if test="kvTitle != null">
+        KV_TITLE,
+      </if>
+      <if test="losttime != null">
+        LOSTTIME,
+      </if>
+      <if test="kvOrienLevel != null">
+        KV_ORIEN_LEVEL,
+      </if>
+      <if test="noisestatus != null">
+        NOISESTATUS,
+      </if>
+      <if test="kvAbstract != null">
+        KV_ABSTRACT,
+      </if>
+      <if test="kvUrl != null">
+        KV_URL,
+      </if>
+      <if test="kvKeyword != null">
+        KV_KEYWORD,
+      </if>
+      <if test="kvWbauthorpic != null">
+        KV_WBAUTHORPIC,
+      </if>
+      <if test="kvAuthor != null">
+        KV_AUTHOR,
+      </if>
+      <if test="krGtime != null">
+        KR_GTIME,
+      </if>
+      <if test="kvIspic != null">
+        KV_ISPIC,
+      </if>
+      <if test="kvIsvideo != null">
+        KV_ISVIDEO,
+      </if>
+      <if test="kvImgurl != null">
+        KV_IMGURL,
+      </if>
+      <if test="kvVedeourl != null">
+        KV_VEDEOURL,
+      </if>
+      <if test="kvTitlematch != null">
+        KV_TITLEMATCH,
+      </if>
+      <if test="kvMustwordminindex != null">
+        KV_MUSTWORDMININDEX,
+      </if>
+      <if test="kvKeywordsminindex != null">
+        KV_KEYWORDSMININDEX,
+      </if>
+      <if test="kvOnlylocal != null">
+        KV_ONLYLOCAL,
+      </if>
+      <if test="kvWeiboovertime != null">
+        KV_WEIBOOVERTIME,
+      </if>
+      <if test="kvWeibosignlocalnoise != null">
+        KV_WEIBOSIGNLOCALNOISE,
+      </if>
+      <if test="kvWeibotopicnoise != null">
+        KV_WEIBOTOPICNOISE,
+      </if>
+      <if test="kvWeiboatnoise != null">
+        KV_WEIBOATNOISE,
+      </if>
+      <if test="kvDtctime != null">
+        KV_DTCTIME,
+      </if>
+      <if test="kvDttime != null">
+        KV_DTTIME,
+      </if>
+      <if test="kvWebchannel != null">
+        KV_WEBCHANNEL,
+      </if>
+      <if test="kvHotkeyword != null">
+        KV_HOTKEYWORD,
+      </if>
+      <if test="kvDomain != null">
+        KV_DOMAIN,
+      </if>
+      <if test="kvSiteid != null">
+        KV_SITEID,
+      </if>
+      <if test="kvInformationstate != null">
+        KV_INFORMATIONSTATE,
+      </if>
+      <if test="importanceWeight != null">
+        IMPORTANCE_WEIGHT,
+      </if>
+      <if test="kvExtendField != null">
+        KV_EXTEND_FIELD,
+      </if>
+      <if test="kvInputdatatype != null">
+        KV_INPUTDATATYPE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="krUuid != null">
+        #{krUuid,jdbcType=VARCHAR},
+      </if>
+      <if test="kvUuid != null">
+        #{kvUuid,jdbcType=VARCHAR},
+      </if>
+      <if test="krInfotype != null">
+        #{krInfotype,jdbcType=VARCHAR},
+      </if>
+      <if test="krKeywordid != null">
+        #{krKeywordid,jdbcType=VARCHAR},
+      </if>
+      <if test="krUid != null">
+        #{krUid,jdbcType=INTEGER},
+      </if>
+      <if test="krState != null">
+        #{krState,jdbcType=VARCHAR},
+      </if>
+      <if test="krCtime != null">
+        #{krCtime,jdbcType=VARCHAR},
+      </if>
+      <if test="krIslocal != null">
+        #{krIslocal,jdbcType=VARCHAR},
+      </if>
+      <if test="kvFlag != null">
+        #{kvFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="arg1 != null">
+        #{arg1,jdbcType=VARCHAR},
+      </if>
+      <if test="arg2 != null">
+        #{arg2,jdbcType=VARCHAR},
+      </if>
+      <if test="arg3 != null">
+        #{arg3,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword != null">
+        #{keyword,jdbcType=VARCHAR},
+      </if>
+      <if test="orientation != null">
+        #{orientation,jdbcType=VARCHAR},
+      </if>
+      <if test="isyj != null">
+        #{isyj,jdbcType=INTEGER},
+      </if>
+      <if test="isread != null">
+        #{isread,jdbcType=INTEGER},
+      </if>
+      <if test="ismyattention != null">
+        #{ismyattention,jdbcType=INTEGER},
+      </if>
+      <if test="isfeedback != null">
+        #{isfeedback,jdbcType=INTEGER},
+      </if>
+      <if test="arg4 != null">
+        #{arg4,jdbcType=VARCHAR},
+      </if>
+      <if test="arg5 != null">
+        #{arg5,jdbcType=VARCHAR},
+      </if>
+      <if test="kvVisitcount != null">
+        #{kvVisitcount,jdbcType=INTEGER},
+      </if>
+      <if test="kvReply != null">
+        #{kvReply,jdbcType=INTEGER},
+      </if>
+      <if test="kvSimhash != null">
+        #{kvSimhash,jdbcType=VARCHAR},
+      </if>
+      <if test="kvWebname != null">
+        #{kvWebname,jdbcType=VARCHAR},
+      </if>
+      <if test="kvCollecttime != null">
+        #{kvCollecttime,jdbcType=VARCHAR},
+      </if>
+      <if test="kvSourcetype != null">
+        #{kvSourcetype,jdbcType=VARCHAR},
+      </if>
+      <if test="kvHot != null">
+        #{kvHot,jdbcType=INTEGER},
+      </if>
+      <if test="kvIstf != null">
+        #{kvIstf,jdbcType=INTEGER},
+      </if>
+      <if test="kvIsrd != null">
+        #{kvIsrd,jdbcType=INTEGER},
+      </if>
+      <if test="isusermain != null">
+        #{isusermain,jdbcType=INTEGER},
+      </if>
+      <if test="ismainsimhash != null">
+        #{ismainsimhash,jdbcType=INTEGER},
+      </if>
+      <if test="kvTitle != null">
+        #{kvTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="losttime != null">
+        #{losttime,jdbcType=VARCHAR},
+      </if>
+      <if test="kvOrienLevel != null">
+        #{kvOrienLevel,jdbcType=INTEGER},
+      </if>
+      <if test="noisestatus != null">
+        #{noisestatus,jdbcType=VARCHAR},
+      </if>
+      <if test="kvAbstract != null">
+        #{kvAbstract,jdbcType=VARCHAR},
+      </if>
+      <if test="kvUrl != null">
+        #{kvUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="kvKeyword != null">
+        #{kvKeyword,jdbcType=VARCHAR},
+      </if>
+      <if test="kvWbauthorpic != null">
+        #{kvWbauthorpic,jdbcType=VARCHAR},
+      </if>
+      <if test="kvAuthor != null">
+        #{kvAuthor,jdbcType=VARCHAR},
+      </if>
+      <if test="krGtime != null">
+        #{krGtime,jdbcType=VARCHAR},
+      </if>
+      <if test="kvIspic != null">
+        #{kvIspic,jdbcType=TINYINT},
+      </if>
+      <if test="kvIsvideo != null">
+        #{kvIsvideo,jdbcType=TINYINT},
+      </if>
+      <if test="kvImgurl != null">
+        #{kvImgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="kvVedeourl != null">
+        #{kvVedeourl,jdbcType=VARCHAR},
+      </if>
+      <if test="kvTitlematch != null">
+        #{kvTitlematch,jdbcType=VARCHAR},
+      </if>
+      <if test="kvMustwordminindex != null">
+        #{kvMustwordminindex,jdbcType=INTEGER},
+      </if>
+      <if test="kvKeywordsminindex != null">
+        #{kvKeywordsminindex,jdbcType=INTEGER},
+      </if>
+      <if test="kvOnlylocal != null">
+        #{kvOnlylocal,jdbcType=VARCHAR},
+      </if>
+      <if test="kvWeiboovertime != null">
+        #{kvWeiboovertime,jdbcType=VARCHAR},
+      </if>
+      <if test="kvWeibosignlocalnoise != null">
+        #{kvWeibosignlocalnoise,jdbcType=VARCHAR},
+      </if>
+      <if test="kvWeibotopicnoise != null">
+        #{kvWeibotopicnoise,jdbcType=VARCHAR},
+      </if>
+      <if test="kvWeiboatnoise != null">
+        #{kvWeiboatnoise,jdbcType=VARCHAR},
+      </if>
+      <if test="kvDtctime != null">
+        #{kvDtctime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="kvDttime != null">
+        #{kvDttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="kvWebchannel != null">
+        #{kvWebchannel,jdbcType=VARCHAR},
+      </if>
+      <if test="kvHotkeyword != null">
+        #{kvHotkeyword,jdbcType=VARCHAR},
+      </if>
+      <if test="kvDomain != null">
+        #{kvDomain,jdbcType=VARCHAR},
+      </if>
+      <if test="kvSiteid != null">
+        #{kvSiteid,jdbcType=VARCHAR},
+      </if>
+      <if test="kvInformationstate != null">
+        #{kvInformationstate,jdbcType=VARCHAR},
+      </if>
+      <if test="importanceWeight != null">
+        #{importanceWeight,jdbcType=INTEGER},
+      </if>
+      <if test="kvExtendField != null">
+        #{kvExtendField,jdbcType=OTHER},
+      </if>
+      <if test="kvInputdatatype != null">
+        #{kvInputdatatype,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.zhxg.yqzj.entities.v1.WkTValidationRefExample" resultType="java.lang.Long">
+    select COUNT(DISTINCT KV_URL) from ${_OTHER_DBNAME}.WK_T_VALIDATION_REF ref
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update ${record._OTHER_DBNAME}.WK_T_VALIDATION_REF ref
+    <set>
+      <if test="record.krUuid != null">
+        KR_UUID = #{record.krUuid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvUuid != null">
+        KV_UUID = #{record.kvUuid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.krInfotype != null">
+        KR_INFOTYPE = #{record.krInfotype,jdbcType=VARCHAR},
+      </if>
+      <if test="record.krKeywordid != null">
+        KR_KEYWORDID = #{record.krKeywordid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.krUid != null">
+        KR_UID = #{record.krUid,jdbcType=INTEGER},
+      </if>
+      <if test="record.krState != null">
+        KR_STATE = #{record.krState,jdbcType=VARCHAR},
+      </if>
+      <if test="record.krCtime != null">
+        KR_CTIME = #{record.krCtime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.krIslocal != null">
+        KR_ISLOCAL = #{record.krIslocal,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvFlag != null">
+        KV_FLAG = #{record.kvFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="record.arg1 != null">
+        ARG1 = #{record.arg1,jdbcType=VARCHAR},
+      </if>
+      <if test="record.arg2 != null">
+        ARG2 = #{record.arg2,jdbcType=VARCHAR},
+      </if>
+      <if test="record.arg3 != null">
+        ARG3 = #{record.arg3,jdbcType=VARCHAR},
+      </if>
+      <if test="record.keyword != null">
+        KEYWORD = #{record.keyword,jdbcType=VARCHAR},
+      </if>
+      <if test="record.orientation != null">
+        ORIENTATION = #{record.orientation,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isyj != null">
+        ISYJ = #{record.isyj,jdbcType=INTEGER},
+      </if>
+      <if test="record.isread != null">
+        ISREAD = #{record.isread,jdbcType=INTEGER},
+      </if>
+      <if test="record.ismyattention != null">
+        ISMYATTENTION = #{record.ismyattention,jdbcType=INTEGER},
+      </if>
+      <if test="record.isfeedback != null">
+        ISFEEDBACK = #{record.isfeedback,jdbcType=INTEGER},
+      </if>
+      <if test="record.arg4 != null">
+        ARG4 = #{record.arg4,jdbcType=VARCHAR},
+      </if>
+      <if test="record.arg5 != null">
+        ARG5 = #{record.arg5,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvVisitcount != null">
+        KV_VISITCOUNT = #{record.kvVisitcount,jdbcType=INTEGER},
+      </if>
+      <if test="record.kvReply != null">
+        KV_REPLY = #{record.kvReply,jdbcType=INTEGER},
+      </if>
+      <if test="record.kvSimhash != null">
+        KV_SIMHASH = #{record.kvSimhash,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvWebname != null">
+        KV_WEBNAME = #{record.kvWebname,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvCollecttime != null">
+        KV_COLLECTTIME = #{record.kvCollecttime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvSourcetype != null">
+        KV_SOURCETYPE = #{record.kvSourcetype,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvHot != null">
+        KV_HOT = #{record.kvHot,jdbcType=INTEGER},
+      </if>
+      <if test="record.kvIstf != null">
+        KV_ISTF = #{record.kvIstf,jdbcType=INTEGER},
+      </if>
+      <if test="record.kvIsrd != null">
+        KV_ISRD = #{record.kvIsrd,jdbcType=INTEGER},
+      </if>
+      <if test="record.isusermain != null">
+        ISUSERMAIN = #{record.isusermain,jdbcType=INTEGER},
+      </if>
+      <if test="record.ismainsimhash != null">
+        ISMAINSIMHASH = #{record.ismainsimhash,jdbcType=INTEGER},
+      </if>
+      <if test="record.kvTitle != null">
+        KV_TITLE = #{record.kvTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="record.losttime != null">
+        LOSTTIME = #{record.losttime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvOrienLevel != null">
+        KV_ORIEN_LEVEL = #{record.kvOrienLevel,jdbcType=INTEGER},
+      </if>
+      <if test="record.noisestatus != null">
+        NOISESTATUS = #{record.noisestatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvAbstract != null">
+        KV_ABSTRACT = #{record.kvAbstract,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvUrl != null">
+        KV_URL = #{record.kvUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvKeyword != null">
+        KV_KEYWORD = #{record.kvKeyword,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvWbauthorpic != null">
+        KV_WBAUTHORPIC = #{record.kvWbauthorpic,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvAuthor != null">
+        KV_AUTHOR = #{record.kvAuthor,jdbcType=VARCHAR},
+      </if>
+      <if test="record.krGtime != null">
+        KR_GTIME = #{record.krGtime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvIspic != null">
+        KV_ISPIC = #{record.kvIspic,jdbcType=TINYINT},
+      </if>
+      <if test="record.kvIsvideo != null">
+        KV_ISVIDEO = #{record.kvIsvideo,jdbcType=TINYINT},
+      </if>
+      <if test="record.kvImgurl != null">
+        KV_IMGURL = #{record.kvImgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvVedeourl != null">
+        KV_VEDEOURL = #{record.kvVedeourl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvTitlematch != null">
+        KV_TITLEMATCH = #{record.kvTitlematch,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvMustwordminindex != null">
+        KV_MUSTWORDMININDEX = #{record.kvMustwordminindex,jdbcType=INTEGER},
+      </if>
+      <if test="record.kvKeywordsminindex != null">
+        KV_KEYWORDSMININDEX = #{record.kvKeywordsminindex,jdbcType=INTEGER},
+      </if>
+      <if test="record.kvOnlylocal != null">
+        KV_ONLYLOCAL = #{record.kvOnlylocal,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvWeiboovertime != null">
+        KV_WEIBOOVERTIME = #{record.kvWeiboovertime,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvWeibosignlocalnoise != null">
+        KV_WEIBOSIGNLOCALNOISE = #{record.kvWeibosignlocalnoise,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvWeibotopicnoise != null">
+        KV_WEIBOTOPICNOISE = #{record.kvWeibotopicnoise,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvWeiboatnoise != null">
+        KV_WEIBOATNOISE = #{record.kvWeiboatnoise,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvDtctime != null">
+        KV_DTCTIME = #{record.kvDtctime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.kvDttime != null">
+        KV_DTTIME = #{record.kvDttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.kvWebchannel != null">
+        KV_WEBCHANNEL = #{record.kvWebchannel,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvHotkeyword != null">
+        KV_HOTKEYWORD = #{record.kvHotkeyword,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvDomain != null">
+        KV_DOMAIN = #{record.kvDomain,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvSiteid != null">
+        KV_SITEID = #{record.kvSiteid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.kvInformationstate != null">
+        KV_INFORMATIONSTATE = #{record.kvInformationstate,jdbcType=VARCHAR},
+      </if>
+      <if test="record.importanceWeight != null">
+        IMPORTANCE_WEIGHT = #{record.importanceWeight,jdbcType=INTEGER},
+      </if>
+      <if test="record.kvExtendField != null">
+        KV_EXTEND_FIELD = #{record.kvExtendField,jdbcType=OTHER},
+      </if>
+      <if test="record.kvInputdatatype != null">
+        KV_INPUTDATATYPE = #{record.kvInputdatatype,jdbcType=BIT},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update ${_OTHER_DBNAME}.WK_T_VALIDATION_REF ref
+    set KR_UUID = #{record.krUuid,jdbcType=VARCHAR},
+      KV_UUID = #{record.kvUuid,jdbcType=VARCHAR},
+      KR_INFOTYPE = #{record.krInfotype,jdbcType=VARCHAR},
+      KR_KEYWORDID = #{record.krKeywordid,jdbcType=VARCHAR},
+      KR_UID = #{record.krUid,jdbcType=INTEGER},
+      KR_STATE = #{record.krState,jdbcType=VARCHAR},
+      KR_CTIME = #{record.krCtime,jdbcType=VARCHAR},
+      KR_ISLOCAL = #{record.krIslocal,jdbcType=VARCHAR},
+      KV_FLAG = #{record.kvFlag,jdbcType=VARCHAR},
+      ARG1 = #{record.arg1,jdbcType=VARCHAR},
+      ARG2 = #{record.arg2,jdbcType=VARCHAR},
+      ARG3 = #{record.arg3,jdbcType=VARCHAR},
+      KEYWORD = #{record.keyword,jdbcType=VARCHAR},
+      ORIENTATION = #{record.orientation,jdbcType=VARCHAR},
+      ISYJ = #{record.isyj,jdbcType=INTEGER},
+      ISREAD = #{record.isread,jdbcType=INTEGER},
+      ISMYATTENTION = #{record.ismyattention,jdbcType=INTEGER},
+      ISFEEDBACK = #{record.isfeedback,jdbcType=INTEGER},
+      ARG4 = #{record.arg4,jdbcType=VARCHAR},
+      ARG5 = #{record.arg5,jdbcType=VARCHAR},
+      KV_VISITCOUNT = #{record.kvVisitcount,jdbcType=INTEGER},
+      KV_REPLY = #{record.kvReply,jdbcType=INTEGER},
+      KV_SIMHASH = #{record.kvSimhash,jdbcType=VARCHAR},
+      KV_WEBNAME = #{record.kvWebname,jdbcType=VARCHAR},
+      KV_COLLECTTIME = #{record.kvCollecttime,jdbcType=VARCHAR},
+      KV_SOURCETYPE = #{record.kvSourcetype,jdbcType=VARCHAR},
+      KV_HOT = #{record.kvHot,jdbcType=INTEGER},
+      KV_ISTF = #{record.kvIstf,jdbcType=INTEGER},
+      KV_ISRD = #{record.kvIsrd,jdbcType=INTEGER},
+      ISUSERMAIN = #{record.isusermain,jdbcType=INTEGER},
+      ISMAINSIMHASH = #{record.ismainsimhash,jdbcType=INTEGER},
+      KV_TITLE = #{record.kvTitle,jdbcType=VARCHAR},
+      LOSTTIME = #{record.losttime,jdbcType=VARCHAR},
+      KV_ORIEN_LEVEL = #{record.kvOrienLevel,jdbcType=INTEGER},
+      NOISESTATUS = #{record.noisestatus,jdbcType=VARCHAR},
+      KV_ABSTRACT = #{record.kvAbstract,jdbcType=VARCHAR},
+      KV_URL = #{record.kvUrl,jdbcType=VARCHAR},
+      KV_KEYWORD = #{record.kvKeyword,jdbcType=VARCHAR},
+      KV_WBAUTHORPIC = #{record.kvWbauthorpic,jdbcType=VARCHAR},
+      KV_AUTHOR = #{record.kvAuthor,jdbcType=VARCHAR},
+      KR_GTIME = #{record.krGtime,jdbcType=VARCHAR},
+      KV_ISPIC = #{record.kvIspic,jdbcType=TINYINT},
+      KV_ISVIDEO = #{record.kvIsvideo,jdbcType=TINYINT},
+      KV_IMGURL = #{record.kvImgurl,jdbcType=VARCHAR},
+      KV_VEDEOURL = #{record.kvVedeourl,jdbcType=VARCHAR},
+      KV_TITLEMATCH = #{record.kvTitlematch,jdbcType=VARCHAR},
+      KV_MUSTWORDMININDEX = #{record.kvMustwordminindex,jdbcType=INTEGER},
+      KV_KEYWORDSMININDEX = #{record.kvKeywordsminindex,jdbcType=INTEGER},
+      KV_ONLYLOCAL = #{record.kvOnlylocal,jdbcType=VARCHAR},
+      KV_WEIBOOVERTIME = #{record.kvWeiboovertime,jdbcType=VARCHAR},
+      KV_WEIBOSIGNLOCALNOISE = #{record.kvWeibosignlocalnoise,jdbcType=VARCHAR},
+      KV_WEIBOTOPICNOISE = #{record.kvWeibotopicnoise,jdbcType=VARCHAR},
+      KV_WEIBOATNOISE = #{record.kvWeiboatnoise,jdbcType=VARCHAR},
+      KV_DTCTIME = #{record.kvDtctime,jdbcType=TIMESTAMP},
+      KV_DTTIME = #{record.kvDttime,jdbcType=TIMESTAMP},
+      KV_WEBCHANNEL = #{record.kvWebchannel,jdbcType=VARCHAR},
+      KV_HOTKEYWORD = #{record.kvHotkeyword,jdbcType=VARCHAR},
+      KV_DOMAIN = #{record.kvDomain,jdbcType=VARCHAR},
+      KV_SITEID = #{record.kvSiteid,jdbcType=VARCHAR},
+      KV_INFORMATIONSTATE = #{record.kvInformationstate,jdbcType=VARCHAR},
+      ENTITYAREA = #{record.entityarea,jdbcType=VARCHAR},
+      IMPORTANCE_WEIGHT = #{record.importanceWeight,jdbcType=INTEGER},
+      KV_EXTEND_FIELD = #{record.kvExtendField,jdbcType=OTHER},
+      KV_INPUTDATATYPE = #{record.kvInputdatatype,jdbcType=BIT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.zhxg.yqzj.entities.v1.WkTValidationRef">
+    update ${_OTHER_DBNAME}.WK_T_VALIDATION_REF ref
+    <set>
+      <if test="kvUuid != null">
+        KV_UUID = #{kvUuid,jdbcType=VARCHAR},
+      </if>
+      <if test="krInfotype != null">
+        KR_INFOTYPE = #{krInfotype,jdbcType=VARCHAR},
+      </if>
+      <if test="krKeywordid != null">
+        KR_KEYWORDID = #{krKeywordid,jdbcType=VARCHAR},
+      </if>
+      <if test="krUid != null">
+        KR_UID = #{krUid,jdbcType=INTEGER},
+      </if>
+      <if test="krState != null">
+        KR_STATE = #{krState,jdbcType=VARCHAR},
+      </if>
+      <if test="krCtime != null">
+        KR_CTIME = #{krCtime,jdbcType=VARCHAR},
+      </if>
+      <if test="krIslocal != null">
+        KR_ISLOCAL = #{krIslocal,jdbcType=VARCHAR},
+      </if>
+      <if test="kvFlag != null">
+        KV_FLAG = #{kvFlag,jdbcType=VARCHAR},
+      </if>
+      <if test="arg1 != null">
+        ARG1 = #{arg1,jdbcType=VARCHAR},
+      </if>
+      <if test="arg2 != null">
+        ARG2 = #{arg2,jdbcType=VARCHAR},
+      </if>
+      <if test="arg3 != null">
+        ARG3 = #{arg3,jdbcType=VARCHAR},
+      </if>
+      <if test="keyword != null">
+        KEYWORD = #{keyword,jdbcType=VARCHAR},
+      </if>
+      <if test="orientation != null">
+        ORIENTATION = #{orientation,jdbcType=VARCHAR},
+      </if>
+      <if test="isyj != null">
+        ISYJ = #{isyj,jdbcType=INTEGER},
+      </if>
+      <if test="isread != null">
+        ISREAD = #{isread,jdbcType=INTEGER},
+      </if>
+      <if test="ismyattention != null">
+        ISMYATTENTION = #{ismyattention,jdbcType=INTEGER},
+      </if>
+      <if test="isfeedback != null">
+        ISFEEDBACK = #{isfeedback,jdbcType=INTEGER},
+      </if>
+      <if test="arg4 != null">
+        ARG4 = #{arg4,jdbcType=VARCHAR},
+      </if>
+      <if test="arg5 != null">
+        ARG5 = #{arg5,jdbcType=VARCHAR},
+      </if>
+      <if test="kvVisitcount != null">
+        KV_VISITCOUNT = #{kvVisitcount,jdbcType=INTEGER},
+      </if>
+      <if test="kvReply != null">
+        KV_REPLY = #{kvReply,jdbcType=INTEGER},
+      </if>
+      <if test="kvSimhash != null">
+        KV_SIMHASH = #{kvSimhash,jdbcType=VARCHAR},
+      </if>
+      <if test="kvWebname != null">
+        KV_WEBNAME = #{kvWebname,jdbcType=VARCHAR},
+      </if>
+      <if test="kvCollecttime != null">
+        KV_COLLECTTIME = #{kvCollecttime,jdbcType=VARCHAR},
+      </if>
+      <if test="kvSourcetype != null">
+        KV_SOURCETYPE = #{kvSourcetype,jdbcType=VARCHAR},
+      </if>
+      <if test="kvHot != null">
+        KV_HOT = #{kvHot,jdbcType=INTEGER},
+      </if>
+      <if test="kvIstf != null">
+        KV_ISTF = #{kvIstf,jdbcType=INTEGER},
+      </if>
+      <if test="kvIsrd != null">
+        KV_ISRD = #{kvIsrd,jdbcType=INTEGER},
+      </if>
+      <if test="isusermain != null">
+        ISUSERMAIN = #{isusermain,jdbcType=INTEGER},
+      </if>
+      <if test="ismainsimhash != null">
+        ISMAINSIMHASH = #{ismainsimhash,jdbcType=INTEGER},
+      </if>
+      <if test="kvTitle != null">
+        KV_TITLE = #{kvTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="losttime != null">
+        LOSTTIME = #{losttime,jdbcType=VARCHAR},
+      </if>
+      <if test="kvOrienLevel != null">
+        KV_ORIEN_LEVEL = #{kvOrienLevel,jdbcType=INTEGER},
+      </if>
+      <if test="noisestatus != null">
+        NOISESTATUS = #{noisestatus,jdbcType=VARCHAR},
+      </if>
+      <if test="kvAbstract != null">
+        KV_ABSTRACT = #{kvAbstract,jdbcType=VARCHAR},
+      </if>
+      <if test="kvUrl != null">
+        KV_URL = #{kvUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="kvKeyword != null">
+        KV_KEYWORD = #{kvKeyword,jdbcType=VARCHAR},
+      </if>
+      <if test="kvWbauthorpic != null">
+        KV_WBAUTHORPIC = #{kvWbauthorpic,jdbcType=VARCHAR},
+      </if>
+      <if test="kvAuthor != null">
+        KV_AUTHOR = #{kvAuthor,jdbcType=VARCHAR},
+      </if>
+      <if test="krGtime != null">
+        KR_GTIME = #{krGtime,jdbcType=VARCHAR},
+      </if>
+      <if test="kvIspic != null">
+        KV_ISPIC = #{kvIspic,jdbcType=TINYINT},
+      </if>
+      <if test="kvIsvideo != null">
+        KV_ISVIDEO = #{kvIsvideo,jdbcType=TINYINT},
+      </if>
+      <if test="kvImgurl != null">
+        KV_IMGURL = #{kvImgurl,jdbcType=VARCHAR},
+      </if>
+      <if test="kvVedeourl != null">
+        KV_VEDEOURL = #{kvVedeourl,jdbcType=VARCHAR},
+      </if>
+      <if test="kvTitlematch != null">
+        KV_TITLEMATCH = #{kvTitlematch,jdbcType=VARCHAR},
+      </if>
+      <if test="kvMustwordminindex != null">
+        KV_MUSTWORDMININDEX = #{kvMustwordminindex,jdbcType=INTEGER},
+      </if>
+      <if test="kvKeywordsminindex != null">
+        KV_KEYWORDSMININDEX = #{kvKeywordsminindex,jdbcType=INTEGER},
+      </if>
+      <if test="kvOnlylocal != null">
+        KV_ONLYLOCAL = #{kvOnlylocal,jdbcType=VARCHAR},
+      </if>
+      <if test="kvWeiboovertime != null">
+        KV_WEIBOOVERTIME = #{kvWeiboovertime,jdbcType=VARCHAR},
+      </if>
+      <if test="kvWeibosignlocalnoise != null">
+        KV_WEIBOSIGNLOCALNOISE = #{kvWeibosignlocalnoise,jdbcType=VARCHAR},
+      </if>
+      <if test="kvWeibotopicnoise != null">
+        KV_WEIBOTOPICNOISE = #{kvWeibotopicnoise,jdbcType=VARCHAR},
+      </if>
+      <if test="kvWeiboatnoise != null">
+        KV_WEIBOATNOISE = #{kvWeiboatnoise,jdbcType=VARCHAR},
+      </if>
+      <if test="kvDtctime != null">
+        KV_DTCTIME = #{kvDtctime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="kvDttime != null">
+        KV_DTTIME = #{kvDttime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="kvWebchannel != null">
+        KV_WEBCHANNEL = #{kvWebchannel,jdbcType=VARCHAR},
+      </if>
+      <if test="kvHotkeyword != null">
+        KV_HOTKEYWORD = #{kvHotkeyword,jdbcType=VARCHAR},
+      </if>
+      <if test="kvDomain != null">
+        KV_DOMAIN = #{kvDomain,jdbcType=VARCHAR},
+      </if>
+      <if test="kvSiteid != null">
+        KV_SITEID = #{kvSiteid,jdbcType=VARCHAR},
+      </if>
+      <if test="kvInformationstate != null">
+        KV_INFORMATIONSTATE = #{kvInformationstate,jdbcType=VARCHAR},
+      </if>
+      <if test="entityarea != null">
+        ENTITYAREA = #{entityarea,jdbcType=VARCHAR},
+      </if>
+      <if test="importanceWeight != null">
+        IMPORTANCE_WEIGHT = #{importanceWeight,jdbcType=INTEGER},
+      </if>
+      <if test="kvExtendField != null">
+        KV_EXTEND_FIELD = #{kvExtendField,jdbcType=OTHER},
+      </if>
+      <if test="kvInputdatatype != null">
+        KV_INPUTDATATYPE = #{kvInputdatatype,jdbcType=BIT},
+      </if>
+    </set>
+    where KR_UUID = #{krUuid,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.zhxg.yqzj.entities.v1.WkTValidationRef">
+    update ${_OTHER_DBNAME}.WK_T_VALIDATION_REF ref
+    set KV_UUID = #{kvUuid,jdbcType=VARCHAR},
+      KR_INFOTYPE = #{krInfotype,jdbcType=VARCHAR},
+      KR_KEYWORDID = #{krKeywordid,jdbcType=VARCHAR},
+      KR_UID = #{krUid,jdbcType=INTEGER},
+      KR_STATE = #{krState,jdbcType=VARCHAR},
+      KR_CTIME = #{krCtime,jdbcType=VARCHAR},
+      KR_ISLOCAL = #{krIslocal,jdbcType=VARCHAR},
+      KV_FLAG = #{kvFlag,jdbcType=VARCHAR},
+      ARG1 = #{arg1,jdbcType=VARCHAR},
+      ARG2 = #{arg2,jdbcType=VARCHAR},
+      ARG3 = #{arg3,jdbcType=VARCHAR},
+      KEYWORD = #{keyword,jdbcType=VARCHAR},
+      ORIENTATION = #{orientation,jdbcType=VARCHAR},
+      ISYJ = #{isyj,jdbcType=INTEGER},
+      ISREAD = #{isread,jdbcType=INTEGER},
+      ISMYATTENTION = #{ismyattention,jdbcType=INTEGER},
+      ISFEEDBACK = #{isfeedback,jdbcType=INTEGER},
+      ARG4 = #{arg4,jdbcType=VARCHAR},
+      ARG5 = #{arg5,jdbcType=VARCHAR},
+      KV_VISITCOUNT = #{kvVisitcount,jdbcType=INTEGER},
+      KV_REPLY = #{kvReply,jdbcType=INTEGER},
+      KV_SIMHASH = #{kvSimhash,jdbcType=VARCHAR},
+      KV_WEBNAME = #{kvWebname,jdbcType=VARCHAR},
+      KV_COLLECTTIME = #{kvCollecttime,jdbcType=VARCHAR},
+      KV_SOURCETYPE = #{kvSourcetype,jdbcType=VARCHAR},
+      KV_HOT = #{kvHot,jdbcType=INTEGER},
+      KV_ISTF = #{kvIstf,jdbcType=INTEGER},
+      KV_ISRD = #{kvIsrd,jdbcType=INTEGER},
+      ISUSERMAIN = #{isusermain,jdbcType=INTEGER},
+      ISMAINSIMHASH = #{ismainsimhash,jdbcType=INTEGER},
+      KV_TITLE = #{kvTitle,jdbcType=VARCHAR},
+      LOSTTIME = #{losttime,jdbcType=VARCHAR},
+      KV_ORIEN_LEVEL = #{kvOrienLevel,jdbcType=INTEGER},
+      NOISESTATUS = #{noisestatus,jdbcType=VARCHAR},
+      KV_ABSTRACT = #{kvAbstract,jdbcType=VARCHAR},
+      KV_URL = #{kvUrl,jdbcType=VARCHAR},
+      KV_KEYWORD = #{kvKeyword,jdbcType=VARCHAR},
+      KV_WBAUTHORPIC = #{kvWbauthorpic,jdbcType=VARCHAR},
+      KV_AUTHOR = #{kvAuthor,jdbcType=VARCHAR},
+      KR_GTIME = #{krGtime,jdbcType=VARCHAR},
+      KV_ISPIC = #{kvIspic,jdbcType=TINYINT},
+      KV_ISVIDEO = #{kvIsvideo,jdbcType=TINYINT},
+      KV_IMGURL = #{kvImgurl,jdbcType=VARCHAR},
+      KV_VEDEOURL = #{kvVedeourl,jdbcType=VARCHAR},
+      KV_TITLEMATCH = #{kvTitlematch,jdbcType=VARCHAR},
+      KV_MUSTWORDMININDEX = #{kvMustwordminindex,jdbcType=INTEGER},
+      KV_KEYWORDSMININDEX = #{kvKeywordsminindex,jdbcType=INTEGER},
+      KV_ONLYLOCAL = #{kvOnlylocal,jdbcType=VARCHAR},
+      KV_WEIBOOVERTIME = #{kvWeiboovertime,jdbcType=VARCHAR},
+      KV_WEIBOSIGNLOCALNOISE = #{kvWeibosignlocalnoise,jdbcType=VARCHAR},
+      KV_WEIBOTOPICNOISE = #{kvWeibotopicnoise,jdbcType=VARCHAR},
+      KV_WEIBOATNOISE = #{kvWeiboatnoise,jdbcType=VARCHAR},
+      KV_DTCTIME = #{kvDtctime,jdbcType=TIMESTAMP},
+      KV_DTTIME = #{kvDttime,jdbcType=TIMESTAMP},
+      KV_WEBCHANNEL = #{kvWebchannel,jdbcType=VARCHAR},
+      KV_HOTKEYWORD = #{kvHotkeyword,jdbcType=VARCHAR},
+      KV_DOMAIN = #{kvDomain,jdbcType=VARCHAR},
+      KV_SITEID = #{kvSiteid,jdbcType=VARCHAR},
+      KV_INFORMATIONSTATE = #{kvInformationstate,jdbcType=VARCHAR},
+      ENTITYAREA = #{entityarea,jdbcType=VARCHAR},
+      IMPORTANCE_WEIGHT = #{importanceWeight,jdbcType=INTEGER},
+      KV_EXTEND_FIELD = #{kvExtendField,jdbcType=OTHER},
+      KV_INPUTDATATYPE = #{kvInputdatatype,jdbcType=BIT}
+    where KR_UUID = #{krUuid,jdbcType=VARCHAR}
+  </update>
+  <insert id="saveSearchCondition" parameterType="java.util.Map">
+  	INSERT INTO jtgk.WK_T_SEARCH_CONDITION(KU_ID,KS_CONDITION,C_TIME,KK_ID,KS_TYPE) 
+  	VALUES(#{msUserId},#{condition},NOW(),#{kkId},'1');
+  </insert>
+  <select id="getSearchCondition" resultType="java.lang.String" parameterType="java.util.Map">
+	  	 SELECT 
+	  	    KS_CONDITION 
+	  	 FROM (
+			(SELECT 
+			      KS_CONDITION
+			FROM   
+			    jtgk.WK_T_SEARCH_CONDITION 
+			WHERE 
+			     KU_ID=#{msUserId}  AND KK_ID=#{kkId}
+			ORDER BY 
+			    C_TIME DESC
+			LIMIT 1 )
+			UNION 
+			(SELECT 
+			      KS_CONDITION
+			FROM   
+			    jtgk.WK_T_SEARCH_CONDITION 
+			WHERE 
+			     KU_ID=#{msUserId}  AND KK_ID=''
+			ORDER BY 
+			    C_TIME DESC
+			LIMIT 1 )) ls LIMIT 1
+  </select>
+  
+  <delete id="delRefByUrlOrHash" parameterType="com.zhxg.yqzj.entities.v1.WkTValidationRef">
+      <if test="null!=kvSimhashList and kvSimhashList.size>0">
+            delete from ${_DBNAME}.WK_T_VALIDATION_REF  where  KV_SIMHASH in
+             <foreach collection="kvSimhashList" item="simHash" separator="," open="(" close=")">
+                #{simHash}
+             </foreach> 
+        </if>
+         <if test="null!=kvUrlList and kvUrlList.size>0">
+              delete from ${_DBNAME}.WK_T_VALIDATION_REF  where  KV_URL in
+            <foreach collection="kvUrlList" item="url" separator="," open="(" close=")">
+               #{url}
+            </foreach> 
+        </if>
+  </delete>
+  
+  <update id="updateRefByUrlOrHash" parameterType="com.zhxg.yqzj.entities.v1.WkTValidationRef">
+	   <if test="null!=kvSimhashList and kvSimhashList.size>0">
+	     update  ${_DBNAME}.WK_T_VALIDATION_REF set ISREAD=1 where KV_SIMHASH in
+	       <foreach collection="kvSimhashList" item="simHash" separator="," open="(" close=")">
+	                #{simHash}
+	       </foreach> 
+	   </if>
+   
+	   <if test="null!=kvUrlList and kvUrlList.size>0">
+	     update  ${_DBNAME}.WK_T_VALIDATION_REF set ISREAD=1  where KV_URL in
+	      <foreach collection="kvUrlList" item="url" separator="," open="(" close=")">
+	               #{url}
+	      </foreach> 
+	      </if>
+  </update>
+  
+  <select id="getREFListByKrUuid" resultMap="BaseResultMap" parameterType="java.util.Map">
+    select  
+      <include refid="Base_Column_List"/>
+    from 
+        ${_OTHER_DBNAME}.WK_T_VALIDATION_REF ref
+    where 
+        KR_UUID IN
+           <foreach collection="krUUidList" item="krUuid" separator="," open="(" close=")">
+              #{krUuid}
+           </foreach> 
+  </select>  
+  <select id="getAgentId" parameterType="java.util.Map" resultType="String">
+        SELECT
+            u.KD_ID
+        FROM
+            yqms2.WK_T_USER u,
+            yqms2.WK_T_AGENTS a
+        WHERE
+            u.KD_ID = a.KA_ID
+        AND u.ku_id = #{_KUID}
+    </select>
+    
+    <select id="getRefUrlOrhashListByLimit_other" resultMap="BaseResultMap" parameterType="com.zhxg.yqzj.entities.v1.WkTValidationRef">
+	  	select  
+		   <include refid="Base_Column_List"/>
+		    from ${_OTHER_DBNAME}.WK_T_VALIDATION_REF ref
+		    <if test="null!=region and region>0 ">
+		    	left join ${_OTHER_DBNAME}.WK_T_INFO_REGION wtif
+		        on ref.KV_UUID=wtif.KV_UUID
+		    </if>
+		    <include refid="refWhere"/>
+	    order by KR_CTIME desc
+  </select>
+  <select id="getSearchConditionInfo" resultType="java.lang.String" parameterType="java.lang.String">
+     SELECT KS_CONDITION 
+     FROM yqms2.WK_T_SEARCH_CONDITION 
+     WHERE ku_id=#{userId} 
+         <if test="null!=kkIdList and kkIdList.size>0">
+             and KK_ID in
+             <foreach collection="kkIdList" item="kkId" separator="," open="(" close=")">
+                #{kkId}
+             </foreach> 
+        </if>
+     ORDER BY C_TIME DESC LIMIT 1 
+  </select>
+  <select id="getKkIdByClassifyId" resultType="java.lang.String" parameterType="java.lang.String">
+    SELECT KS_ID FROM yqms2.WT_K_SUBRELATION WHERE KC_UUID=#{_parameter}
+   </select>
+</mapper>

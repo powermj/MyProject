@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.ReportTemplate">
+	
+	<resultMap id="reportTemplate" type="com.zhxg.yqzj.entities.v1.ReportTemplate">
+		<id property="id" column="id" />
+		<result property="userid" column="userid" />
+		<result property="type" column="type" />
+		<result property="template" column="template" />
+	</resultMap>
+
+	<select id="getReportTemplateList"  parameterType = "java.util.Map"  resultMap="reportTemplate">
+		SELECT 
+		      * 
+		FROM 
+		      report.report_template 
+		WHERE 
+		      userid = #{userid}
+	</select>
+	
+	<insert id="insertReportTemplate" parameterType = "java.util.Map">
+	    insert into report_template
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="_KUID != null" >
+	        userid,
+	      </if>
+	      <if test="type != null" >
+	        type,
+	      </if>
+	      <if test="template != null" >
+	        template
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="_KUID != null" >
+	        #{_KUID},
+	      </if>
+	      <if test="type != null" >
+	        #{type},
+	      </if>
+	      <if test="template != null">
+	      	#{template}
+	      </if>
+	    </trim>
+	</insert>
+</mapper>

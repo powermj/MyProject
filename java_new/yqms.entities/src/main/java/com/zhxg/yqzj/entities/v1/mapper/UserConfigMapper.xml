@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.UserConfig">
+	
+	<resultMap id="userConfig" type="UserConfig">
+		<result property="userId" column="KU_ID" />
+		<result property="key" column="KU_TYPE" />
+		<result property="value" column="KU_VALUE" />
+	</resultMap>
+	
+	<!-- 根据用户ID查询用户配置信息 -->
+	<select id="getUserConfigByUserId" parameterType="java.lang.String" resultMap="userConfig">
+		SELECT
+			*
+		FROM
+			yqms2.WK_T_USERBASEINFO
+		WHERE 
+			KU_ID = #{userId}
+	</select>
+</mapper>

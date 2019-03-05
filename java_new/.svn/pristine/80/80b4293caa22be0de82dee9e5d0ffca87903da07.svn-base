@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.Expert">
+	
+	<resultMap id="experts" type="Expert">
+		<id property="id" column="id" />
+		<result property="avatar" column="avatar" />
+		<result property="type" column="type" />
+		<result property="abstracts" column="abstract" />
+		<result property="successCase" column="success_case" />
+		<result property="region" column="region" />
+		<result property="name" column="name" />
+		<result property="nickname" column="nickname" />
+		<result property="label" column="label" />
+		<result property="introduction" column="introduction" />
+		<result property="successive" column="successive" />
+		<result property="achievement" column="achievement" />
+		<result property="level" column="level" />
+		<result property="ctime" column="ctime" />
+		<result property="status" column="status" />
+		<result property="state" column="state" />
+		<result property="consultationDescribe" column="consultationDescribe" />	
+		<result property="consultationType" column="consultationType" />
+		<result property="regionName" column="regionName" />
+		
+			
+		<association property="supportConsultationType" column="{expertId=id}" select="com.zhxg.yqzj.entities.v1.ConsultationType.getConsultationType"/>
+	</resultMap>
+	
+	<select id="getList" resultMap="experts">
+		SELECT 
+		t.*, (CASE WHEN sum(CASE WHEN c.status = 0 THEN 1 ELSE 0 END ) <![CDATA[<>]]> 0 THEN 0
+		WHEN sum( CASE WHEN c.status = 1 THEN 1 ELSE 0 END ) <![CDATA[<>]]> 0 THEN 1
+		WHEN sum( CASE WHEN c.status = 2 THEN 1 ELSE 0 END ) <![CDATA[<>]]> 0 THEN 2 ELSE -1 END) AS status
+		FROM
+		(SELECT
+			e.id,
+			e.avatar,
+			e.name,
+			e.nickname,
+			group_concat(t.expert_type) as type,
+			e.abstract,
+			e.success_case,
+			e.region,
+			e.label,
+			e.introduction,
+			e.successive,
+			e.achievement,
+			e.level,
+			e.ctime,
+			e.state
+		FROM
+			yqzj.zj_expert_infomation e,yqzj.zj_expert_type t
+		WHERE
+			e.type_id = t.id AND e.state = 1
+		AND 
+            e.id > 0
+		<if test="null!=classtype and ''!=classtype">
+            AND e.expert_classtype=#{classtype}
+        </if>
+        
+		<if test="null!=type and ''!=type">
+            AND e.type_id=#{type}
+        </if>
+		<choose>
+		 <when test="searchType == 1">
+	          AND  (
+	          		t.expert_type like CONCAT('%',#{searchWord},'%') 
+	          		OR
+	          		e.abstract like CONCAT('%',#{searchWord},'%') 
+	          		OR
+	          		e.introduction like CONCAT('%',#{searchWord},'%')
+	          		OR
+	          		e.successive like CONCAT('%',#{searchWord},'%')
+	          		OR
+	          		e.achievement like CONCAT('%',#{searchWord},'%')
+	          		OR
+	          		e.success_case like CONCAT('%',#{searchWord},'%')  
+	          		OR
+	          		(SELECT (case l.level when 1 then l.province when 2 then l.city else l.county end) as  regionname FROM yqht.b_locationinfo l
+       				 WHERE e.region = l.uuid) like CONCAT('%',#{searchWord},'%') 
+	          		OR
+	          		e.label like CONCAT('%',#{searchWord},'%') 
+	          		OR
+	          		e.name like CONCAT('%',#{searchWord},'%') 
+	          		) 
+	        </when>
+	        <when test="searchType == 2">
+	          AND  e.name like CONCAT('%',#{searchWord},'%')  
+	        </when>
+	        <when test="searchType == 3">
+	          AND  e.success_case like CONCAT('%',#{searchWord},'%')  
+	        </when>
+	        <when test="searchType == 4">
+	          AND  (SELECT (case l.level when 1 then l.province when 2 then l.city else l.county end) as  regionname FROM yqht.b_locationinfo l
+                     WHERE e.region = l.uuid) like CONCAT('%',#{searchWord},'%')
+	        </when>
+	    </choose>
+		GROUP BY 
+			e.id) t LEFT JOIN yqzj.zj_consultation c ON t.id = c.expert_id
+		AND c.userid = #{userid}  
+		GROUP BY 
+			t.id
+		ORDER BY 
+			t.level,t.ctime DESC
+	</select>
+	
+	
+	<select id="getExpertInfodetail" resultMap="experts">
+		SELECT 
+		t.*,(case l.level when 1 then l.province when 2 then l.city else l.county end) as  regionName, (CASE WHEN sum(CASE WHEN c.status = 0 THEN 1 ELSE 0 END ) <![CDATA[<>]]> 0 THEN 0
+		WHEN sum( CASE WHEN c.status = 1 THEN 1 ELSE 0 END ) <![CDATA[<>]]> 0 THEN 1
+		WHEN sum( CASE WHEN c.status = 2 THEN 1 ELSE 0 END ) <![CDATA[<>]]> 0 THEN 2 ELSE -1 END) AS status,
+		CASE WHEN sum(CASE WHEN c.status = 0 or c.status = 1 THEN 1 ELSE 0 END ) <![CDATA[<>]]> 0 THEN c.describe ELSE null END AS consultationDescribe,
+		CASE WHEN sum(CASE WHEN c.status = 0 or c.status = 1 THEN 1 ELSE 0 END ) <![CDATA[<>]]> 0 THEN c.type ELSE null END AS consultationType
+		FROM
+		(SELECT
+			e.id,
+			e.avatar,
+			e.name,
+			e.nickname,
+			group_concat(t1.expert_type) as type,
+			e.abstract,
+			e.success_case,
+			e.region,
+			e.label,
+			e.introduction,
+			e.successive,
+			e.achievement,
+			e.level,
+			e.ctime,
+			e.state
+		FROM
+			yqzj.zj_expert_infomation e,yqzj.zj_expert_type t1
+		WHERE
+			e.type_id = t1.id
+		AND 
+			e.id = #{expertid}
+		AND 
+            e.id > 0
+		GROUP BY 
+			e.id) t 
+		LEFT JOIN 
+			yqzj.zj_consultation c 
+		ON 
+			t.id = c.expert_id
+		AND 
+			c.userid = #{userid}  
+        LEFT JOIN 
+			yqht.b_locationinfo l
+        ON
+         	t.region = l.uuid
+		GROUP BY 
+			t.id
+		ORDER BY 
+			t.level DESC
+	</select>
+	
+	<select id="getConsultationType" resultMap="experts">
+		SELECT
+			id,consultation_type
+		FROM
+			yqzj.zj_consultation_type
+	</select>
+	 
+	<select id="getAllExpertType" resultMap="experts">
+		SELECT
+			id,expert_type AS type
+		FROM
+			yqzj.zj_expert_type
+	</select>
+
+</mapper>

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.SolrExportCondition">
+
+    <resultMap id="solrExportCondition" type="SolrExportCondition">
+        <result property="fieldId" column="FIELD_ID"/>
+        <result property="fieldName" column="FIELD_NAME" />
+        <result property="userId" column="USER_ID" />
+        <result property="valid" column="VALID" />
+        <result property="sequences" column="SEQUENCES" />
+    </resultMap>
+	
+	<!-- 查询筛选条件列表 -->
+	<select id="getExportCondition" parameterType = "java.util.Map" resultType = "solrExportCondition">
+		SELECT    tb1.FIELD_ID,
+			      tb1.FIELD_NAME,
+		          tb2.USER_ID,
+		          tb2.VALID,
+		          tb2.SEQUENCES
+		FROM      SOLR_T_EXPORTFIELD tb1
+		LEFT JOIN SOLR_T_EXPORTCONDITION tb2
+		ON  tb1.FIELD_ID = tb2.FIELD_ID AND tb2.USER_ID = #{_KUID}
+		WHERE 1=1
+		ORDER BY tb2.SEQUENCES
+	</select>
+	
+	<!-- 删除用户下导出字段 -->
+	<delete id="deleteExportCondition" parameterType = "java.util.Map">
+		DELETE FROM SOLR_T_EXPORTCONDITION
+		WHERE USER_ID = #{_KUID}
+	</delete>
+	<!-- 添加用户自定义导出字段 -->
+	<insert id="setExportCondition" parameterType="java.util.Map">
+		<selectKey keyProperty="id" resultType="int" >  
+            select LAST_INSERT_ID()  
+        </selectKey>
+        INSERT INTO 
+            SOLR_T_EXPORTCONDITION (
+            USER_ID, 
+            FIELD_ID, 
+            VALID,  
+            SEQUENCES)
+        VALUES 
+       <foreach collection="conditionList" item="exportField" index="index" separator="," >
+    	(#{exportField.userId},
+         #{exportField.fieldId},
+         #{exportField.valid},
+         #{exportField.sequences})
+       </foreach>
+	</insert>
+	<!-- 获取用户自定义字段 -->
+	<select id="getValidCondition" parameterType = "java.util.Map" resultType = "solrExportCondition">
+		SELECT
+			tb1.FIELD_ID,
+			tb2.FIELD_NAME,
+			tb2.SOLR_ID,
+			tb1.USER_ID,
+			tb1.VALID,
+			tb1.SEQUENCES
+		FROM
+			SOLR_T_EXPORTCONDITION tb1,SOLR_T_EXPORTFIELD tb2
+		WHERE
+		 tb1.USER_ID = #{_KUID}
+		AND
+		 tb1.VALID = '1'
+		AND 
+		 tb1.FIELD_ID = tb2.FIELD_ID
+		ORDER BY tb1.SEQUENCES
+	</select>
+	<!-- 获取全部字段 -->
+	<select id="getAllCondition"  parameterType = "java.util.Map" resultType = "solrExportCondition">
+		SELECT
+			tb1.FIELD_ID,
+			tb1.FIELD_NAME,
+			tb1.SOLR_ID
+		FROM
+			SOLR_T_EXPORTFIELD tb1
+	</select>
+</mapper>

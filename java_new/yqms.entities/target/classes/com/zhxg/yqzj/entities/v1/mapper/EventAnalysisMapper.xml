@@ -1,0 +1,1215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.EventAnalysis">
+
+    <resultMap id="baseEventAnalysis" type="EventAnalysis">
+        <id property="uuid" column="KT_UUID" />
+        <result property="userId" column="KU_ID" />
+        <result property="topicName" column="KT_NAME" />
+        <result property="beginTime" column="KT_BEGIN" />
+        <result property="endTime" column="KT_END" />
+        <result property="closeTime" column="KK_CLOSETIME" />
+        <result property="interval" column="KT_INTERVAL" />
+        <result property="status" column="KT_STATUS" />
+        <result property="name" column="KK_NAME" />
+        <result property="creatTime" column="KT_TIME" />
+        <result property="summary" column="KT_SUMMARY" />
+        <result property="isShared" column="KT_ISSHARED" />
+        <result property="sharedTime" column="KT_SHAREDTIME" />
+        <result property="cancelSharedTime" column="KT_CANCELSHAREDTIME" />
+        <result property="words" column="WORDS" />
+        <result property="exclusionWords" column="KK_NOT" />
+        <result property="type" column="KK_TYPE" />
+        <result property="ids" column="ids" />
+        <result property="classId" column="classId" />
+        <result property="orientation" column="orientation" />
+        <result property="topicSharedUserId" column="topicSharedUserId" />
+        <result property="infoStatus" column="infoStatus" />
+        <result property="snapshotUrl" column="snapshotUrl" />
+        <result property="appSnapshotUrl" column="appSnapshotUrl" />
+        <result property="notWords" column="KT_NOT" />
+        <result property="isLogic" column="KT_IS_LOGIC" />
+        <result property="expression" column="KT_EXPRESSION" />
+        <result property="faceImgUrl" column="faceImgUrl" />
+    </resultMap>
+
+	<!-- 事件分析列表 -->
+	<select id="selectEventAnalysisList" resultMap="baseEventAnalysis">
+	    SELECT
+			T.KT_UUID,
+			KU_ID,
+			T.KT_NAME,
+			T.KT_BEGIN,
+			T.KT_END,
+			T.KK_CLOSETIME,
+			T.KT_INTERVAL,
+			T.KT_STATUS,
+			T.KK_NAME,
+			T.KT_TIME,
+			T.KT_SUMMARY,
+			T.KT_ISSHARED,
+			T.KT_SHAREDTIME,
+			T.KT_CANCELSHAREDTIME,
+			T.KT_NOT,
+			T.KT_IS_LOGIC,
+			T.KT_EXPRESSION,
+			GROUP_CONCAT(C.KK_NAME) AS WORDS
+		FROM
+			YQZB_T_TOPIC T left join
+			YQZB_T_CKEY C on T.KT_UUID = C.KT_UUID AND C.KK_TYPE = 1
+		WHERE
+		<!-- AND T.KT_ISNEW=2 -->
+		T.KU_ID = #{userId}
+		AND KT_ISDELETE <![CDATA[ <> ]]> 1	
+		<if test="null!=type and ''!=type">
+            AND KT_IS_LOGIC = #{type}
+        </if>  
+		GROUP BY
+			T.KT_UUID
+		ORDER BY
+			T.KT_TIME DESC
+	</select>
+	
+	 
+	 <!-- 事件分析信息数量 -->
+	<select id="selectEventAnalysisInfoCount" parameterType = "String" resultType = "int">
+	    SELECT
+			count(0)
+		FROM
+            ${tableName}
+        WHERE
+            1=1
+        <if test="null!=beginTime and ''!=beginTime">
+            AND KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        </if>  
+        <if test="null!=endTime and ''!=endTime">
+            AND KN_CTIME <![CDATA[ <= ]]> #{endTime}
+        </if> 
+	</select>
+	
+	<!-- 事件分析数量 -->
+	<select id="selectEventAnalysisCount" parameterType = "String" resultType = "int">
+	    SELECT
+			count(0)
+		FROM
+		    YQZB_T_TOPIC
+		WHERE
+			KU_ID = #{userId}
+	 <!--   AND KT_ISNEW = 2	 -->
+		 AND KT_ISDELETE <![CDATA[ <> ]]> 1	
+	</select>
+	
+	
+    <resultMap type="java.util.Map" id="eventAnalysisCount">
+        <result property="topicCount" column="KU_TOPICCOUNT"  javaType="int" jdbcType="INTEGER"/> 
+        <result property="userStatus" column="KU_USERSTATUS"  javaType="int" jdbcType="INTEGER"/> 
+        <result property="userGenre" column="KU_USERGENRE"  javaType="int" jdbcType="INTEGER"/>
+    </resultMap> 
+	<!-- 允许设置的数量和用户状态 -->
+	<select id="selectUserStatusAndEventAnalysisCount" parameterType = "String" resultMap = "eventAnalysisCount">
+	    SELECT
+			KU_TOPICCOUNT,
+			KU_USERSTATUS,
+			KU_USERGENRE
+		FROM
+			WK_T_USERSERVICE
+		WHERE
+			KU_ID = #{userId}		
+	</select>
+	 <!--添加事件分析 -->
+	<select id="saveAddTopic" >
+       <![CDATA[
+       INSERT INTO YQZB_T_TOPIC (
+			KT_UUID,
+			KU_ID,
+			KT_NAME,
+			KT_SUMMARY,
+			KT_BEGIN,
+			KT_END,
+			KK_NAME,
+			KT_STATUS,
+			KT_TIME,
+			KK_CLOSETIME,
+			KT_ISNEW,
+			KT_EXPRESSION,
+			KT_NOT,
+			KT_IS_LOGIC,
+			faceImgUrl
+		)
+		VALUES (
+			#{uuid},
+            #{userId},
+            #{topicName},
+            #{summary},
+            #{beginTime},
+            #{nowTime},
+            #{firstKeyWords},
+            '0',
+            #{nowTime},
+            #{closeTime},
+            #{isNew},
+            #{expression},
+            #{notWords},
+            #{isLogic},
+            #{faceImgUrl}
+            )
+
+            ]]>
+    </select>
+	
+	
+	
+	<select id="selectUserEventAnalysisStatus" resultType = "java.util.HashMap">
+	   SELECT
+			KU_VALUE value
+		FROM
+			`WK_T_USERBASEINFO`
+		WHERE
+			KU_ID = #{userId}
+		AND KU_TYPE = 'KB_NEWTOPIC'		
+	</select>
+	
+	
+	
+	    <!--     创建事件分析数据表 -->
+    <update id="createTopicTable" parameterType = "java.util.Map">
+   	   CREATE TABLE ${_DBNAME}.${tableName} (
+   	   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '主键',
+	  `UUID` varchar(140) NOT NULL,
+	  `KT_UUID` varchar(40) NOT NULL,
+	  `KN_TYPE` char(2) NOT NULL,
+	  `KN_TITLE` char(150) DEFAULT NULL,
+	  `KN_SOURCE` char(50) DEFAULT NULL,
+	  `KN_URL` varchar(270) DEFAULT NULL,
+	  `KN_TIME` char(20) DEFAULT NULL,
+	  `KN_CTIME` char(20) DEFAULT NULL,
+	  `KN_REPEATCOUNT` int(4) DEFAULT NULL,
+	  `KN_ABSTRACT` varchar(200) DEFAULT NULL,
+	  `KV_VISITCOUNT` int(4) DEFAULT NULL,
+	  `KV_REPLY` int(4) DEFAULT NULL,
+	  `KV_COLLECTION` int(4) DEFAULT NULL,
+	  `KV_TRANSPORT` int(4) DEFAULT NULL,
+	  `KV_REPEAT` int(4) DEFAULT NULL,
+	  `KV_STATE` varchar(2) DEFAULT NULL,
+	  `KN_SITE` char(50) DEFAULT NULL,
+	  `KN_ORIENTATION` char(2) DEFAULT NULL,
+	  `KN_AUTHOR` varchar(50) DEFAULT NULL,
+	  `KN_TOPICUID` varchar(40) DEFAULT NULL,
+	  `KN_ORIEN_LEVEL` varchar(2) DEFAULT NULL,
+	  `KN_FANSCOUNT` int(9) DEFAULT NULL,
+	  `KN_CONTENT` varchar(3500) DEFAULT NULL,
+	  `KN_JINGWAI` varchar(2) DEFAULT NULL,
+	  `KN_TITLESEG` varchar(200) DEFAULT NULL,
+	  `KN_TOPICWORDS` varchar(60) DEFAULT NULL,
+	  `KT_WEIBOUID` varchar(30) DEFAULT NULL,
+	  `ConfigID` varchar(50) DEFAULT NULL,
+	  `gender` varchar(20) DEFAULT NULL,
+	  `WEBNAMEDOMAIN` varchar(50) DEFAULT NULL,
+	  `location` varchar(20) DEFAULT NULL,
+	  `verified` varchar(20) DEFAULT NULL,
+	  `USERID` varchar(50) DEFAULT NULL,
+	  `screen_name` varchar(50) DEFAULT NULL,
+	  `KN_ARG3` varchar(100) DEFAULT NULL,
+	  `KV_WECHAT_INFO_TYPE` int(4) DEFAULT NULL,
+	  `INFO_CONTENT` text COMMENT '当前信息内容',
+	  `MAIN_CONTENT` text COMMENT '主微博内容',
+	  `PREV_AUTHOR` varchar(100) DEFAULT '' COMMENT '前一个作者',
+	  `ALL_AUTHOR` text  COMMENT '作者串',
+	  `SIMHASH` varchar(45) DEFAULT '' COMMENT '相似度hash值',
+	  `REFER_URL` varchar(500) DEFAULT '' COMMENT '转发原文链接',
+	  `IS_WARNING` int(4) DEFAULT '0' COMMENT '是否预警',
+	  `IS_ATTENTION` int(4) DEFAULT '0' COMMENT '是否关注',
+	  `IS_READ` int(4) DEFAULT '0' COMMENT '是否已读',
+	  `IS_BRIEFING` int(4) DEFAULT '0' COMMENT '是否已加入简报 0否 1是',
+	  `IS_REPORT` int(4) DEFAULT '0' COMMENT '是否上报',
+	  `IMPORTANCE_WEIGHT` int(4) DEFAULT NULL COMMENT '重要度',
+	  `KV_DTTIME` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
+	  `TOPIC_SUMMARY` text  COMMENT '摘要',
+	  `TOPIC_SUMMARY_SCORE` double(20,10) DEFAULT '0' COMMENT '摘要可信度',
+	  `EXTEND_FIELD` json DEFAULT NULL COMMENT '扩展字段',
+	  PRIMARY KEY (`id`),
+  	  UNIQUE KEY `UUID` (`UUID`) USING BTREE,
+	  KEY `KT_UUID` (`KT_UUID`) USING BTREE,
+	  KEY `TOPICUID` (`KN_TOPICUID`) USING BTREE,
+	  KEY `URL` (`KN_URL`) USING BTREE,
+	  KEY `CTIME` (`KN_CTIME`) USING BTREE,
+	  KEY `SITE` (`KN_SITE`) USING BTREE,
+	  KEY `ORIENTATION` (`KN_ORIENTATION`) USING BTREE,
+	  KEY `KN_TIME` (`KN_TIME`) USING BTREE,
+	  KEY `TITLESEG` (`KN_TITLESEG`) USING BTREE,
+	  KEY `SIMHASH` (`SIMHASH`) USING BTREE
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    </update>
+    
+    
+    
+    
+     <!--     创建事件分析评论表 -->
+    <update id="createTopicCommontTable" parameterType = "java.util.Map">
+    	CREATE TABLE ${_DBNAME}.${commontTableName} (
+		  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+		  `infoid` varchar(64) NOT NULL COMMENT '信息主键',
+		  `url` varchar(500) NOT NULL COMMENT '原文链接',
+		  `commont` text NOT NULL COMMENT '评论内容',
+		  `viewpoint` varchar(200) NOT NULL COMMENT '观点',
+		  `author` varchar(50) NOT NULL COMMENT '评论人',
+		  `address` varchar(200) DEFAULT NULL COMMENT '地理位置',
+		  PRIMARY KEY (`id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='评论表';
+    </update>
+    
+    
+    
+    
+     <!--     创建事件分析微博作者表 -->
+    <update id="createTopicWeiboAuthorTable" parameterType = "java.util.Map">
+    	  CREATE TABLE ${_DBNAME}.${weiboAuthorTableName} (
+		  `id` varchar(100) NOT NULL COMMENT '博主ID',
+		  `name` varchar(50) NOT NULL DEFAULT '' COMMENT '姓名',
+		  `gender` int(2) NOT NULL DEFAULT '0' COMMENT '性别 1 男 2 女 0 未知',
+		  `region` varchar(50) DEFAULT '' COMMENT '地域',
+		  `avatar_url` varchar(500) DEFAULT '' COMMENT '头像URL',
+		  `verified` int(2) DEFAULT '0' COMMENT '是否认证',
+		  `verified_type` int(2) DEFAULT '0' COMMENT '认证类型',
+		  `verified_identity` varchar(200) DEFAULT '' COMMENT '认证身份',
+		  `verified_level` int(2) DEFAULT '0' COMMENT '认证等级',
+		  `user_type` int(2) DEFAULT '0' COMMENT '用户类型',
+		  `importance` varchar(50) DEFAULT '',
+		  `influence` varchar(50) DEFAULT '',
+		  `friends_count` int(11) DEFAULT '0' COMMENT '关注数',
+		  `fans_count` int(11) DEFAULT '0',
+		  `statuses_count` int(11) DEFAULT '0' COMMENT '信息数',
+		  PRIMARY KEY (`id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='博主ID';
+    </update>
+    
+    <!--     创建事件分析地域表 -->
+    <update id="createTopicRegionTableTable" parameterType = "java.util.Map">
+    	  CREATE TABLE ${_DBNAME}.${regionTableName} (
+		  `KV_UUID` varchar(32) NOT NULL COMMENT '信息ID',
+		  `REGION_ID` int(11) NOT NULL COMMENT '地域ID',
+		  `KR_CTIME` varchar(20) DEFAULT NULL,
+		  PRIMARY KEY (`KV_UUID`,`REGION_ID`),
+		  KEY `index_REGION_ID` (`REGION_ID`),
+		  KEY `INDEX_KR_CTIME` (`KR_CTIME`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    </update>
+    
+    
+    
+    
+    
+	 <!--修改事件分析 -->
+  <update id="updateEventAnalysis" parameterType="java.util.Map" >
+    update YQZB_T_TOPIC
+    <set >
+      <if test="userId != null" >
+        KU_ID = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="topicName != null" >
+        KT_NAME = #{topicName,jdbcType=VARCHAR},
+      </if>
+      <if test="summary != null" >
+        KT_SUMMARY = #{summary,jdbcType=VARCHAR},
+      </if>
+      <if test="firstKeyWords != null" >
+        KK_NAME = #{firstKeyWords,jdbcType=VARCHAR},
+      </if>
+      <if test="beginTime != null" >
+        KT_BEGIN = #{beginTime,jdbcType=CHAR},
+      </if>
+      <if test="closeTime != null" >
+        KK_CLOSETIME = #{closeTime,jdbcType=VARCHAR},
+      </if>
+       <if test="snapshotUrl != null" >
+        snapshotUrl = #{snapshotUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="appSnapshotUrl != null" >
+        appSnapshotUrl = #{appSnapshotUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="expression != null" >
+        KT_EXPRESSION = #{expression,jdbcType=VARCHAR},
+      </if>
+      <if test="notWords != null" >
+        KT_NOT = #{notWords,jdbcType=VARCHAR},
+      </if>
+      <if test="isLogic != null" >
+        KT_IS_LOGIC = #{isLogic,jdbcType=VARCHAR},
+      </if>
+      <if test="faceImgUrl != null" >
+        faceImgUrl = #{faceImgUrl,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where KT_UUID = #{uuid,jdbcType=VARCHAR}
+  </update>
+  
+  
+  
+   <!--删除事件分析词表 -->
+  <delete id="deleteEventAnalysisWords" parameterType="java.lang.String" >
+    DELETE
+	FROM
+		YQZB_T_CKEY
+	WHERE
+		KT_UUID =#{uuid,jdbcType=VARCHAR}
+  </delete>
+  
+   <!--假删除事件分析 -->
+  <update id="deleteEventAnalysis" parameterType="java.lang.String" >
+    update YQZB_T_TOPIC  
+      SET KT_ISDELETE = 1, KT_TIME = #{deleteTime} 
+    where KT_UUID = #{uuid,jdbcType=VARCHAR}
+  </update>
+  
+   <!--删除事件分析信息表 -->
+  <update id="dropEventAnalysisInfo" parameterType="java.lang.String" >
+    drop table ${tableName}
+  </update>
+  
+  
+  
+  <!--删除事件分析 -->
+  <delete id="cddeleteEventAnalysis" parameterType="java.lang.String" >
+    delete from YQZB_T_TOPIC
+    where KT_UUID = #{uuid,jdbcType=VARCHAR}
+  </delete>
+
+  <!--   保存话题关键词 -->
+  <insert id="saveAddTopickeyword" parameterType="java.util.Map" >
+    insert into YQZB_T_CKEY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="keyUuid != null" >
+        KK_UUID,
+      </if>
+      <if test="uuid != null" >
+        KT_UUID,
+      </if>
+      <if test="firstKeyWordsnew != null" >
+        KK_NAME,
+      </if>
+      <if test="nowTime != null" >
+        KK_CTIME,
+      </if>
+      <if test="exclusionWords != null" >
+        KK_NOT,
+      </if>      
+        KK_TYPE,     
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="keyUuid != null" >
+        #{keyUuid,jdbcType=VARCHAR},
+      </if>
+      <if test="uuid != null" >
+        #{uuid,jdbcType=VARCHAR},
+      </if>
+      <if test="firstKeyWordsnew != null" >
+        #{firstKeyWordsnew,jdbcType=VARCHAR},
+      </if>
+      <if test="nowTime != null" >
+        #{nowTime,jdbcType=VARCHAR},
+      </if>
+      <if test="exclusionWords != null" >
+        #{exclusionWords,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type,jdbcType=VARCHAR},
+      </if>
+     
+    </trim>
+  </insert>
+ 
+	<!-- 事件分析详情 -->
+	<select id="selectEventAnalysisInfo" resultMap="baseEventAnalysis">
+	   SELECT
+			c.KK_UUID,
+			t.KT_UUID,
+			t.KU_ID,
+			t.KT_NAME,
+			t.KT_BEGIN,
+			t.KT_END,
+			t.KT_INTERVAL,
+			t.KT_STATUS,
+			t.KT_SUMMARY,
+			t.KK_CLOSETIME,
+			c.KK_NAME,
+			c.KK_NOT,
+			c.KK_TYPE,
+			t.KT_NOT,
+			t.KT_EXPRESSION,
+			t.KT_IS_LOGIC,
+			faceImgUrl
+		FROM
+			YQZB_T_TOPIC t LEFT JOIN
+			YQZB_T_CKEY c ON t.KT_UUID = c.KT_UUID
+		WHERE
+			t.KT_UUID = #{eventAnalysisId}
+	</select>
+	
+	
+	<!-- 推荐事件分析列表 -->
+	<select id="selectRecommendEventAnalysisList" resultMap="baseEventAnalysis">
+	  SELECT
+		KT_UUID,
+		KU_ID AS topicSharedUserId,
+		KT_NAME,
+		KT_BEGIN,
+		KT_END,
+		KK_CLOSETIME,
+		KT_INTERVAL,
+		KT_STATUS,
+		KK_NAME,
+		KT_TIME,
+		KT_SUMMARY,           
+		KT_NOT,
+        KT_EXPRESSION,
+        KT_IS_LOGIC,
+        faceImgUrl
+	FROM
+		YQZB_T_TOPIC 
+	WHERE
+		KT_ISSHARED = 1
+		AND KT_ISDELETE <![CDATA[ <> ]]> 1
+	ORDER BY
+		KT_SHAREDTIME DESC
+	</select>
+	
+	<!-- 往期事件分析列表 -->
+	<select id="selectDeleteEventAnalysisList" resultMap="baseEventAnalysis">
+	  SELECT
+			T.KT_UUID,
+			T.KU_ID,
+			T.KT_NAME,
+			T.KT_BEGIN,
+			T.KT_END,
+			T.KK_CLOSETIME,
+			T.KT_INTERVAL,
+			T.KT_STATUS,
+			T.KK_NAME,
+			T.KT_TIME,
+			T.KT_SUMMARY,
+			T.KT_ISSHARED,
+			T.KT_SHAREDTIME,
+			T.KT_CANCELSHAREDTIME,
+			T.snapshotUrl,
+			T.appSnapshotUrl,
+			T.KT_NOT,
+            T.KT_EXPRESSION,
+            T.KT_IS_LOGIC
+		FROM
+			YQZB_T_TOPIC T
+		WHERE
+			T.KT_ISDELETE = 1
+		AND T.KU_ID = #{userId}
+		GROUP BY
+			T.KT_UUID
+		ORDER BY
+			T.KT_TIME DESC
+	</select>
+	
+	
+	<!-- 添加关注 -->
+    <insert id="insertAttentionSelective" parameterType="java.util.Map" >
+	    insert into ${tableName}
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="keyId != null" >
+	        KM_UUID,
+	      </if>
+	      <if test="_KUID != null" >
+	        KU_ID,
+	      </if>
+	      <if test="KN_TYPE != null" >
+	        KV_SOURCETYPE,
+	      </if>	      
+	        KV_ID,
+	      <if test="KN_TITLE != null" >
+	        KV_TITLE,
+	      </if>
+	      <if test="KN_SOURCE != null" >
+	        KV_SOURCE,
+	      </if>
+	      <if test="KN_URL != null" >
+	        KV_URL,
+	      </if>
+	      <if test="KN_TIME != null" >
+	        KV_TIME,
+	      </if>
+	      <if test="KN_CTIME != null" >
+	        KV_CTIME,
+	      </if>
+	      <if test="KV_VISITCOUNT != null" >
+	        KV_VISITCOUNT,
+	      </if>
+	      <if test="KV_REPLY != null" >
+	        KV_REPLY,
+	      </if>
+	      <if test="KV_COLLECTION != null" >
+	        KV_COLLECTION,
+	      </if>
+	      <if test="KV_TRANSPORT != null" >
+	        KV_TRANSPORT,
+	      </if>
+	      <if test="KV_REPEAT != null" >
+	        KV_REPEAT,
+	      </if>
+	      <if test="KN_ABSTRACT != null" >
+	        KV_ABSTRACT,
+	      </if>
+	      <if test="KN_ORIENTATION != null" >
+	        KV_ORIENTATION,
+	      </if>
+	        KV_FLAG,
+	      <if test="KN_SITE != null" >
+	        KV_SITE,
+	      </if>
+	      <if test="KV_TEMPLET != null" >
+	        KV_TEMPLET,
+	      </if>
+	      <if test="KV_STATE != null" >
+	        KV_STATE,
+	      </if>
+	      <if test="KV_SNA_FLAG != null" >
+	        KV_SNA_FLAG,
+	      </if>
+	      <if test="KV_INDEX_FLAG != null" >
+	        KV_INDEX_FLAG,
+	      </if>
+	      <if test="KN_ORIEN_LEVEL != null" >
+	        KV_ORIEN_LEVEL,
+	      </if>
+	      <if test="KV_INSERT_TIME != null" >
+	        KV_INSERT_TIME,
+	      </if>
+	      <if test="UUID != null" >
+	        KV_UUID,
+	      </if>
+	      <if test="CLOSECJ != null" >
+	        CLOSECJ,
+	      </if>
+	      <if test="ORACLE_MYSQL_UUID != null" >
+	        ORACLE_MYSQL_UUID,
+	      </if>
+	      <if test="IS_SYNCHRONIZED != null" >
+	        IS_SYNCHRONIZED,
+	      </if>
+	      <if test="classId != null" >
+	        KM_ID,
+	      </if>
+	      <if test="KV_KEYWORD != null" >
+	        KV_KEYWORD,
+	      </if>
+	      <if test="KT_UUID != null" >
+	        TOPIC_ID,
+	      </if>	       
+	        KV_TYPE,	      
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="keyId != null" >
+	        #{keyId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="_KUID != null" >
+	        #{_KUID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KN_TYPE != null" >
+	        #{KN_TYPE,jdbcType=VARCHAR},
+	      </if>
+	        '0',
+	      <if test="KN_TITLE != null" >
+	        #{KN_TITLE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KN_SOURCE != null" >
+	        #{KN_SOURCE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KN_URL != null" >
+	        #{KN_URL,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KN_TIME != null" >
+	        #{KN_TIME,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KN_CTIME != null" >
+	        #{KN_CTIME,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_VISITCOUNT != null" >
+	        #{KV_VISITCOUNT,jdbcType=INTEGER},
+	      </if>
+	      <if test="KV_REPLY != null" >
+	        #{KV_REPLY,jdbcType=INTEGER},
+	      </if>
+	      <if test="KV_COLLECTION != null" >
+	        #{KV_COLLECTION,jdbcType=INTEGER},
+	      </if>
+	      <if test="KV_TRANSPORT != null" >
+	        #{KV_TRANSPORT,jdbcType=INTEGER},
+	      </if>
+	      <if test="KV_REPEAT != null" >
+	        #{KV_REPEAT,jdbcType=INTEGER},
+	      </if>
+	      <if test="KN_ABSTRACT != null" >
+	        #{KN_ABSTRACT,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KN_ORIENTATION != null" >
+	        #{KN_ORIENTATION,jdbcType=VARCHAR},
+	      </if>
+	        '0',
+	      <if test="KN_SITE != null" >
+	        #{KN_SITE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_TEMPLET != null" >
+	        #{KV_TEMPLET,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_STATE != null" >
+	        #{KV_STATE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_SNA_FLAG != null" >
+	        #{KV_SNA_FLAG,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_INDEX_FLAG != null" >
+	        #{KV_INDEX_FLAG,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KN_ORIEN_LEVEL != null" >
+	        #{KN_ORIEN_LEVEL,jdbcType=INTEGER},
+	      </if>
+	      <if test="KV_INSERT_TIME != null" >
+	        #{KV_INSERT_TIME,jdbcType=VARCHAR},
+	      </if>
+	      <if test="UUID != null" >
+	        #{UUID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="CLOSECJ != null" >
+	        #{CLOSECJ,jdbcType=VARCHAR},
+	      </if>
+	      <if test="ORACLE_MYSQL_UUID != null" >
+	        #{ORACLE_MYSQL_UUID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="IS_SYNCHRONIZED != null" >
+	        #{IS_SYNCHRONIZED,jdbcType=CHAR},
+	      </if>
+	      <if test="classId != null" >
+	        #{classId,jdbcType=CHAR},
+	      </if>
+	      <if test="KV_KEYWORD != null" >
+	        #{KV_KEYWORD,jdbcType=CHAR},
+	      </if>
+	      <if test="KT_UUID != null" >
+	        #{KT_UUID,jdbcType=CHAR},
+	      </if>
+	      2,
+	    </trim>
+	  </insert>
+	
+	
+	<!-- 添加关注内容 -->
+	<insert id="insertAttentionCntSelective" parameterType="java.util.Map" >
+	    insert into ${tableName}
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="keyId != null" >
+	        KM_UUID,
+	      </if>
+	      <if test="KN_CTIME != null" >
+	        KV_CTIME,
+	      </if>
+	      <if test="ORACLE_MYSQL_UUID != null" >
+	        ORACLE_MYSQL_UUID,
+	      </if>
+	      <if test="IS_SYNCHRONIZED != null" >
+	        IS_SYNCHRONIZED,
+	      </if>
+	      <if test="KN_CONTENT != null" >
+	        KV_CONTENT,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="keyId != null" >
+	        #{keyId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KN_CTIME != null" >
+	        #{KN_CTIME,jdbcType=VARCHAR},
+	      </if>
+	      <if test="ORACLE_MYSQL_UUID != null" >
+	        #{ORACLE_MYSQL_UUID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="IS_SYNCHRONIZED != null" >
+	        #{IS_SYNCHRONIZED,jdbcType=CHAR},
+	      </if>
+	      <if test="KN_CONTENT != null" >
+	        #{KN_CONTENT,jdbcType=LONGVARCHAR},
+	      </if>
+	    </trim>
+	  </insert>
+	<!-- 标倾向性 -->
+	<update id="updateOrientation" parameterType="java.lang.String" >
+	    UPDATE ${_DBNAME}.TOPIC_${eventAnalysisId} a,(SELECT 
+                SIMHASH
+		            FROM
+		                ${_DBNAME}.TOPIC_${eventAnalysisId}
+		            WHERE
+		                UUID IN 
+		                          <foreach collection="idsList" index="index" item="item" open="(" separator="," close=")">        
+			                         #{item}    
+			                      </foreach>
+                                ) b
+		SET 
+		    a.KN_ORIENTATION = #{orientation,jdbcType=VARCHAR}
+		WHERE
+		    a.SIMHASH  = b.SIMHASH
+				
+  	</update>
+  	
+  	<resultMap type="java.lang.String" id="simHashList">
+  		<result property="simHash" column="SIMHASH"/>
+  	</resultMap>
+  	
+  	<!-- 查询信息的simHash值 -->
+  	<select id="getSimhashList" parameterType = "java.util.Map" resultMap="simHashList">
+  		SELECT 
+  			SIMHASH
+  		FROM 
+  			${_DBNAME}.TOPIC_${eventId}
+  		where UUID IN
+  		<if test="uuidArr != null and uuidArr.length != 0">
+  			<foreach collection="uuidArr" index="index" item="item" open="(" separator="," close=")">        
+				#{item}    
+		</foreach>
+  		</if>
+  	</select>
+  	<!-- 批量修改倾向性 -->
+  	<update id="updateOrientations" parameterType="java.util.Map" >
+	    UPDATE ${_DBNAME}.TOPIC_${eventId}  
+	      SET KN_ORIENTATION = #{orientation,jdbcType=VARCHAR}  
+	    WHERE 
+	      SIMHASH IN
+	      <if test="simHashList != null ">
+				<foreach collection="simHashList" item="simHash" open="(" separator="," close=")">
+					#{simHash}
+				</foreach>		 		
+		 </if>
+  	</update>
+  	
+  	<!-- 标已读 -->
+  	<update id="updateRead" parameterType="java.lang.String" >
+	    update ${_DBNAME}.TOPIC_${eventAnalysisId}  
+	      SET IS_READ = 1  
+	    where UUID IN
+		<foreach collection="idsList" index="index" item="item" open="(" separator="," close=")">        
+			#{item}    
+		</foreach>
+  	</update>
+	<!-- 标关注 -->
+	<update id="updateattention" parameterType="java.lang.String" >
+	    update ${_DBNAME}.TOPIC_${eventAnalysisId}  
+	      SET IS_ATTENTION = 1  
+	    where UUID IN
+		<foreach collection="kmIdList" index="index" item="item" open="(" separator="," close=")">        
+			#{item}    
+		</foreach>
+  	</update>
+  	
+  	<!-- 标简报 -->
+	<update id="updateBriefing" parameterType="java.lang.String" >
+	    update ${_DBNAME}.TOPIC_${eventAnalysisId}  
+	      SET IS_BRIEFING = 1  
+	    where UUID IN
+		<foreach collection="kmIdList" index="index" item="item" open="(" separator="," close=")">        
+			#{item}    
+		</foreach>
+  	</update>
+	<!-- 删除信息 -->
+	<delete id="deleteEventAnalysisData" parameterType="java.lang.String" >			
+		DELETE
+		FROM ${_DBNAME}.TOPIC_${eventAnalysisId}  
+	    where UUID IN
+ 		<foreach collection="id" index="index" item="item" open="(" separator="," close=")">        
+ 			#{item}    
+ 		</foreach>
+	</delete>
+	
+	
+	<select id="selectEventAnalysisDataList" resultType="java.util.HashMap">
+        SELECT 
+ 		    *
+ 		FROM
+ 		    ${_OTHER_DBNAME}.TOPIC_${eventAnalysisId}
+ 		where 1=1 
+ 	    <if test="kmIdList != null">
+	 		AND UUID IN
+	 		<foreach collection="kmIdList" index="index" item="item" open="(" separator="," close=")">        
+	 			#{item}    
+	 		</foreach>
+	 	</if>
+     </select>
+	
+	<select id="selectAttentionList" resultType="java.util.HashMap">
+        SELECT 
+ 		    *
+ 		FROM
+ 		    ${tableName}
+ 		where 1=1 
+ 		and KM_ID = #{kyId}
+ 		 <if test="kvIdList != null">
+ 		AND KV_UUID IN
+ 		<foreach collection="kvIdList" index="index" item="item" open="(" separator="," close=")">        
+ 			#{item}    
+ 		</foreach>
+ 		</if>
+     </select>
+     
+     
+     <select id="selectBriefingList" resultType="java.util.HashMap">
+        SELECT 
+ 		    *
+ 		FROM
+ 		    ${tableName}
+ 		where 1=1 
+ 		and KY_UUID = #{kyId}
+ 		 <if test="kvIdList != null">
+ 		AND KV_UUID IN
+ 		<foreach collection="kvIdList" index="index" item="item" open="(" separator="," close=")">        
+ 			#{item}    
+ 		</foreach>
+ 		</if>
+     </select>
+     
+     <delete id="deleteAttentionList" parameterType="java.lang.String" >			
+		DELETE
+		FROM ${tableName}  
+	    where KV_UUID IN
+		<foreach collection="kmIdList" index="index" item="item" open="(" separator="," close=")">        
+			#{item}    
+		</foreach>
+	</delete>
+     
+     
+	
+	<!-- 添加简报 -->
+    <insert id="insertBriefingSelective" parameterType="java.util.Map" >
+	    insert into ${_DBNAME}.WK_T_YQJB_INFO
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="keyId != null" >
+	        KM_UUID,
+	      </if>
+	      <if test="KN_TYPE != null" >
+	        KV_SOURCETYPE,
+	      </if>	      
+	        KV_ID,
+	      <if test="KN_TITLE != null" >
+	        KV_TITLE,
+	      </if>
+	      <if test="KN_SOURCE != null" >
+	        KV_SOURCE,
+	      </if>
+	      <if test="KN_URL != null" >
+	        KV_URL,
+	      </if>
+	      <if test="KN_TIME != null" >
+	        KV_TIME,
+	      </if>
+	      <if test="KN_CTIME != null" >
+	        KV_CTIME,
+	      </if>
+	      <if test="KV_VISITCOUNT != null" >
+	        KV_VISITCOUNT,
+	      </if>
+	      <if test="KV_REPLY != null" >
+	        KV_REPLY,
+	      </if>
+	      <if test="KV_COLLECTION != null" >
+	        KV_COLLECTION,
+	      </if>
+	      <if test="KV_TRANSPORT != null" >
+	        KV_TRANSPORT,
+	      </if>
+	      <if test="KV_REPEAT != null" >
+	        KV_REPEAT,
+	      </if>
+	      <if test="KN_ABSTRACT != null" >
+	        KV_ABSTRACT,
+	      </if>
+	      <if test="KN_ORIENTATION != null" >
+	        KV_ORIENTATION,
+	      </if>
+	        KV_FLAG,
+	      <if test="KN_SITE != null" >
+	        KV_SITE,
+	      </if>
+	      <if test="KV_TEMPLET != null" >
+	        KV_TEMPLET,
+	      </if>
+	      <if test="KV_STATE != null" >
+	        KV_STATE,
+	      </if>
+	      <if test="KV_SNA_FLAG != null" >
+	        KV_SNA_FLAG,
+	      </if>
+	      <if test="KV_INDEX_FLAG != null" >
+	        KV_INDEX_FLAG,
+	      </if>
+	      <if test="KN_ORIEN_LEVEL != null" >
+	        KV_ORIEN_LEVEL,
+	      </if>
+	      <if test="KV_INSERT_TIME != null" >
+	        KV_INSERT_TIME,
+	      </if>
+	      <if test="UUID != null" >
+	        KV_UUID,
+	      </if>
+	      <if test="CLOSECJ != null" >
+	        CLOSECJ,
+	      </if>
+	      <if test="ORACLE_MYSQL_UUID != null" >
+	        ORACLE_MYSQL_UUID,
+	      </if>
+	      <if test="IS_SYNCHRONIZED != null" >
+	        IS_SYNCHRONIZED,
+	      </if>
+	      <if test="classId != null" >
+	        KY_UUID,
+	      </if>
+	      <if test="KT_UUID != null" >
+	        TOPIC_ID,
+	      </if>       
+	        KV_TYPE,	
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="keyId != null" >
+	        #{keyId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KN_TYPE != null" >
+	        #{KN_TYPE,jdbcType=VARCHAR},
+	      </if>
+	        '0',
+	      <if test="KN_TITLE != null" >
+	        #{KN_TITLE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KN_SOURCE != null" >
+	        #{KN_SOURCE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KN_URL != null" >
+	        #{KN_URL,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KN_TIME != null" >
+	        #{KN_TIME,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KN_CTIME != null" >
+	        #{KN_CTIME,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_VISITCOUNT != null" >
+	        #{KV_VISITCOUNT,jdbcType=INTEGER},
+	      </if>
+	      <if test="KV_REPLY != null" >
+	        #{KV_REPLY,jdbcType=INTEGER},
+	      </if>
+	      <if test="KV_COLLECTION != null" >
+	        #{KV_COLLECTION,jdbcType=INTEGER},
+	      </if>
+	      <if test="KV_TRANSPORT != null" >
+	        #{KV_TRANSPORT,jdbcType=INTEGER},
+	      </if>
+	      <if test="KV_REPEAT != null" >
+	        #{KV_REPEAT,jdbcType=INTEGER},
+	      </if>
+	      <if test="KN_ABSTRACT != null" >
+	        #{KN_ABSTRACT,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KN_ORIENTATION != null" >
+	        #{KN_ORIENTATION,jdbcType=VARCHAR},
+	      </if>
+	        '0',
+	      <if test="KN_SITE != null" >
+	        #{KN_SITE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_TEMPLET != null" >
+	        #{KV_TEMPLET,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_STATE != null" >
+	        #{KV_STATE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_SNA_FLAG != null" >
+	        #{KV_SNA_FLAG,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_INDEX_FLAG != null" >
+	        #{KV_INDEX_FLAG,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KN_ORIEN_LEVEL != null" >
+	        #{KN_ORIEN_LEVEL,jdbcType=INTEGER},
+	      </if>
+	      <if test="KV_INSERT_TIME != null" >
+	        #{KV_INSERT_TIME,jdbcType=VARCHAR},
+	      </if>
+	      <if test="UUID != null" >
+	        #{UUID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="CLOSECJ != null" >
+	        #{CLOSECJ,jdbcType=VARCHAR},
+	      </if>
+	      <if test="ORACLE_MYSQL_UUID != null" >
+	        #{ORACLE_MYSQL_UUID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="IS_SYNCHRONIZED != null" >
+	        #{IS_SYNCHRONIZED,jdbcType=CHAR},
+	      </if>
+	      <if test="classId != null" >
+	        #{classId,jdbcType=CHAR},
+	      </if>
+	      <if test="KT_UUID != null" >
+	        #{KT_UUID,jdbcType=CHAR},
+	      </if>	
+	      2,  
+	    </trim>
+	  </insert>
+	
+	
+	<!-- 添加简报内容 -->
+	<insert id="insertBriefingCntSelective" parameterType="java.util.Map" >
+	    insert into ${_DBNAME}.WK_T_YQJB_INFOCNT
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="keyId != null" >
+	        KM_UUID,
+	      </if>
+	      <if test="KN_CTIME != null" >
+	        KV_CTIME,
+	      </if>
+	      <if test="ORACLE_MYSQL_UUID != null" >
+	        ORACLE_MYSQL_UUID,
+	      </if>
+	      <if test="IS_SYNCHRONIZED != null" >
+	        IS_SYNCHRONIZED,
+	      </if>
+	      <if test="KN_CONTENT != null" >
+	        KV_CONTENT,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="keyId != null" >
+	        #{keyId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KN_CTIME != null" >
+	        #{KN_CTIME,jdbcType=VARCHAR},
+	      </if>
+	      <if test="ORACLE_MYSQL_UUID != null" >
+	        #{ORACLE_MYSQL_UUID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="IS_SYNCHRONIZED != null" >
+	        #{IS_SYNCHRONIZED,jdbcType=CHAR},
+	      </if>
+	      <if test="KN_CONTENT != null" >
+	        #{KN_CONTENT,jdbcType=LONGVARCHAR},
+	      </if>
+	    </trim>
+	  </insert>
+	  
+	  <!-- 删除往期事件分析 -->
+	<delete id="deletePastEventAnalysis" parameterType="java.lang.String" >			
+		DELETE
+		FROM YQZB_T_TOPIC  
+	    where KU_ID =#{_KUID}
+	    AND KT_UUID IN
+		<foreach collection="uuids" index="index" item="item" open="(" separator="," close=")">        
+			#{item}    
+		</foreach>
+	</delete>
+	
+	    <!--修改信息状态 -->
+  <update id="updateEventAnalysisData" parameterType="java.lang.String" >
+    update ${_DBNAME}.TOPIC_${eventAnalysisId}  
+      SET KV_STATE = #{status}    
+    where UUID IN
+ 		<foreach collection="id" index="index" item="item" open="(" separator="," close=")">        
+ 			#{item}    
+ 		</foreach> 
+  </update>
+  <select id="selectEventAnalysisStatus" resultType="java.util.HashMap">
+       SELECT
+			KU_VALUE AS status
+		FROM
+			`WK_T_USERBASEINFO`
+		WHERE
+			KU_ID = #{_KUID}
+		AND KU_TYPE = 'KU_EVENTANALYSISSTATUS'
+   </select>
+  
+  
+ <!--修改用户事件分析状态 -->
+  <update id="updateEventAnalysisStatus" parameterType="java.lang.String" >
+   	update 
+   		 WK_T_USERBASEINFO  
+      SET 
+      	KU_VALUE = #{status}    
+    where 
+    	KU_ID = #{_KUID}
+	AND 
+		KU_TYPE = 'KU_EVENTANALYSISSTATUS' 
+  </update>
+  
+  
+   <!--   保存用户事件分析状态 -->
+  <insert id="addEventAnalysisStatus" parameterType="java.util.Map" >
+    insert into WK_T_USERBASEINFO
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="_KUID != null" >
+        KU_ID,
+      </if>
+        KU_TYPE,
+      <if test="status != null" >
+        KU_VALUE,
+      </if>    
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="_KUID != null" >
+        #{_KUID,jdbcType=INTEGER},
+      </if>
+        'KU_EVENTANALYSISSTATUS',
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  
+  <resultMap type="java.util.Map" id="eventAnalysisNum">
+       <result property="totalNum" column="totalNum"  javaType="int" jdbcType="INTEGER"/> 
+       <result property="deletedNum" column="deletedNum"  javaType="int" jdbcType="INTEGER"/> 
+       <result property="undeletedNum" column="undeletedNum"  javaType="int" jdbcType="INTEGER"/>
+  </resultMap> 
+  
+   <!-- 用户事件分析数量  删除的  未删除的  总数  -->
+   <select id="selectUserEventAnalysisNum" parameterType = "String" resultMap = "eventAnalysisNum">
+       SELECT
+           count(KU_ID) AS totalNum,
+           SUM(CASE WHEN KT_ISDELETE = 0 THEN 1 ELSE 0 end) AS undeletedNum, 
+           SUM(CASE WHEN KT_ISDELETE = 1 THEN 1 ELSE 0 end) AS deletedNum
+       FROM 
+           YQZB_T_TOPIC
+       WHERE
+           KU_ID = #{userId}
+<!--       AND KT_ISNEW =2  -->     
+   </select>
+  
+  <resultMap type="java.util.Map" id="sourceTypeNum">
+       <result property="网媒" column="networkNum"  javaType="int" jdbcType="INTEGER"/> 
+       <result property="论坛" column="forumNum"  javaType="int" jdbcType="INTEGER"/> 
+       <result property="博客" column="blogNum"  javaType="int" jdbcType="INTEGER"/>
+       <result property="微博" column="microblogNum"  javaType="int" jdbcType="INTEGER"/>
+       <result property="报刊" column="newspapersNum"  javaType="int" jdbcType="INTEGER"/>
+       <result property="微信" column="wechatNum"  javaType="int" jdbcType="INTEGER"/>
+       <result property="视频" column="videoNum"  javaType="int" jdbcType="INTEGER"/>
+       <result property="APP" column="appNum"  javaType="int" jdbcType="INTEGER"/>
+       <result property="评论" column="commentNum"  javaType="int" jdbcType="INTEGER"/>
+       <result property="其他" column="otherNum"  javaType="int" jdbcType="INTEGER"/>
+  </resultMap> 
+  
+  <select id="selectTopicSourceTypeNum" parameterType="java.util.Map" resultMap="sourceTypeNum">
+  		SELECT
+			IFNULL(SUM(KN_TYPE = 01),0) AS 'networkNum',
+			IFNULL(SUM(KN_TYPE = 02),0) AS 'forumNum',
+			IFNULL(SUM(KN_TYPE = 03),0) AS 'blogNum',
+			IFNULL(SUM(KN_TYPE = 04),0) AS 'microblogNum',
+			IFNULL(SUM(KN_TYPE = 05),0) AS 'newspapersNum',
+			IFNULL(SUM(KN_TYPE = 06),0) AS 'wechatNum',
+			IFNULL(SUM(KN_TYPE = 07),0) AS 'videoNum',
+			IFNULL(SUM(KN_TYPE = 09),0) AS 'appNum',
+			IFNULL(SUM(KN_TYPE = 10),0) AS 'commentNum',
+			IFNULL(SUM(KN_TYPE = 99),0) AS 'otherNum' 
+		FROM ${tableName}
+  </select>
+  
+  
+</mapper>

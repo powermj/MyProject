@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.MobileCloudSubjectInfo">
+
+	<!-- 获取推荐事件主体词 -->
+	<resultMap type="com.zhxg.yqzj.entities.v1.MobileCloudSubjectInfo" id="MobileCloudSubjectInfos">
+		<result property="id" column="id"/>
+		<result property="departmentId" column="departmentId"/>
+		<result property="subjectWord" column="subjectWord"/>
+	</resultMap>
+	<select id="getSubjectWord" parameterType = "java.util.Map" resultMap="MobileCloudSubjectInfos">
+		select 
+			T1.id,
+			T1.departmentId,
+			T1.subjectWord
+		from 
+			MobileCloudSubject T1
+		where 
+			T1.departmentId = #{departmentId}
+	</select>
+	
+</mapper>

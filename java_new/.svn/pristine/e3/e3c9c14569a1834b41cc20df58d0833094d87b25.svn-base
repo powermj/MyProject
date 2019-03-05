@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/security 
+		http://www.springframework.org/schema/security/spring-security-3.2.xsd
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/data/jpa 
+		http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+		
+	<!--用户个人信息库，配置库 -->
+	<bean scope="singleton" id="dbUserConfSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${db.jdbcdriver}" />
+		<property name="url" value="${db.userConf.url}" />
+		<property name="username" value="${db.userConf.user}" />
+		<property name="password" value="${db.userConf.password}" />
+		<property name="initialSize" value="5" />
+		<property name="maxActive" value="100" />
+		<property name="maxIdle" value="10" />
+		<property name="minIdle" value="5" />
+		<property name="logAbandoned" value="true" />
+		<property name="removeAbandoned" value="true" />
+		<property name="removeAbandonedTimeout" value="1000" />
+		<property name="maxWait" value="1000" />
+		<property name="testOnBorrow" value="true"/>
+		<property name="testOnReturn" value="true"/>
+		<property name="testWhileIdle" value="true"/>
+		<property name="minEvictableIdleTimeMillis" value="1000"/>
+		<property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+	</bean>
+	<!-- 文本内容库 -->
+	<bean scope="singleton" id="dbLocationSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${db.jdbcdriver}" />
+		<property name="url" value="${db.location.url}" />
+		<property name="username" value="${db.location.user}" />
+		<property name="password" value="${db.location.password}" />
+		<property name="initialSize" value="10" />
+		<property name="maxActive" value="100" />
+		<property name="maxIdle" value="10" />
+		<property name="minIdle" value="5" />
+		<property name="logAbandoned" value="true" />
+		<property name="removeAbandoned" value="true" />
+		<property name="removeAbandonedTimeout" value="1000" />
+		<property name="maxWait" value="1000" />
+		<property name="testOnBorrow" value="true"/>
+		<property name="testOnReturn" value="true"/>
+		<property name="testWhileIdle" value="true"/>
+		<property name="minEvictableIdleTimeMillis" value="1000"/>
+		<property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+	</bean>
+	
+	<!-- 地域信息库 -->
+    <bean scope="singleton" id="dbRegionSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${db.jdbcdriver}" />
+        <property name="url" value="${db.region.url}" />
+        <property name="username" value="${db.region.user}" />
+        <property name="password" value="${db.region.password}" />
+        <property name="initialSize" value="10" />
+        <property name="maxActive" value="100" />
+        <property name="maxIdle" value="10" />
+        <property name="minIdle" value="5" />
+        <property name="logAbandoned" value="true" />
+        <property name="removeAbandoned" value="true" />
+        <property name="removeAbandonedTimeout" value="1000" />
+        <property name="maxWait" value="1000" />
+        <property name="testOnBorrow" value="true"/>
+        <property name="testOnReturn" value="true"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="minEvictableIdleTimeMillis" value="1000"/>
+        <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+    </bean>
+    
+    <!-- 官网信息库 -->
+    <bean scope="singleton" id="dbOfficialwebsiteSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${db.jdbcdriver}" />
+        <property name="url" value="${db.officialwebsite.url}" />
+        <property name="username" value="${db.officialwebsite.user}" />
+        <property name="password" value="${db.officialwebsite.password}" />
+        <property name="initialSize" value="1" />
+        <property name="maxActive" value="10" />
+        <property name="maxIdle" value="1" />
+        <property name="minIdle" value="1" />
+        <property name="logAbandoned" value="true" />
+        <property name="removeAbandoned" value="true" />
+        <property name="removeAbandonedTimeout" value="1000" />
+        <property name="maxWait" value="1000" />
+        <property name="testOnBorrow" value="true"/>
+        <property name="testOnReturn" value="true"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="minEvictableIdleTimeMillis" value="1000"/>
+        <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+    </bean>
+    
+    <!-- 官网信息库 -->
+    <bean scope="singleton" id="logSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${db.jdbcdriver}" />
+        <property name="url" value="${db.log.url}" />
+        <property name="username" value="${db.log.user}" />
+        <property name="password" value="${db.log.password}" />
+        <property name="initialSize" value="1" />
+        <property name="maxActive" value="10" />
+        <property name="maxIdle" value="1" />
+        <property name="minIdle" value="1" />
+        <property name="logAbandoned" value="true" />
+        <property name="removeAbandoned" value="true" />
+        <property name="removeAbandonedTimeout" value="1000" />
+        <property name="maxWait" value="1000" />
+        <property name="testOnBorrow" value="true"/>
+        <property name="testOnReturn" value="true"/>
+        <property name="testWhileIdle" value="true"/>
+        <property name="minEvictableIdleTimeMillis" value="1000"/>
+        <property name="timeBetweenEvictionRunsMillis" value="3600000"/>
+    </bean>
+	
+	
+	
+	
+	<!-- 多数据源配置 -->
+	<bean id="multipleDataSource" class="com.zhxg.framework.spring.support.MultipleDataSource">
+		<property name="defaultTargetDataSource" ref="dbUserConfSource" />
+		<property name="targetDataSources">
+			<map>
+				<!-- 注意这里的value是和上面的DataSource的id对应，key要和DataSourceMethodInterceptor中mapping的key对应 -->
+				<entry value-ref="dbUserConfSource" key="dbUserConfSource" />
+				<entry value-ref="dbLocationSource" key="dbLocationSource" />
+				<entry value-ref="dbRegionSource" key="dbRegionSource" />
+				<entry value-ref="dbOfficialwebsiteSource" key="dbOfficialwebsiteSource" />
+				<entry value-ref="logSource" key="logSource" />
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 使用JDBC事物 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="multipleDataSource" />
+	</bean>
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="multipleDataSource" />
+		<property name="configLocation" value="classpath:conf/mybatis.xml"></property>
+		<property name="mapperLocations">
+			<list>
+				<value>classpath*:com/zhxg/**/**/*Mapper.xml</value>
+			</list>
+		</property>
+		<!-- 配置JavaBean别名 -->
+		<property name="typeAliasesPackage" value="com.zhxg.yqzj.entities.v1"/>
+		<!-- 配置pageHelper分页插件 -->
+		<property name="plugins">
+			<array>
+				<bean class="com.github.pagehelper.PageInterceptor">
+					<property name="properties">
+						<value>
+							helperDialect=mysql
+							reasonable=true
+							supportMethodsArguments=true
+							params=count=countSql
+							autoRuntimeDialect=true
+							rowBoundsWithCount=true
+						</value>
+					</property>
+				</bean>
+			</array>
+		</property>
+	</bean>
+	<!-- 配置SQLSession模板 -->
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg index="0" ref="sqlSessionFactory" />
+	</bean>
+	
+</beans>

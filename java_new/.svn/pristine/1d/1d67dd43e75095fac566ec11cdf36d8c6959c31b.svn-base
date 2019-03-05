@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.ChannelTV">
+
+    <resultMap id="baseChannelTV" type="ChannelTV">
+        <id property="kruuid" column="KR_UUID" />
+        <result property="kvuuid" column="KV_UUID" />
+    </resultMap>
+    
+    
+    
+    
+     <!-- 上传电视监控视频信息 -->
+  <insert id="uploadTVMonitoringInformation" parameterType="java.util.Map" >
+    insert into ${_DBNAME}.WK_T_VALIDATION_REF
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="kruuid != null" >
+        KR_UUID,
+      </if>
+      <if test="kvuuid != null" >
+        KV_UUID,
+      </if>
+      <if test="infoType != null" >
+        KR_INFOTYPE,
+      </if>
+      <if test="keywordId != null" >
+        KR_KEYWORDID,
+      </if>
+      <if test="_KUID != null" >
+        KR_UID,
+      </if>
+      <if test="infoState != null" >
+        KR_STATE,
+      </if>
+      <if test="cTime != null" >
+        KR_CTIME,
+      </if>
+      <if test="isLocal != null" >
+        KR_ISLOCAL,
+      </if>
+      <if test="arg1 != null" >
+        ARG1,
+      </if>
+      <if test="arg2 != null" >
+        ARG2,
+      </if>
+      <if test="keyword != null" >
+        KEYWORD,
+      </if>
+      <if test="orientation != null" >
+        ORIENTATION,
+      </if>
+      <if test="isyj != null" >
+        ISYJ,
+      </if>
+      <if test="isread != null" >
+        ISREAD,
+      </if>
+      <if test="ismyattention != null" >
+        ISMYATTENTION,
+      </if>
+      <if test="isfeedback != null" >
+        ISFEEDBACK,
+      </if>
+      <if test="visitCount != null" >
+        KV_VISITCOUNT,
+      </if>
+      <if test="reply != null" >
+        KV_REPLY,
+      </if>
+      <if test="simhash != null" >
+        KV_SIMHASH,
+      </if>
+      <if test="webname != null" >
+        KV_WEBNAME,
+      </if>
+      <if test="cTime != null" >
+        KV_COLLECTTIME,
+      </if>
+      <if test="sourceType != null" >
+        KV_SOURCETYPE,
+      </if>
+      <if test="hot != null" >
+        KV_HOT,
+      </if>
+      <if test="istf != null" >
+        KV_ISTF,
+      </if>
+      <if test="isrd != null" >
+        KV_ISRD,
+      </if>
+      <if test="isusermain != null" >
+        ISUSERMAIN,
+      </if>
+      <if test="title != null" >
+        KV_TITLE,
+      </if>
+      <if test="losttime != null" >
+        LOSTTIME,
+      </if>
+      <if test="orienLevel != null" >
+        KV_ORIEN_LEVEL,
+      </if>      
+        <if test="noisestatus != null" >
+        NOISESTATUS,
+      </if>
+      <if test="infoAbstract != null" >
+        KV_ABSTRACT,
+      </if>
+      <if test="url != null" >
+        KV_URL,
+      </if>
+      <if test="keyword != null" >
+        KV_KEYWORD,
+      </if>
+      <if test="author != null" >
+        KV_AUTHOR,
+      </if>
+      <if test="cTime != null" >
+        KR_GTIME,
+      </if>
+      <if test="isVideo != null" >
+        KV_ISVIDEO,
+      </if>
+      <if test="isPic != null" >
+        KV_ISPIC,
+      </if>
+      <if test="imageurl != null" >
+        KV_IMGURL,
+      </if>
+      <if test="url != null" >
+        KV_VEDEOURL,
+      </if>
+      <if test="titleMatch != null" >
+        KV_TITLEMATCH,
+      </if>
+      <if test="mustwordminindex != null" >
+        KV_MUSTWORDMININDEX,
+      </if>
+      <if test="keywordsminindex != null" >
+        KV_KEYWORDSMININDEX,
+      </if>
+      <if test="onlylocal != null" >
+        KV_ONLYLOCAL,
+      </if>
+      <if test="weiboovertime != null" >
+        KV_WEIBOOVERTIME,
+      </if>
+      <if test="weibosignlocalnoise != null" >
+        KV_WEIBOSIGNLOCALNOISE,
+      </if>
+      <if test="weibotopicnoise != null" >
+        KV_WEIBOTOPICNOISE,
+      </if>
+      <if test="weiboatnoise != null" >
+        KV_WEIBOATNOISE,
+      </if>
+      <if test="cTime != null" >
+        KV_DTCTIME,
+      </if>
+      <if test="cTime != null" >
+        KV_DTTIME,
+      </if>
+      <if test="webChannel != null" >
+        KV_WEBCHANNEL,
+      </if>
+      <if test="keyword != null" >
+        KV_HOTKEYWORD,
+      </if>
+      <if test="domain != null" >
+        KV_DOMAIN,
+      </if> 
+      <if test="siteid != null" >
+        KV_SITEID,
+      </if>
+      <if test="importanceWeight != null" >
+        IMPORTANCE_WEIGHT,
+      </if>
+      <if test="type != null" >
+        KV_INPUTDATATYPE,
+      </if>          
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+     <if test="kruuid != null" >
+        #{kruuid},
+      </if>
+      <if test="kvuuid != null" >
+        #{kvuuid},
+      </if>
+      <if test="infoType != null" >
+        #{infoType},
+      </if>
+      <if test="keywordId != null" >
+         #{keywordId},
+      </if>
+      <if test="_KUID != null" >
+         #{_KUID},
+      </if>
+      <if test="infoState != null" >
+        #{infoState},
+      </if>
+      <if test="cTime != null" >
+        #{cTime},
+      </if>
+      <if test="isLocal != null" >
+         #{isLocal},
+      </if>
+      <if test="arg1 != null" >
+        #{arg1},
+      </if>
+      <if test="arg2 != null" >
+         #{arg2},
+      </if>
+      <if test="keyword != null" >
+         #{keyword},
+      </if>
+      <if test="orientation != null" >
+         #{orientation},
+      </if>
+      <if test="isyj != null" >
+         #{isyj},
+      </if>
+      <if test="isread != null" >
+         #{isread},
+      </if>
+      <if test="ismyattention != null" >
+         #{ismyattention},
+      </if>
+      <if test="isfeedback != null" >
+        #{isfeedback},
+      </if>
+      <if test="visitCount != null" >
+         #{visitCount},
+      </if>
+      <if test="reply != null" >
+         #{reply},
+      </if>
+      <if test="simhash != null" >
+         #{simhash},
+      </if>
+      <if test="webname != null" >
+         #{webname},
+      </if>
+      <if test="cTime != null" >
+         #{cTime},
+      </if>
+      <if test="sourceType != null" >
+         #{sourceType},
+      </if>
+      <if test="hot != null" >
+         #{hot},
+      </if>
+      <if test="istf != null" >
+         #{istf},
+      </if>
+      <if test="isrd != null" >
+         #{isrd},
+      </if>
+      <if test="isusermain != null" >
+         #{isusermain},
+      </if>
+      <if test="title != null" >
+         #{title},
+      </if>
+      <if test="losttime != null" >
+         #{losttime},
+      </if>
+      <if test="orienLevel != null" >
+         #{orienLevel},
+      </if>      
+        <if test="noisestatus != null" >
+         #{noisestatus},
+      </if>
+      <if test="infoAbstract != null" >
+         #{infoAbstract},
+      </if>
+      <if test="url != null" >
+         #{url},
+      </if>
+      <if test="keyword != null" >
+         #{keyword},
+      </if>
+      <if test="author != null" >
+         #{author},
+      </if>
+      <if test="cTime != null" >
+         #{cTime},
+      </if>
+      <if test="isVideo != null" >
+         #{isVideo},
+      </if>
+      <if test="isPic != null" >
+         #{isPic},
+      </if>
+      <if test="imageurl != null" >
+         #{imageurl},
+      </if>
+      <if test="url != null" >
+         #{url},
+      </if>
+      <if test="titleMatch != null" >
+         #{titleMatch},
+      </if>
+      <if test="mustwordminindex != null" >
+         #{mustwordminindex},
+      </if>
+      <if test="keywordsminindex != null" >
+         #{keywordsminindex},
+      </if>
+      <if test="onlylocal != null" >
+         #{onlylocal},
+      </if>
+      <if test="weiboovertime != null" >
+         #{weiboovertime},
+      </if>
+      <if test="weibosignlocalnoise != null" >
+         #{weibosignlocalnoise},
+      </if>
+      <if test="weibotopicnoise != null" >
+         #{weibotopicnoise},
+      </if>
+      <if test="weiboatnoise != null" >
+         #{weiboatnoise},
+      </if>
+      <if test="cTime != null" >
+         #{cTime},
+      </if>
+      <if test="cTime != null" >
+         #{cTime},
+      </if>
+      <if test="webChannel != null" >
+         #{webChannel},
+      </if>
+      <if test="keyword != null" >
+         #{keyword},
+      </if>
+      <if test="domain != null" >
+         #{domain},
+      </if> 
+      <if test="siteid != null" >
+         #{siteid},
+      </if>
+      <if test="importanceWeight != null" >
+         #{importanceWeight},
+      </if>
+      <if test="type != null" >
+        #{type},
+      </if>
+    </trim>
+  </insert>
+ <!--删除事件分析信息表 -->
+  <update id="deleteTVMonitoringInformation" parameterType="java.lang.String" >
+    delete from ${_DBNAME}.WK_T_VALIDATION_REF WHERE KR_UUID = #{krUuid}
+  </update>
+	
+</mapper>

@@ -1,0 +1,48 @@
+package com.zhxg.fgw.service.impl;
+
+import com.zhxg.fgw.entity.po.SysRole;
+import com.zhxg.fgw.service.RoleService;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Stream;
+
+@Service
+public class RoleServiceImpl implements RoleService {
+    @Resource
+    public JdbcTemplate jdbcTemplate;
+
+    @Override
+    public List<SysRole> findAll() {
+        return jdbcTemplate.query("select * from sys_role", BeanPropertyRowMapper.newInstance(SysRole.class));
+    }
+
+    @Override
+    public void addRole(String roleName, String roleDesc, String modules) {
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        jdbcTemplate.update(connection -> {
+            int idx = 1;
+            PreparedStatement ps = connection.prepareStatement("insert into sys_role(role_name, role_desc, flag, create_time) VALUES (?, ?, 1, ?)", Statement.RETURN_GENERATED_KEYS);
+            ps.setString(idx++, roleName);
+            ps.setString(idx++, roleDesc);
+            ps.setDate(idx, new java.sql.Date(System.currentTimeMillis()));
+            return ps;
+        }, keyHolder);
+
+        long roleId = keyHolder.getKey().longValue();
+
+        Date now = new Date();
+        Stream.of(modules.split(","))
+                .map(Integer::parseInt)
+                .forEach(moduleId -> jdbcTemplate.update("insert into sys_role_module(role_id, module_id, create_time) VALUES (" + roleId + ", " + moduleId + ", ?)", now));
+    }
+}

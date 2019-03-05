@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.Report">
+	
+	<resultMap id="report" type="Report">
+		<id property="id" column="KR_UUID" />
+		<result property="title" column="KR_TITLE" />
+		<result property="address" column="KR_ADDRESS" />
+		<result property="time" column="KR_TIME" />
+		<result property="userid" column="KR_UID" />
+		<result property="type" column="KR_TYPE" />
+	</resultMap>
+
+	<select id="getReportList" resultMap="report">
+		SELECT
+			KR_UUID,KR_TITLE,KR_ADDRESS,str_to_date(KR_TIME,'%Y%c%d') as KR_TIME,KR_UID,KR_TYPE
+		FROM
+			${_DBNAME}.WK_T_REPORT
+		WHERE
+			KR_UID = #{userid}
+		ORDER BY 
+			KR_TIME DESC 
+		LIMIT 
+			5
+	</select>
+	
+	<resultMap id="reportTemplate" type="com.zhxg.yqzj.entities.v1.ReportTemplate">
+        <id property="id" column="id" />
+        <result property="userid" column="userid" />
+        <result property="type" column="type" />
+        <result property="templateName" column="templateName" />
+        <result property="template" column="template" />
+        <result property="templateImg" column="templateImg" />
+        <result property="templateType" column="templateType" />
+        <result property="reportSelected" column="reportSelected" />
+        
+    </resultMap>
+
+    <select id="getReportTemplateList"  parameterType = "java.util.Map"  resultMap="reportTemplate">
+        SELECT 
+              id,
+              userid,
+              type,
+              templateName,
+              template,
+              templateImg ,
+              templateType
+        FROM 
+              yqms2.report_template 
+        WHERE 
+              id = #{templateId}
+    </select>
+    
+    <select id="getAllReportTemplate"  parameterType = "java.util.Map"  resultMap="reportTemplate">
+		SELECT 
+              a.id,
+              a.userid,
+              a.type,
+              a.templateName,
+              a.templateImg,
+              a.templateType,
+              case  when b.KU_ID is null then 0 else 1 end as reportSelected
+        FROM 
+              yqms2.report_template a left join WK_T_USERBASEINFO b on b.ku_type = 'DAY_REPORT_ID' and b.KU_VALUE = a.id and (b.KU_ID = #{_KUID} or b.KU_ID is null)
+        where
+            a.templateType = #{templateType}
+        and a.type = #{type}
+        and (a.userid = #{_KUID} or  a.userid = 0)
+        order by reportSelected desc,a.userid,a.id desc
+    </select>
+    
+    <insert id="insertReportTemplate" parameterType = "java.util.Map">
+	    insert into report_template
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="_KUID != null" >
+	        userid,
+	      </if>
+	      <if test="type != null" >
+	        type,
+	      </if>
+	      <if test="templateName != null" >
+	        templateName,
+	      </if>
+	      <if test="template != null" >
+	        template,
+	      </if>
+	      <if test="templateImg != null" >
+	        templateImg,
+	      </if>
+	      <if test="templateType != null" >
+	        templateType
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="_KUID != null" >
+	        #{_KUID},
+	      </if>
+	      <if test="type != null" >
+	        #{type},
+	      </if>
+	      <if test="templateName != null" >
+	        #{templateName},
+	      </if>
+	      <if test="template != null">
+	      	#{template},
+	      </if>
+	      <if test="templateImg != null">
+	      	#{templateImg},
+	      </if>
+	      <if test="templateType != null" >
+	        #{templateType}
+	      </if>
+	    </trim>
+	</insert>
+	
+	<update id="updateTemplate" parameterType="java.util.Map">
+		update yqms2.report_template 
+		set
+			template = #{template},
+			templateName = #{templateName},
+			templateImg = #{templateImg}
+		where
+			id = #{templateId}
+		and
+			userid = #{_KUID}
+	</update>
+	
+	<delete id="deleteTemplate" parameterType="java.util.Map">
+		delete from 
+			yqms2.report_template 
+		where 
+			id in 
+		<foreach collection="templateIdArr" index = "index" item="templateId" open="(" separator="," close=")">
+			#{templateId}
+		</foreach> 
+		
+	</delete>
+	
+	<update id="updateReportFileInfo" parameterType="java.util.Map">
+		update ReportFileInfo
+		set
+			reportFileName = #{reportFileName}
+		where
+			id = #{reportFileId}
+		and
+			reportFileName = #{reportFileName}
+			
+	</update>
+	
+	<delete id="deleteReportFileInfo" parameterType="java.util.Map">
+		delete from 
+			ReportFileInfo
+		where
+			id in
+		<foreach collection="reportFileIdArr" index="index" item="reportFileId" open="(" separator="," close=")">
+			#{reportFileId}
+ 		</foreach>	
+	</delete>
+	
+	<select id="getTemplateCount" parameterType="java.util.Map" resultType = "int">
+			select count(*)
+				from yqms2.report_template
+				where 
+					<![CDATA[(userid = #{_KUID} or userid = 0)]]>
+				and
+					templateName = #{templateName}
+				and
+					type = #{type}
+				and 
+					templateType = #{templateType}
+			<if test="templateId != null">
+				and 
+					id <![CDATA[<>]]> #{templateId}
+			</if>
+		
+	</select>
+</mapper>

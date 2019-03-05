@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 
+             舆情关注表操作
+	@ahthor:fujiqiu
+	@date:2018-4-19
+    @version:1.0
+ -->
+<mapper namespace="com.zhxg.yqzj.entities.v1.Yqgz">
+	<!-- 查询简报列表 -->
+	<select id="selectList" parameterType = "java.util.Map" resultType = "java.util.Map">
+		SELECT    tb.KV_UUID,
+			      tb.KM_UUID,
+		          tb.KU_ID,
+		          tb.KV_TITLE,
+		          tb.KV_CTIME,
+		          tb.KV_ABSTRACT,
+		          tb.KV_SITE,
+		          tb.KV_URL,
+		          tb.KV_SOURCE,
+		          tb.KV_SOURCETYPE,
+		          tb1.KV_CONTENT
+		FROM      ${_DBNAME}.WK_T_MYATTENTION_INFO tb
+		LEFT JOIN ${_DBNAME}.WK_T_MYATTENTION_INFOCNT tb1 ON tb.KM_UUID = tb1.KM_UUID
+		WHERE  1 = 1
+		<if test="kvIdList != null and kvIdList != ''">
+			AND tb.KV_UUID IN
+			<foreach collection="kvIdList" index="index" item="item" open="(" separator="," close=")">        
+				#{item}    
+			</foreach>
+		</if>
+		<if test="kyId != null and kyId != ''">
+			AND tb.KY_UUID = #{kyId}
+		</if>
+	</select>
+    <!-- 添加关注 -->
+    <insert id="insertYqgzSelective" parameterType="java.util.Map" >
+	    insert into ${_DBNAME}.WK_T_MYATTENTION_INFO
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="KM_UUID != null" >
+	        KM_UUID,
+	      </if>
+	      <if test="KU_ID != null" >
+	        KU_ID,
+	      </if>
+	      <if test="KV_SOURCETYPE != null" >
+	        KV_SOURCETYPE,
+	      </if>
+	      <if test="KV_ID != null" >
+	        KV_ID,
+	      </if>
+	      <if test="KV_TITLE != null" >
+	        KV_TITLE,
+	      </if>
+	      <if test="KV_SOURCE != null" >
+	        KV_SOURCE,
+	      </if>
+	      <if test="KV_URL != null" >
+	        KV_URL,
+	      </if>
+	      <if test="KV_TIME != null" >
+	        KV_TIME,
+	      </if>
+	      <if test="KV_CTIME != null" >
+	        KV_CTIME,
+	      </if>
+	      <if test="KV_VISITCOUNT != null" >
+	        KV_VISITCOUNT,
+	      </if>
+	      <if test="KV_REPLY != null" >
+	        KV_REPLY,
+	      </if>
+	      <if test="KV_COLLECTION != null" >
+	        KV_COLLECTION,
+	      </if>
+	      <if test="KV_TRANSPORT != null" >
+	        KV_TRANSPORT,
+	      </if>
+	      <if test="KV_REPEAT != null" >
+	        KV_REPEAT,
+	      </if>
+	      <if test="KV_ABSTRACT != null" >
+	        KV_ABSTRACT,
+	      </if>
+	      <if test="KV_ORIENTATION != null" >
+	        KV_ORIENTATION,
+	      </if>
+	      <if test="KV_FLAG != null" >
+	        KV_FLAG,
+	      </if>
+	      <if test="KV_SITE != null" >
+	        KV_SITE,
+	      </if>
+	      <if test="KV_TEMPLET != null" >
+	        KV_TEMPLET,
+	      </if>
+	      <if test="KV_STATE != null" >
+	        KV_STATE,
+	      </if>
+	      <if test="KV_SNA_FLAG != null" >
+	        KV_SNA_FLAG,
+	      </if>
+	      <if test="KV_INDEX_FLAG != null" >
+	        KV_INDEX_FLAG,
+	      </if>
+	      <if test="KV_ORIEN_LEVEL != null" >
+	        KV_ORIEN_LEVEL,
+	      </if>
+	      <if test="KV_INSERT_TIME != null" >
+	        KV_INSERT_TIME,
+	      </if>
+	      <if test="KV_UUID != null" >
+	        KV_UUID,
+	      </if>
+	      <if test="CLOSECJ != null" >
+	        CLOSECJ,
+	      </if>
+	      <if test="ORACLE_MYSQL_UUID != null" >
+	        ORACLE_MYSQL_UUID,
+	      </if>
+	      <if test="IS_SYNCHRONIZED != null" >
+	        IS_SYNCHRONIZED,
+	      </if>
+	      <if test="KM_ID != null" >
+	        KM_ID,
+	      </if>
+	      <if test="KV_TYPE != null" >
+	        KV_TYPE,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="KM_UUID != null" >
+	        #{KM_UUID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KU_ID != null" >
+	        #{KU_ID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_SOURCETYPE != null" >
+	        #{KV_SOURCETYPE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_ID != null" >
+	        #{KV_ID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_TITLE != null" >
+	        #{KV_TITLE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_SOURCE != null" >
+	        #{KV_SOURCE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_URL != null" >
+	        #{KV_URL,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_TIME != null" >
+	        #{KV_TIME,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_CTIME != null" >
+	        #{KV_CTIME,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_VISITCOUNT != null" >
+	        #{KV_VISITCOUNT,jdbcType=INTEGER},
+	      </if>
+	      <if test="KV_REPLY != null" >
+	        #{KV_REPLY,jdbcType=INTEGER},
+	      </if>
+	      <if test="KV_COLLECTION != null" >
+	        #{KV_COLLECTION,jdbcType=INTEGER},
+	      </if>
+	      <if test="KV_TRANSPORT != null" >
+	        #{KV_TRANSPORT,jdbcType=INTEGER},
+	      </if>
+	      <if test="KV_REPEAT != null" >
+	        #{KV_REPEAT,jdbcType=INTEGER},
+	      </if>
+	      <if test="KV_ABSTRACT != null" >
+	        #{KV_ABSTRACT,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_ORIENTATION != null" >
+	        #{KV_ORIENTATION,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_FLAG != null" >
+	        #{KV_FLAG,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_SITE != null" >
+	        #{KV_SITE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_TEMPLET != null" >
+	        #{KV_TEMPLET,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_STATE != null" >
+	        #{KV_STATE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_SNA_FLAG != null" >
+	        #{KV_SNA_FLAG,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_INDEX_FLAG != null" >
+	        #{KV_INDEX_FLAG,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_ORIEN_LEVEL != null" >
+	        #{KV_ORIEN_LEVEL,jdbcType=INTEGER},
+	      </if>
+	      <if test="KV_INSERT_TIME != null" >
+	        #{KV_INSERT_TIME,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_UUID != null" >
+	        #{KV_UUID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="CLOSECJ != null" >
+	        #{CLOSECJ,jdbcType=VARCHAR},
+	      </if>
+	      <if test="ORACLE_MYSQL_UUID != null" >
+	        #{ORACLE_MYSQL_UUID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="IS_SYNCHRONIZED != null" >
+	        #{IS_SYNCHRONIZED,jdbcType=CHAR},
+	      </if>
+	      <if test="KM_ID != null" >
+	        #{KM_ID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_TYPE != null" >
+	        #{KV_TYPE,jdbcType=INTEGER},
+	      </if>
+	    </trim>
+	  </insert>
+	  <!-- 	  添加简报内容 -->
+	  <insert id="insertYqgzCntSelective" parameterType="java.util.Map" >
+	    insert into ${_DBNAME}.WK_T_MYATTENTION_INFOCNT
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="KM_UUID != null" >
+	        KM_UUID,
+	      </if>
+	      <if test="KV_CTIME != null" >
+	        KV_CTIME,
+	      </if>
+	      <if test="ORACLE_MYSQL_UUID != null" >
+	        ORACLE_MYSQL_UUID,
+	      </if>
+	      <if test="IS_SYNCHRONIZED != null" >
+	        IS_SYNCHRONIZED,
+	      </if>
+	      <if test="KV_CONTENT != null" >
+	        KV_CONTENT,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="KM_UUID != null" >
+	        #{KM_UUID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_CTIME != null" >
+	        #{KV_CTIME,jdbcType=VARCHAR},
+	      </if>
+	      <if test="ORACLE_MYSQL_UUID != null" >
+	        #{ORACLE_MYSQL_UUID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="IS_SYNCHRONIZED != null" >
+	        #{IS_SYNCHRONIZED,jdbcType=CHAR},
+	      </if>
+	      <if test="KV_CONTENT != null" >
+	        #{KV_CONTENT,jdbcType=LONGVARCHAR},
+	      </if>
+	    </trim>
+	  </insert>
+      
+      <!-- 	  删除关注 -->
+      <delete id="deletegz" parameterType = "java.util.Map">
+      	  DELETE FROM ${_DBNAME}.WK_T_MYATTENTION_INFO WHERE KM_UUID = #{kmId}
+      </delete>
+      <!-- 	  删除关注内容 -->
+      <delete id="deletegzCnt" parameterType = "java.util.Map">
+      	  DELETE FROM ${_DBNAME}.WK_T_MYATTENTION_INFOCNT WHERE KM_UUID = #{kmId}
+      </delete>
+      <!-- 查询关注是否添加过 -->
+      <select id="getCountByUrl" parameterType = "java.util.Map" resultType = "int">
+		SELECT
+			count(KV_URL)
+		FROM
+			${_DBNAME}.WK_T_MYATTENTION_INFO
+		WHERE
+			KV_URL = #{kvUrl,jdbcType=VARCHAR}
+	</select>
+</mapper>

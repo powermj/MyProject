@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.ReportClassify">
+
+	<!-- 获取用户下所有数据分类 -->
+	<resultMap type="com.zhxg.yqzj.entities.v1.ReportClassify" id="ReportClassifys">
+		<result property="id" column="id"/>
+		<result property="userId" column="userId"/>
+		<result property="classifyName" column="classifyName"/>
+	</resultMap>
+	
+	<select id="getReportClassifys" parameterType = "java.util.Map" resultMap="ReportClassifys">
+		select 
+			T1.id,
+			T1.userId,
+			T1.classifyName
+		from 
+			ReportClassify T1
+		where 
+			T1.userId = #{_KUID}
+	</select>
+	
+	<update id="updateReportClassifyName" parameterType = "java.util.Map">
+		update
+			ReportClassify
+		set 
+			classifyName = #{classifyName}
+		where 
+			id = #{classifyId}
+	</update>
+	
+	<delete id="deleteReportClassifyById" parameterType = "java.util.Map">
+		delete from
+			ReportClassify
+		where 
+			id = #{classifyId}
+	</delete>
+	
+	<insert id="insertReportClassify" parameterType = "java.util.Map">
+		<selectKey keyProperty="id" resultType="int" >  
+            select LAST_INSERT_ID()  
+        </selectKey> 
+	    insert into ReportClassify
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="_KUID != null" >
+	        userId,
+	      </if>
+	      <if test="classifyName != null" >
+	        classifyName
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="_KUID != null" >
+	        #{_KUID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="classifyName != null" >
+	        #{classifyName,jdbcType=VARCHAR}
+	      </if>
+	    </trim>
+	</insert>
+	
+	<select id="getClassifyNum" parameterType = "java.util.Map" resultType = "int">
+		select 
+			count(id)
+		from
+			ReportClassify
+		where 
+			userId = #{_KUID}
+		and
+			classifyName = #{classifyName}
+	</select>
+	
+	<resultMap type="java.util.HashMap" id="classifyMap">
+		<result property="key" column="id"/>
+		<result property="value" column="classifyName"/>
+	</resultMap>	
+	
+	<select id="getReportClassifyName" parameterType = "java.util.Map" resultMap = "classifyMap">
+		select 
+			T1.id,
+			T1.classifyName
+		from 
+			ReportClassify T1
+		where 
+			T1.userId = #{_KUID}
+	</select>
+	
+</mapper>

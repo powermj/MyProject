@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.ReportFileInfo">
+
+	<!-- 获取用户下所有数据分类 -->
+	<resultMap type="com.zhxg.yqzj.entities.v1.ReportFileInfo" id="ReportFileInfos">
+		<result property="id" column="id"/>
+		<result property="userId" column="userId"/>
+		<result property="reportFileName" column="reportFileName"/>
+		<result property="enterTime" column="enterTime"/>
+		<result property="downLoadUrl" column="downLoadUrl"/>
+	</resultMap>
+	
+	<select id="getReportFileInfos" parameterType = "java.util.Map" resultMap="ReportFileInfos">
+		select 
+			T1.id,
+			T1.reportFileName,
+			T1.enterTime,
+			T1.downLoadUrl
+		from 
+			ReportFileInfo T1
+		where 
+			T1.userId = #{_KUID}
+		<if test="enterStartTime != null and enterEndTime != null">
+			<![CDATA[
+			AND enterTime >= #{enterStartTime}
+			AND enterTime <= #{enterEndTime}
+			]]>
+		</if>
+			AND T1.reportType = #{reportType}
+		order by
+			T1.enterTime desc
+	</select>
+	
+	<insert id="insertReportFileInfo" parameterType = "java.util.Map">
+	    insert into ReportFileInfo
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="_KUID != null" >
+	        userId,
+	      </if>
+	      <if test="reportFileName != null" >
+	        reportFileName,
+	      </if>
+	      <if test="downLoadUrl != null" >
+	        downLoadUrl,
+	      </if>
+	      <if test="initType != null" >
+	        reportType
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="_KUID != null" >
+	        #{_KUID},
+	      </if>
+	      <if test="reportFileName != null" >
+	        #{reportFileName},
+	      </if>
+	      <if test="downLoadUrl != null">
+	      	#{downLoadUrl},
+	      </if>
+	      <if test="initType != null">
+	      	#{initType}
+	      </if>
+	    </trim>
+	</insert>
+	
+</mapper>

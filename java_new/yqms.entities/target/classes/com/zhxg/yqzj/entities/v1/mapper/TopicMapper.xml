@@ -1,0 +1,375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.Topic">
+    <!--     创建专题数据表 -->
+    <update id="createTable" parameterType = "java.util.Map">
+    	CREATE TABLE ${_DBNAME}.TOPIC_${KtUUid} (
+		   `UUID` varchar(140) NOT NULL,
+		   `KT_UUID` varchar(40) NOT NULL,
+		   `KN_TYPE` char(2) NOT NULL,
+		   `KN_TITLE` char(150) DEFAULT NULL,
+		   `KN_SOURCE` char(50) DEFAULT NULL,
+		   `KN_URL` varchar(270) DEFAULT NULL,
+		   `KN_TIME` char(20) DEFAULT NULL,
+		   `KN_CTIME` char(20) DEFAULT NULL,
+		   `KN_REPEATCOUNT` int(4) DEFAULT NULL,
+		   `KN_ABSTRACT` varchar(200) DEFAULT NULL,
+		   `KV_VISITCOUNT` int(4) DEFAULT NULL,
+		   `KV_REPLY` int(4) DEFAULT NULL,
+		   `KV_COLLECTION` int(4) DEFAULT NULL,
+		   `KV_TRANSPORT` int(4) DEFAULT NULL,
+		   `KV_REPEAT` int(4) DEFAULT NULL,
+		   `KV_STATE` varchar(2) DEFAULT NULL,
+		   `KN_SITE` char(50) DEFAULT NULL,
+		   `KN_ORIENTATION` char(2) DEFAULT NULL,
+		   `KN_AUTHOR` varchar(50) DEFAULT NULL,
+		   `KN_TOPICUID` varchar(40) DEFAULT NULL,
+		   `KN_INPUTTYPE` varchar(2) DEFAULT NULL,
+		   `KN_ORIEN_LEVEL` varchar(2) DEFAULT NULL,
+		   `KN_FANSCOUNT` int(9) DEFAULT NULL,
+		   `KN_CONTENT` varchar(3500) DEFAULT NULL,
+		   `KN_JINGWAI` varchar(2) DEFAULT NULL,
+		   `KN_TITLESEG` varchar(200) DEFAULT NULL,
+		   `KN_TOPICWORDS` varchar(60) DEFAULT NULL,
+		   `KN_ZYINFO` varchar(50) DEFAULT NULL,
+		   `KT_WEIBOUID` varchar(30) DEFAULT NULL,
+		   `KN_ARG` varchar(50) DEFAULT NULL,
+		   `ConfigID` varchar(50) DEFAULT NULL,
+		   `AUTOCLASSLY` varchar(200) DEFAULT NULL,
+		   `CLASSLYTYPE` varchar(5) DEFAULT NULL,
+		   `CLASSLYINFO` varchar(200) DEFAULT NULL,
+		   `GDZMCLASSLY` varchar(200) DEFAULT NULL,
+		   `GDFMCLASSLY` varchar(200) DEFAULT NULL,
+		   `GDFMCLASSLYINFO` varchar(200) DEFAULT NULL,
+		   `GDZMCLASSLYINFO` varchar(200) DEFAULT NULL,
+		   `GDZFXX` varchar(10) DEFAULT NULL,
+		   `sheng` varchar(50) DEFAULT NULL,
+		   `shi` varchar(50) DEFAULT NULL,
+		   `xian` varchar(50) DEFAULT NULL,
+		   `jigou` varchar(100) DEFAULT NULL,
+		   `GDINFO` varchar(300) DEFAULT NULL,
+		   `gender` varchar(20) DEFAULT NULL,
+		   `WEBNAMEDOMAIN` varchar(50) DEFAULT NULL,
+		   `WEBNAMELEVER` varchar(10) DEFAULT NULL,
+		   `location` varchar(20) DEFAULT NULL,
+		   `verified` varchar(20) DEFAULT NULL,
+		   `USERID` varchar(50) DEFAULT NULL,
+		   `screen_name` varchar(50) DEFAULT NULL,
+		   `KN_ARG1` varchar(100) DEFAULT NULL,
+		   `KN_ARG2` varchar(100) DEFAULT NULL,
+		   `KN_ARG3` varchar(100) DEFAULT NULL,
+		   `KN_ARG4` varchar(100) DEFAULT NULL,
+		   `KV_DTCTIME` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
+		   `KV_DTTIME` datetime NOT NULL DEFAULT '1970-01-01 00:00:00',
+		   PRIMARY KEY (`UUID`),
+		   UNIQUE KEY `UUID` (`UUID`) USING BTREE,
+		   KEY `KT_UUID` (`KT_UUID`) USING BTREE,
+		   KEY `TOPICUID` (`KN_TOPICUID`) USING BTREE,
+		   KEY `URL` (`KN_URL`) USING BTREE,
+		   KEY `CTIME` (`KN_CTIME`) USING BTREE,
+		   KEY `SITE` (`KN_SITE`) USING BTREE,
+		   KEY `ORIENTATION` (`KN_ORIENTATION`) USING BTREE,
+		   KEY `KN_TIME` (`KN_TIME`) USING BTREE,
+		   KEY `INDEX_KV_DTCTIME` (`KV_DTCTIME`),
+		   KEY `INDEX_KV_DTTIME` (`KV_DTTIME`)
+	   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    </update>
+	<insert id="insertSelective" parameterType="java.util.Map">
+    insert into YQZB_T_TOPIC
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="KT_UUID != null" >
+        KT_UUID,
+      </if>
+      <if test="KU_ID != null" >
+        KU_ID,
+      </if>
+      <if test="KT_NAME != null" >
+        KT_NAME,
+      </if>
+      <if test="KT_SUMMARY != null" >
+        KT_SUMMARY,
+      </if>
+      <if test="KT_BEGIN != null" >
+        KT_BEGIN,
+      </if>
+      <if test="KT_END != null" >
+        KT_END,
+      </if>
+      <if test="KT_INTERVAL != null" >
+        KT_INTERVAL,
+      </if>
+      <if test="KT_STATUS != null" >
+        KT_STATUS,
+      </if>
+      <if test="KK_NAME != null" >
+        KK_NAME,
+      </if>
+      <if test="KT_TIME != null" >
+        KT_TIME,
+      </if>
+      <if test="KK_MUST != null" >
+        KK_MUST,
+      </if>
+      <if test="KK_SHOULD != null" >
+        KK_SHOULD,
+      </if>
+      <if test="KK_EVENT != null" >
+        KK_EVENT,
+      </if>
+      <if test="KK_CLOSETIME != null" >
+        KK_CLOSETIME,
+      </if>
+      <if test="ORACLE_MYSQL_UUID != null" >
+        ORACLE_MYSQL_UUID,
+      </if>
+      <if test="IS_SYNCHRONIZED != null" >
+        IS_SYNCHRONIZED,
+      </if>
+      <if test="KT_ISNEW != null" >
+        KT_ISNEW,
+      </if>
+      <if test="KT_ISSHARED != null" >
+        KT_ISSHARED,
+      </if>
+      <if test="KT_SHAREDTIME != null" >
+        KT_SHAREDTIME,
+      </if>
+      <if test="KT_CANCELSHAREDTIME != null" >
+        KT_CANCELSHAREDTIME,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="KT_UUID != null" >
+        #{KT_UUID,jdbcType=VARCHAR},
+      </if>
+      <if test="KU_ID != null" >
+        #{KU_ID,jdbcType=INTEGER},
+      </if>
+      <if test="KT_NAME != null" >
+        #{KT_NAME,jdbcType=VARCHAR},
+      </if>
+      <if test="KT_SUMMARY != null" >
+        #{KT_SUMMARY,jdbcType=VARCHAR},
+      </if>
+      <if test="KT_BEGIN != null" >
+        #{KT_BEGIN,jdbcType=CHAR},
+      </if>
+      <if test="KT_END != null" >
+        #{KT_END,jdbcType=CHAR},
+      </if>
+      <if test="KT_INTERVAL != null" >
+        #{KT_INTERVAL,jdbcType=INTEGER},
+      </if>
+      <if test="KT_STATUS != null" >
+        #{KT_STATUS,jdbcType=CHAR},
+      </if>
+      <if test="KK_NAME != null" >
+        #{KK_NAME,jdbcType=VARCHAR},
+      </if>
+      <if test="KT_TIME != null" >
+        #{KT_TIME,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_MUST != null" >
+        #{KK_MUST,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_SHOULD != null" >
+        #{KK_SHOULD,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_EVENT != null" >
+        #{KK_EVENT,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_CLOSETIME != null" >
+        #{KK_CLOSETIME,jdbcType=VARCHAR},
+      </if>
+      <if test="ORACLE_MYSQL_UUID != null" >
+        #{ORACLE_MYSQL_UUID,jdbcType=VARCHAR},
+      </if>
+      <if test="IS_SYNCHRONIZED != null" >
+        #{IS_SYNCHRONIZED,jdbcType=CHAR},
+      </if>
+      <if test="KT_ISNEW != null" >
+        #{KT_ISNEW,jdbcType=VARCHAR},
+      </if>
+      <if test="KT_ISSHARED != null" >
+        #{KT_ISSHARED,jdbcType=TINYINT},
+      </if>
+      <if test="KT_SHAREDTIME != null" >
+        #{KT_SHAREDTIME,jdbcType=VARCHAR},
+      </if>
+      <if test="KT_CANCELSHAREDTIME != null" >
+        #{KT_CANCELSHAREDTIME,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="java.util.Map" >
+    update YQZB_T_TOPIC
+    <set >
+      <if test="KU_ID != null" >
+        KU_ID = #{KU_ID,jdbcType=INTEGER},
+      </if>
+      <if test="KT_NAME != null" >
+        KT_NAME = #{KT_NAME,jdbcType=VARCHAR},
+      </if>
+      <if test="KT_SUMMARY != null" >
+        KT_SUMMARY = #{KT_SUMMARY,jdbcType=VARCHAR},
+      </if>
+      <if test="KT_BEGIN != null" >
+        KT_BEGIN = #{KT_BEGIN,jdbcType=CHAR},
+      </if>
+      <if test="KT_END != null" >
+        KT_END = #{KT_END,jdbcType=CHAR},
+      </if>
+      <if test="KT_INTERVAL != null" >
+        KT_INTERVAL = #{KT_INTERVAL,jdbcType=INTEGER},
+      </if>
+      <if test="KT_STATUS != null" >
+        KT_STATUS = #{KT_STATUS,jdbcType=CHAR},
+      </if>
+      <if test="KK_NAME != null" >
+        KK_NAME = #{KK_NAME,jdbcType=VARCHAR},
+      </if>
+      <if test="KT_TIME != null" >
+        KT_TIME = #{KT_TIME,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_MUST != null" >
+        KK_MUST = #{KK_MUST,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_SHOULD != null" >
+        KK_SHOULD = #{KK_SHOULD,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_EVENT != null" >
+        KK_EVENT = #{KK_EVENT,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_CLOSETIME != null" >
+        KK_CLOSETIME = #{KK_CLOSETIME,jdbcType=VARCHAR},
+      </if>
+      <if test="ORACLE_MYSQL_UUID != null" >
+        ORACLE_MYSQL_UUID = #{ORACLE_MYSQL_UUID,jdbcType=VARCHAR},
+      </if>
+      <if test="IS_SYNCHRONIZED != null" >
+        IS_SYNCHRONIZED = #{IS_SYNCHRONIZED,jdbcType=CHAR},
+      </if>
+      <if test="KT_ISNEW != null" >
+        KT_ISNEW = #{KT_ISNEW,jdbcType=VARCHAR},
+      </if>
+      <if test="KT_ISSHARED != null" >
+        KT_ISSHARED = #{KT_ISSHARED,jdbcType=TINYINT},
+      </if>
+      <if test="KT_SHAREDTIME != null" >
+        KT_SHAREDTIME = #{KT_SHAREDTIME,jdbcType=VARCHAR},
+      </if>
+      <if test="KT_CANCELSHAREDTIME != null" >
+        KT_CANCELSHAREDTIME = #{KT_CANCELSHAREDTIME,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where KT_UUID = #{KT_UUID,jdbcType=VARCHAR}
+  </update>
+   <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from YQZB_T_TOPIC
+    where KT_UUID = #{KT_UUID,jdbcType=VARCHAR}
+  </delete>
+  
+  <!--   保存话题关键词 -->
+  <insert id="saveTopicKeyWords" parameterType="java.util.Map" >
+    insert into YQZB_T_CKEY
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="KK_UUID != null" >
+        KK_UUID,
+      </if>
+      <if test="KT_UUID != null" >
+        KT_UUID,
+      </if>
+      <if test="KK_NAME != null" >
+        KK_NAME,
+      </if>
+      <if test="KK_CTIME != null" >
+        KK_CTIME,
+      </if>
+      <if test="KK_STATE != null" >
+        KK_STATE,
+      </if>
+      <if test="KK_NOT != null" >
+        KK_NOT,
+      </if>
+      <if test="KK_TYPE != null" >
+        KK_TYPE,
+      </if>
+      <if test="KK_CALED != null" >
+        KK_CALED,
+      </if>
+      <if test="ORACLE_MYSQL_UUID != null" >
+        ORACLE_MYSQL_UUID,
+      </if>
+      <if test="IS_SYNCHRONIZED != null" >
+        IS_SYNCHRONIZED,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="KK_UUID != null" >
+        #{KK_UUID,jdbcType=VARCHAR},
+      </if>
+      <if test="KT_UUID != null" >
+        #{KT_UUID,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_NAME != null" >
+        #{KK_NAME,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_CTIME != null" >
+        #{KK_CTIME,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_STATE != null" >
+        #{KK_STATE,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_NOT != null" >
+        #{KK_NOT,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_TYPE != null" >
+        #{KK_TYPE,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_CALED != null" >
+        #{KK_CALED,jdbcType=VARCHAR},
+      </if>
+      <if test="ORACLE_MYSQL_UUID != null" >
+        #{ORACLE_MYSQL_UUID,jdbcType=VARCHAR},
+      </if>
+      <if test="IS_SYNCHRONIZED != null" >
+        #{IS_SYNCHRONIZED,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <!--   更新话题关键词 -->
+  <update id="updateTopicKeyWords" parameterType="java.util.Map" >
+    update YQZB_T_CKEY
+    <set >
+      <if test="KT_UUID != null" >
+        KT_UUID = #{KT_UUID,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_NAME != null" >
+        KK_NAME = #{KK_NAME,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_CTIME != null" >
+        KK_CTIME = #{KK_CTIME,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_STATE != null" >
+        KK_STATE = #{KK_STATE,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_NOT != null" >
+        KK_NOT = #{KK_NOT,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_TYPE != null" >
+        KK_TYPE = #{KK_TYPE,jdbcType=VARCHAR},
+      </if>
+      <if test="KK_CALED != null" >
+        KK_CALED = #{KK_CALED,jdbcType=VARCHAR},
+      </if>
+      <if test="ORACLE_MYSQL_UUID != null" >
+        ORACLE_MYSQL_UUID = #{ORACLE_MYSQL_UUID,jdbcType=VARCHAR},
+      </if>
+      <if test="IS_SYNCHRONIZED != null" >
+        IS_SYNCHRONIZED = #{IS_SYNCHRONIZED,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where KK_UUID = #{KK_UUID,jdbcType=VARCHAR}
+  </update>
+</mapper>

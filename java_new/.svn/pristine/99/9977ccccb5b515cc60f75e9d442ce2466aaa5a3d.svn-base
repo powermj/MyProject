@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.CaseBaseInfo">
+
+	<resultMap id="casebaseinfo" type="CaseBaseInfo">
+		<id property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="casebaseAbstract" column="abstract" />
+		<result property="industry" column="industry" />
+		<result property="caseType" column="case_type" />
+		<result property="relatedUnits" column="related_units" />
+		<result property="firstMedia" column="first_media" />
+		<result property="disposalMethods" column="disposal_methods" />
+		<result property="followup" column="followup" />
+		<result property="responseContent" column="response_content" />
+		<result property="caseTime" column="case_time" />
+		<result property="classId" column="class_id" />
+		<result property="exportUrl" column="export_url" />
+		<result property="loadTime" column="load_time" />
+		<result property="relatedRegion" column="related_region" />
+		<result property="userid" column="userid" />
+		<result property="status" column="status" />
+		
+	</resultMap>
+	
+	<select id="getCaseBaseList" resultMap="casebaseinfo">
+		SELECT
+			a.id,a.title,a.abstract,a.case_time,CASE WHEN COUNT(b.casebase_id) &gt; 0 THEN 1 ELSE 0 END AS status
+		FROM
+			yqzj.zj_casebase_infomation a LEFT JOIN yqzj.zj_casebase_download b ON a.id = b.casebase_id AND b.userid=#{userid}
+		WHERE 1=1
+		<if test="null!=classId and ''!=classId">
+	            AND a.class_id=#{classId}
+	    </if>
+		  
+	    <if test="null!=searchWord and ''!=searchWord">
+	    	    
+	    AND  (
+			a.title like CONCAT('%',#{searchWord},'%') 
+			OR
+			a.abstract like CONCAT('%',#{searchWord},'%') 
+			OR
+			a.industry like CONCAT('%',#{searchWord},'%')
+			OR
+			a.case_type like CONCAT('%',#{searchWord},'%')
+			OR
+			a.related_units like CONCAT('%',#{searchWord},'%')
+			OR
+			a.first_media like CONCAT('%',#{searchWord},'%')  
+			OR
+			a.disposal_methods like CONCAT('%',#{searchWord},'%') 
+			OR
+			a.followup like CONCAT('%',#{searchWord},'%') 
+			OR
+			a.response_content like CONCAT('%',#{searchWord},'%') 
+		) 
+		
+	    </if>
+	    
+	    GROUP BY a.id  ORDER BY a.case_time DESC
+			
+	</select>
+	
+
+	<select id="getCaseBaseInfoDetail" resultMap="casebaseinfo">
+		SELECT
+			a.id,a.title,a.abstract,a.industry,a.case_type,a.related_units,a.first_media,a.disposal_methods,a.followup,
+			a.response_content,a.class_id,a.export_url,a.case_time,a.related_region,CASE WHEN COUNT(b.casebase_id) &gt; 0 THEN 1 ELSE 0 END AS status
+		FROM
+			yqzj.zj_casebase_infomation a LEFT JOIN yqzj.zj_casebase_download b ON a.id = b.casebase_id AND b.userid=#{userid}
+		where 
+			id = #{infoid}
+	</select>
+
+	<select id="getLoadReportsList" resultMap="casebaseinfo">
+		SELECT 
+			a.casebase_id as id,
+			a.load_time,
+			b.abstract,
+			b.title,
+			b.case_time 
+		FROM 
+			yqzj.zj_casebase_download a, 
+			yqzj.zj_casebase_infomation b 
+		WHERE 
+			a.casebase_id=b.id 
+		AND 
+			a.userid = #{userid}
+		ORDER BY 
+			a.load_time DESC			
+	</select>
+	
+	<insert id="insertCaseBaseReport">
+		REPLACE INTO
+			yqzj.zj_casebase_download(`userid`,`casebase_id`)
+		VALUES
+			(#{userid},#{id})
+	</insert>
+	
+	<resultMap type="java.util.Map" id="casebaseDownloadSize">
+		<result property="caseBaseDownloadCount" column="caseBaseDownloadCount"  javaType="int" jdbcType="INTEGER"/>  
+		<result property="caseBaseDownloadTotal" column="caseBaseDownloadTotal"  javaType="int" jdbcType="INTEGER"/> 
+	</resultMap>  
+	
+	<select id="getCaseBaseDownloadCount" resultMap="casebaseDownloadSize">
+		SELECT 
+			COUNT(t2.userid) AS caseBaseDownloadCount,
+			IFNULL(CAST(t3.KU_VALUE AS SIGNED),0) AS caseBaseDownloadTotal 
+		FROM  
+			(SELECT '1' from dual) t  
+		LEFT JOIN  
+			yqzj.zj_casebase_download t2  
+		ON  
+			t2.userid = #{userid}
+		LEFT JOIN 
+			yqms2.WK_T_USERBASEINFO t3 
+		ON 
+			t3.ku_id = #{userid} 
+		AND 
+			t3.ku_type = 'KU_CASEBASE_DOWNLOAD_SIZE'
+	
+	</select>
+</mapper>

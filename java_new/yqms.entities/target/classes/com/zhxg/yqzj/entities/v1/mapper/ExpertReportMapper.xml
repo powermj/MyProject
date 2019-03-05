@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.ExpertReport">
+	
+	
+		<resultMap id="expertreport" type="Report">
+		<id property="id" column="id" />
+		<result property="title" column="report_title" />
+		<result property="caseName" column="case_name" />
+		<result property="address" column="report_address" />
+		<result property="time" column="upload_time" />
+		<result property="userid" column="userid" />
+		<result property="reportclassid" column="report_classid" />
+		<result property="subtime" column="submission_time" />
+		<result property="type" column="report_type" />
+		<result property="keyWords" column="key_words" />
+		<result property="sampleUrl" column="sample_url" />
+		<result property="sampleArticle" column="sample_article" />
+		<result property="specialRequirements" column="special_requirements" />
+	</resultMap>
+
+
+	<select id="getExpertReportList" resultMap="expertreport">
+		SELECT
+			*
+		FROM
+			yqzj.zj_report_info a 
+		LEFT JOIN
+			yqzj.zj_applicationpurpose_info b
+		ON
+			a.id = b.report_id
+		WHERE
+			a.userid = #{userid}
+			
+		<if test="null!=classid and ''!=classid">
+            AND report_classid=#{classid}
+        </if>
+        
+		ORDER BY 
+			submission_time DESC ,upload_time DESC 
+	</select>
+	
+	<select id="getExpertReportTreeList" resultMap="expertreport">
+		SELECT
+			*
+		FROM
+			yqzj.zj_report_type		
+	</select>
+	
+	<resultMap type="java.util.Map" id="expertReportSize">
+		<result property="reportTypeId" column="report_type_id"  javaType="int" jdbcType="INTEGER"/>  
+		<result property="total" column="total"  javaType="int" jdbcType="INTEGER"/>  
+		<result property="count" column="count"  javaType="int" jdbcType="INTEGER"/> 
+	</resultMap>  
+	
+	<select id="getExpertReportCount" resultMap="expertReportSize">
+		SELECT
+			a.id AS report_type_id, 
+			IFNULL(CAST(b.KU_VALUE AS SIGNED),0) AS total ,
+			IFNULL(c.used,0) AS count
+		FROM  
+			yqzj.zj_report_type a 
+		LEFT JOIN 
+			yqms2.WK_T_USERBASEINFO b 
+		ON 
+			a.report_key = b.KU_TYPE 
+		AND 
+			b.ku_id = #{userid}	
+		LEFT JOIN  
+			(SELECT report_classid,
+					count(1) AS used 
+			FROM 
+				yqzj.zj_report_info 
+			WHERE 
+				userid = #{userid} 
+			GROUP BY 
+				report_classid) c 
+		ON  
+			c.report_classid =  a.id 
+	</select>
+	<insert id="insertExpertReport">
+		INSERT INTO 
+			yqzj.zj_report_info(report_classid,report_title,userid) 
+		VALUES
+			(#{reportclassid},#{title},#{userid})
+	</insert>
+	
+	<insert id="insertExpertSpecialReport">
+		INSERT INTO 
+			`yqzj`.`zj_applicationpurpose_info` (`report_id`, `case_name`, `key_words`, `sample_url`, `sample_article`, `special_requirements`)
+		 VALUES (#{id}, #{title}, #{keyWords}, #{sampleUrl}, #{sampleArticle}, #{specialRequirements});
+
+	</insert>
+	
+	<!-- 验证报告是否是该用户的 -->
+	<select id="getIsMyExpertReport" resultMap="expertreport">
+		SELECT id FROM yqzj.zj_report_info WHERE report_address=#{reportName} AND userid=#{userid}		
+	</select>
+	         
+
+
+
+
+</mapper>

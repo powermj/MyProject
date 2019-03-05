@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="yqms.app.api:war">
+    <output-path>$PROJECT_DIR$/yqms.app.api/target</output-path>
+    <root id="archive" name="yqms.app.api.war">
+      <element id="artifact" artifact-name="yqms.app.api:war exploded" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.Subject">
+	
+	<resultMap id="subject" type="Subject">
+		<id property="uuid" column="KS_ID" />
+	</resultMap>
+	<select id="getArtificialWaringSubjectList" resultMap="subject">
+		SELECT 
+			ws.KS_ID
+		FROM 
+			yqms2.WK_T_KEYWS_WARNSET ws,yqms2.WK_T_WARNSPECIAL_USER wu  
+		WHERE 
+			ws.ks_id = wu.ks_id 
+		AND 
+			ws.KW_OPEN = 1 
+		AND 
+			wu.ku_id = #{userId}
+	</select>
+
+	<update id="updateSubjectKcuuid" parameterType="com.zhxg.yqzj.entities.v1.Subject">
+ 		   UPDATE
+    			WT_K_SUBRELATION
+    		SET
+    			KC_UUID = #{userClassifyId},
+    			KC_INDEX = #{index_c}
+			WHERE
+				KU_ID = #{userid}
+			AND
+				KS_ID = #{uuid}				
+    </update>
+    
+    <select id="selectMaxIndexByKcuuid" resultType="java.lang.Integer" parameterType="com.zhxg.yqzj.entities.v1.Subject">
+        SELECT	MAX(KC_INDEX) FROM WT_K_SUBRELATION WHERE KU_ID = #{userid} AND KC_UUID = #{userClassifyId}
+    </select>
+</mapper>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.OverseasWebsite">
+
+    <resultMap id="overseasWebsite" type="OverseasWebsite">
+        <result property="id" column="id"/>
+        <result property="webName" column="webName" />
+        <result property="url" column="url" />
+        <result property="className" column="className" />
+        <result property="classid" column="classid" />
+    </resultMap>
+	
+	<!-- 获取境外网站列表 -->
+	<select id="getOverseasWebsite" resultMap="overseasWebsite">
+		<![CDATA[
+        SELECT 
+		    a.id,
+		    a.WEB_NAME AS webName,
+		    a.WEBSITE AS url,
+		    b.name AS className,
+		    b.id AS classid
+		FROM
+		    yqms2.OVERSEA_WEB a,
+		    yqms2.OVERSEA_WEBTYPE b
+		WHERE
+		    a.web_type_id = b.id
+		order by a.id;
+            ]]>
+	</select>
+	
+</mapper>

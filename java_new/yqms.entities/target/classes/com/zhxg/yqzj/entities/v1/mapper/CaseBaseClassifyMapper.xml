@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.CaseBaseClassify">
+
+	<resultMap id="caseBaseClassify" type="CaseBaseClassify">
+		<id property="id" column="id" />
+		<result property="pId" column="pid" />
+		<result property="name" column="classify_name" />
+		<result property="level" column="level" />
+		<result property="ctime" column="ctime" />
+	</resultMap>
+
+	<select id="getcaseBaseClassificationTree" resultMap="caseBaseClassify">
+		SELECT id,pid,classify_name,ctime,level FROM yqzj.zj_casebase_classify order by level
+	</select>
+
+
+
+</mapper>

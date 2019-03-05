@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.ReportVariable">
+
+	<!-- 获取用户下所有数据分类 -->
+	<resultMap type="com.zhxg.yqzj.entities.v1.ReportVariable" id="ReportVariables">
+		<result property="id" column="id"/>
+		<result property="userId" column="userId"/>
+		<result property="initName" column="initName"/>
+		<result property="initType" column="initType"/>
+		<result property="initValue" column="initValue"/>
+		<result property="initTotal" column="initTotal"/>
+		<result property="initTimeStamp" column="initTimeStamp"/>
+		<result property="timeInterval" column="timeInterval"/>
+		<result property="timeDifference" column="timeDifference"/>
+	</resultMap>
+	
+	<select id="getReportVariables" parameterType = "java.util.Map" resultMap="ReportVariables">
+		select 
+			id,
+			userId,
+			initName,
+			initType,
+			initValue,
+			initTotal,
+			initTimeStamp,
+			timeInterval
+		from
+			ReportVariable
+		where
+			userId = #{_KUID}
+	</select>
+	
+	<select id="getReportVariable" parameterType = "java.util.Map" resultMap="ReportVariables">
+		select 
+			id,
+			userId,
+			initName,
+			initType,
+			initValue,
+			initTotal,
+			initTimeStamp,
+			timeInterval
+		from
+			ReportVariable
+		where
+			userId = #{_KUID}
+		and
+			initType = #{initType}
+	</select>
+	
+	
+	<update id="updateReportVariable" parameterType = "java.util.Map">
+		update 
+			ReportVariable
+		set
+			initValue = #{initValue},
+			initTotal = #{initTotal}
+		where 
+			userId = #{_KUID}
+		and
+			initName = #{initName}
+	</update>
+	
+	<update id="updateInitValue" parameterType = "java.util.Map">
+		update 
+			ReportVariable
+		set
+			initValue = #{initValue},
+			initTotal = #{initTotal}
+		where 
+			userId = #{_KUID}
+		and
+			id = #{variableId}
+	</update>
+	
+	<delete id="deleteReportVariableById" parameterType = "java.util.Map">
+		delete from 
+			ReportVariable
+		where
+			id = #{id}
+		and
+			userId = #{_KUID}
+	</delete>
+	
+	<insert id="insertReportVariable" parameterType = "java.util.Map">
+	    insert into ReportVariable
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="initName != null and initName != ''" >
+	        initName,
+	      </if>
+	      <if test="_KUID != null and _KUID != ''" >
+	        userId,
+	      </if>
+	      <if test="initType != null and initType != ''" >
+	        initType,
+	      </if>
+	      <if test="initValue != null and initValue !=''" >
+	        initValue,
+	      </if>
+	      <if test="initTotal != null and initTotal != ''" >
+	        initTotal,
+	      </if>
+	      <if test="initTimeStamp != null and initTimeStamp != ''" >
+	        initTimeStamp,
+	      </if>
+	      <if test="timeInterval != null and timeInterval != ''" >
+	        timeInterval,
+	      </if>
+	      <if test="timeDifference != null and timeDifference != ''" >
+	        timeDifference
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="initName != null and initName != ''" >
+	        #{initName},
+	      </if>
+	      <if test="_KUID != null and _KUID != ''" >
+	        #{_KUID},
+	      </if>
+	      <if test="initType != null and initType != ''" >
+	        #{initType},
+	      </if>
+	      <if test="initValue != null and initValue !=''" >
+	        #{initValue},
+	      </if>
+	      <if test="initTotal != null and initTotal != ''" >
+	        #{initTotal},
+	      </if>
+	      <if test="initTimeStamp != null and initTimeStamp != ''" >
+	        #{initTimeStamp},
+	      </if>
+	      <if test="timeInterval != null and timeInterval != ''" >
+	        #{timeInterval},
+	      </if>
+	      <if test="timeDifference != null and timeDifference != ''" >
+	        #{timeDifference}
+	      </if>
+	    </trim>
+	    on duplicate key update
+	        initValue = #{initValue},
+	        initTotal = #{initTotal},
+	        initTimeStamp = #{initTimeStamp},
+	        timeInterval = #{timeInterval}
+	</insert>
+	
+	<select id="getVariableNum" parameterType = "java.util.Map" resultType = "int">
+	       select
+	       		count(id)
+	       from 
+	       		ReportVariable
+	       where
+	       		userId = #{_KUID}
+	       and
+	       		initType = #{initType}
+	</select>
+</mapper>

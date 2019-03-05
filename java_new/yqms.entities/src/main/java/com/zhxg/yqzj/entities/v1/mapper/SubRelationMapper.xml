@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.SubRelation">
+
+	<resultMap type="SubRelation" id="SubRelationInfo">
+		<result property="ksId" column="KS_ID"/>
+		<result property="ksPid" column="KS_PID"/>
+		<result property="ksSid" column="KS_SID"/>
+		<result property="kcUuid" column="KC_UUID"/>
+		<result property="kkName" column="KK_NAME"/>
+		<result property="isParent" column="IS_PARENT"/>
+		<result property="kkType" column="KK_TYPE"/>
+	</resultMap>
+	<!-- 获取信息详细关键词 -->
+	<select id="getDetailRelationTopic" parameterType = "java.util.Map" resultMap="SubRelationInfo">
+	    SELECT
+			a.KS_ID,
+			a.KS_PID,
+			a.KS_SID,
+			a.KC_UUID,
+			a.KK_NAME,
+			a.IS_PARENT, 
+		    b.KK_TYPE
+		FROM
+			WT_K_SUBRELATION a
+		LEFT JOIN 
+			WK_T_KEYWS b 
+		ON   
+			a.KS_SID = b.KK_ID
+		WHERE
+			a.KS_ID in
+		<foreach collection="krKeyWordIds" index="index" item="item" open="(" separator="," close=")">
+	             #{item.krKeyWordId}
+	    </foreach>
+		AND (
+			b.kk_type NOT IN ('08', '09', '10')
+		OR 
+			b.kk_type IS NULL )
+	</select>
+	
+	<!-- 获取信息详细关键词 -->
+	<select id="getDetailParentTopic" resultMap="SubRelationInfo">
+	    SELECT
+			a.KS_ID,
+			a.KS_PID,
+			a.KS_SID,
+			a.KC_UUID,
+			a.KK_NAME,
+			a.IS_PARENT, 
+		    b.KK_TYPE
+		FROM
+			WT_K_SUBRELATION a
+		LEFT JOIN 
+			WK_T_KEYWS b 
+		ON   
+			a.KS_SID = b.KK_ID
+		WHERE
+			a.KS_ID = #{ksId}
+		AND (
+			b.kk_type NOT IN ('08', '09', '10')
+		OR 
+			b.kk_type IS NULL )
+	</select>
+	
+	
+	<resultMap type="SubRelation" id="userRelation">
+		<result property="ksId" column="KS_ID"/>
+		<result property="kkName" column="KK_NAME"/>
+	</resultMap>
+	<select id="getUserTopicList" parameterType="java.util.Map" resultMap="userRelation">
+		SELECT
+			KS_ID,
+			KK_NAME
+		FROM
+			WT_K_SUBRELATION
+		WHERE
+			KU_ID = #{_KUID}
+		AND 
+			KS_PID = '0'
+		AND
+			kk_type NOT IN ('08', '09', '10', '18', '19')
+		ORDER BY
+			KS_CTIME 
+		DESC
+	</select>
+</mapper>

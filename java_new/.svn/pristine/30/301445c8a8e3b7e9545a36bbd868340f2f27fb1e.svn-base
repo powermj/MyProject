@@ -1,0 +1,23 @@
+package com.zhxg.fgw.service;
+
+import com.zhxg.fgw.entity.po.SysRole;
+import com.zhxg.fgw.entity.po.SysUser;
+
+import java.util.List;
+import java.util.Map;
+
+public interface UserService {
+
+    /**
+     * 查询用户列表
+     * @return
+     */
+    List<SysRole> findAll();
+
+    /**
+     * 根据用户id查询用户信息
+     * @param userId
+     * @return
+     */
+    Map<String, Object> queryUserById(String userId);
+}

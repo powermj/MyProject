@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.Account">
+
+    <resultMap id="baseAccount" type="Account">
+        <id property="accountId" column="account_id" />
+        <result property="userid" column="userid" />
+        <result property="ssoAccountId" column="sso_account_id" />
+        <result property="name" column="name" />
+        <result property="account" column="account" />
+        <result property="phone" column="phone" />
+        <result property="email" column="email" />
+        <result property="wechat" column="wechat" />
+        <result property="state" column="state" />
+        <result property="template" column="template" />
+        <result property="identity" column="identity" />
+        <result property="ctime" column="ctime" />
+        <result property="loginTime" column="login_time" />
+        <result property="order" column="order" />
+        <result property="appUserThemeImage" column="appUserThemeImage" />
+        <result property="appUserThemeImagetime" column="appUserThemeImagetime" />
+        <result property="appMainColour" column="appMainColour" />
+    </resultMap>
+	
+	<resultMap id="account" type="Account" extends="baseAccount">
+		<association property="user" column="userid" select="com.zhxg.yqzj.entities.v1.User.getUserByKuId"/>
+	</resultMap>
+
+	<!-- 根据ssoAccountId查询用户详情 -->
+	<select id="getAccount" resultMap="account">
+	   <![CDATA[
+		SELECT
+			a.account_id,
+			a.sso_account_id,
+			a.userid,
+			a.name,
+			a.account,
+			a.phone,
+			a.email,
+			a.template,
+			a.identity,
+			a.wechat,
+			a.state,
+			a.ctime,
+			login_time
+		FROM
+			yqms2.ms_account a,
+			yqms2.WK_T_USER b,
+			yqms2.WK_T_USERSERVICE c
+		WHERE 
+			a.userid = b.KU_ID
+		AND
+			c.KU_ID = b.KU_ID
+		AND
+            a.state != -1 
+		AND
+			a.sso_account_id = #{accountId}
+		AND
+			a.product_type = '2'	
+	   ]]>
+	</select>
+	
+	   <!-- 根据accountId查询用户详情 -->
+    <select id="getAccountByAccountId" resultMap="account">
+       <![CDATA[
+        SELECT
+            a.account_id,
+            a.sso_account_id,
+            a.userid,
+            a.name,
+            a.account,
+            a.phone,
+            a.email,
+            a.template,
+            a.identity,
+            a.wechat,
+            a.state,
+            a.order,
+            a.ctime,
+            login_time
+        FROM
+            yqms2.ms_account a,
+            yqms2.WK_T_USER b,
+            yqms2.WK_T_USERSERVICE c
+        WHERE 
+            a.userid = b.KU_ID
+        AND
+            c.KU_ID = b.KU_ID
+        AND
+            a.account_id = #{accountId}
+        AND
+			a.product_type = '2'
+       ]]>
+    </select>
+    
+    <!-- 根据手机号 和 userId 查询用户详情 -->
+    <select id="getAccountByPhone" resultMap="account">
+       <![CDATA[
+        SELECT
+            a.account_id,
+            a.sso_account_id,
+            a.userid,
+            a.name,
+            a.account,
+            a.phone,
+            a.email,
+            a.template,
+            a.identity,
+            a.wechat,
+            a.state,
+            a.ctime,
+            login_time
+        FROM
+            yqms2.ms_account a,
+            yqms2.WK_T_USER b,
+            yqms2.WK_T_USERSERVICE c
+        WHERE 
+            a.userid = b.KU_ID
+        AND
+            c.KU_ID = b.KU_ID
+        AND
+            a.state != -1 
+        AND
+            a.userid = #{userid}
+        AND
+            a.phone = #{telphone}
+        AND
+            a.product_type = '2'    
+       ]]>
+    </select>
+	
+	<!-- 根据kuId查询用户详情 -->
+    <select id="getAccountList" resultMap="baseAccount">
+        SELECT
+            a.account_id,
+            a.sso_account_id,
+            a.userid,
+            a.name,
+            a.account,
+            a.phone,
+            a.email,
+            a.template,
+            a.identity,
+            a.wechat,
+            a.state,
+            a.`order`,
+            a.ctime,
+            login_time
+        FROM
+            yqms2.ms_account a
+        WHERE 
+            a.userid = #{_KUID}
+        AND 
+            a.product_type = '2'    
+        AND 
+          <![CDATA[  a.state >= 0 ]]>
+        <if test="null!=searchWord and ''!=searchWord">
+	        AND  (
+	            a.account like CONCAT('%',#{searchWord},'%') 
+	            OR
+	            a.name like CONCAT('%',#{searchWord},'%') 
+	            OR
+	            a.phone like CONCAT('%',#{searchWord},'%')
+	            OR
+	            a.email like CONCAT('%',#{searchWord},'%')
+	            OR
+	            a.wechat like CONCAT('%',#{searchWord},'%')
+	        ) 
+        </if>    
+        <if test="null!=searchState and ''!=searchState">
+            AND a.state = #{searchState}
+        </if> 
+        ORDER BY IFNULL(a.`order`,99999999) ASC
+    </select>
+	
+	
+	<!-- 根据kuId查询用户详情 -->
+	<select id="getVaildAccounts" resultMap="baseAccount">
+	   <![CDATA[
+		SELECT
+			a.account_id,
+			a.sso_account_id,
+			a.userid,
+			a.name,
+			a.account,
+			a.phone,
+			a.email,
+			a.template,
+			a.identity,
+            a.wechat,
+            a.state,
+            a.`order`,
+			a.ctime,
+			login_time
+		FROM
+			yqms2.ms_account a,
+            yqms2.WK_T_USER b,
+            yqms2.WK_T_USERSERVICE c
+        WHERE 
+            a.userid = b.KU_ID
+        AND
+            c.KU_ID = b.KU_ID
+        AND
+            c.ku_userstatus < '2' 
+        AND 
+            c.ku_trysdate >= date_format(NOW(), "%Y-%m-%d")
+            ]]>
+	</select>
+	
+	<!-- 新增账号 -->
+    <select id="insertAccount" >
+       <![CDATA[
+        INSERT INTO 
+            `yqms2`.`ms_account` (
+            `userid`, 
+            `sso_account_id`, 
+            `account`, 
+            `password`, 
+            `name`, 
+            `phone`, 
+            `email`, 
+            `wechat`, 
+            `template`, 
+            `state`, 
+            `order`, 
+            `identity`,
+            `product_type`)
+        VALUES (
+            #{userid},
+            #{ssoAccountId},
+            #{account},
+            #{password},
+            #{name},
+            #{phone},
+            #{email},
+            #{wechat},
+            #{template},
+            #{state},
+            #{order},
+            #{identity},
+            #{productType}
+        )
+            ]]>
+    </select>
+    
+    <update id="clearHistoryAccount">
+        DELETE FROM
+            yqms2.ms_account
+        WHERE
+            account = #{account}
+        AND
+            state = -1
+     </update>
+    
+     <update id="moveUpBelow">
+     UPDATE yqms2.ms_account a,yqms2.ms_account b
+	SET a.`order` = a.`order` - 1
+	WHERE
+	    a.userid = #{userid}
+	AND 
+	    b.account_id = #{accountId}
+	AND 
+	   <![CDATA[ a.`order` > b.`order`]]>
+     </update>
+    
+    <update id="updateAccount">
+        UPDATE yqms2.ms_account
+	       <set>
+	        <if test="null!=name and ''!=name">
+	            name = #{name},
+	        </if> 
+	        <if test="null!=account and ''!=account">
+	            account = #{account},
+	        </if> 
+	        <if test="null!=phone and ''!=phone">
+	            phone = #{phone},
+	        </if> 
+	        <if test="null!=email and '-2'!=email">
+	            email = #{email},
+	        </if> 
+	        <if test="null!=wechat and '-2'!=wechat">
+	            wechat = #{wechat},
+	        </if>
+	        <if test="null!=identity and ''!=identity">
+	            identity = #{identity},
+	        </if>
+	        <if test="null!=state">
+	            state = #{state},
+	        </if>
+	        <if test="null!=loginTime">
+                login_time = #{loginTime},
+            </if> 
+	       </set>
+	       WHERE 
+	           account_id = #{accountId}
+    </update>
+	<!--     查询账号下面的人员数量 -->
+	<select id="getAccountCountByUserId" parameterType = "int" resultType = "int">
+		SELECT count(0)
+		FROM   yqms2.ms_account
+		WHERE  userid = #{userId}	
+		AND state != -1
+		AND
+			product_type = '2'
+	</select>
+	<!-- 	获取排序后的账号id -->
+	<select id="getSortAccountListByUserId" parameterType = "int" resultMap = "account">
+		<![CDATA[
+        SELECT
+            a.account_id,
+            a.sso_account_id,
+            a.userid,
+            a.sso_account_id,
+            a.name,
+            a.account,
+            a.phone,
+            a.email,
+            a.template,
+            a.identity,
+            a.wechat,
+            a.`order`,
+            a.state,
+            a.ctime,
+            login_time
+        FROM
+            yqms2.ms_account a
+        WHERE 
+            a.userid = #{userId}
+        AND a.state != -1    
+        ORDER BY IFNULL(a.`order`,99999999) ASC
+            ]]>
+	</select>
+	<!-- 批量更新顺序 -->
+	<update id="updateAccountOrderBunch" parameterType="java.util.List">
+		update yqms2.ms_account
+		<trim prefix="set" suffixOverrides=",">
+            <trim prefix="`order` =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                     when account_id=#{item.accountId} then #{item.order}
+                </foreach>
+            </trim>
+        </trim>
+        where account_id in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.accountId}
+        </foreach>
+	</update>
+	
+	
+	<resultMap type="java.util.Map" id="maxOrder">
+        <result property="maxOrder" column="maxOrder"  javaType="int" jdbcType="INTEGER"/>  
+    </resultMap>  
+    
+    <select id="getMaxOrder" resultMap="maxOrder">
+        SELECT 
+            max(`order`) maxOrder
+        FROM  
+            yqms2.ms_account  
+        WHERE
+            userid = #{userid}
+        AND
+			product_type = '2'
+    
+    </select>
+    
+    <resultMap type="java.util.Map" id="test">
+        <result property="KD_VALUE" column="KD_VALUE"  javaType="String" jdbcType="VARCHAR"/>  
+    </resultMap>  
+    
+    <select id="appUserThemeImage" resultMap="test">
+        SELECT
+			KD_VALUE
+		FROM
+			${_DBNAME}.WK_T_DEFINEDHOME
+		WHERE
+			KD_DATATYPE = '3'
+    
+    </select>
+    
+    
+    <resultMap id="manageUser" type="ManageUser">
+        <id property="userId" column="KU_ID" />
+        <result property="loginName" column="KU_LID" />
+        <result property="passWord" column="KU_PASSWD" />
+    </resultMap>
+    <!-- 	获取关联账号 -->
+	<select id="getManageUserList" parameterType = "int" resultMap = "manageUser">
+		SELECT
+			mu.KU_ID,
+			u.KU_LID,
+			u.KU_PASSWD
+		FROM
+			yqms2.WK_T_USER u,
+			yqms2.WK_T_MUSER mu
+		WHERE
+			u.KU_ID = mu.KU_ID
+		AND KU_MID =#{userId}        
+	</select>
+	
+	<resultMap type="java.util.Map" id="trialMessage">
+        <result property="id" column="id"  javaType="String" jdbcType="INTEGER"/>  
+    </resultMap>  
+    
+    <select id="getTrialMessage" resultMap="trialMessage">
+       SELECT
+			id
+		FROM
+			web_message
+		WHERE
+			tel = #{tel}
+		AND tid = 8
+    
+    </select>
+    
+    
+     <update id="applyForTrial">
+        <![CDATA[
+        INSERT INTO web_message (
+			tel,
+			mname,
+			title,
+			addtime,
+			tid,
+			source
+		)
+		VALUES
+			(
+				 #{tel},
+				 #{mName},
+		         #{title},
+				 #{addtime},
+				 #{tid},
+				 #{source}
+			)
+            ]]>
+     </update>
+	
+
+<!-- 根据登录名获取用户id -->
+	<resultMap type="java.util.Map" id="userIdByloginname">
+        <result property="id" column="KU_ID"  javaType="String" jdbcType="INTEGER"/>  
+    </resultMap>  
+    
+    <select id="getUserId" resultMap="userIdByloginname">
+        SELECT
+			KU_ID
+		FROM
+			WK_T_USER
+		WHERE
+			KU_LID = #{loginName}
+    
+    </select>	
+    
+    
+    <!-- 获取允许绑定的个数 -->
+	<resultMap type="java.util.Map" id="permitBindingNumber">
+        <result property="permitNumber" column="KU_VALUE"  javaType="String" jdbcType="INTEGER"/>  
+    </resultMap>  
+    
+    <select id="getPermitBindingNumber" resultMap="permitBindingNumber">
+        SELECT
+			KU_VALUE
+		FROM
+			WK_T_USERBASEINFO
+		WHERE
+			KU_ID = #{userId}
+		AND KU_TYPE = 'YQMS_ACCOUNT_LIMIT'
+    
+    </select>
+    
+     <!-- 获取用户地域状态等信息 -->
+    <resultMap id="userArea" type="java.util.Map">
+        <id property="userId" column="KU_ID" />
+        <result property="loginName" column="KU_LID" />
+        <result property="status" column="KU_USERSTATUS" />
+        <result property="template" column="KU_TEMPLATE" />
+        <result property="usergenre" column="KU_USERGENRE" />
+        <result property="industry" column="KU_INDUSTRY" />
+        <result property="provinceId" column="province_id" />
+        <result property="cityId" column="city_id" />
+        <result property="countyId" column="county_id" />
+    </resultMap>
+    
+    <select id="getUserArea" resultMap="userArea">
+        SELECT
+			u.*, ua.province_id,
+			ua.city_id,
+			ua.county_id
+		FROM
+			(
+				SELECT
+					u.KU_ID,
+					u.KU_LID,
+					us.KU_USERSTATUS,
+					u.KU_TEMPLATE,
+					us.KU_USERGENRE,
+					us.KU_INDUSTRY
+					
+				FROM
+					WK_T_USER u,
+					WK_T_USERSERVICE us
+				WHERE
+					u.KU_ID = us.KU_ID
+				AND u.KU_ID = #{userId}
+			) u
+		LEFT JOIN WK_T_USER_AREA_NEW ua ON u.KU_ID = ua.ku_id
+		WHERE
+			u.KU_ID = #{userId}
+    
+    </select>
+    
+    
+    
+     <update id="insertCustomerId">
+        <![CDATA[
+        INSERT INTO WK_T_USERBASEINFO (
+			KU_ID,
+			KU_TYPE,
+			KU_VALUE
+		)
+		VALUES
+			(
+		         #{userId},
+				 #{type},
+				 #{customerId}
+			)
+            ]]>
+     </update>
+     
+     
+      <!-- 获取用户一级行业 -->
+	<resultMap type="java.util.Map" id="userIndustry">
+        <result property="pId" column="KC_PID"  javaType="String" jdbcType="INTEGER"/>  
+    </resultMap>  
+    
+    <select id="getIndustry" resultMap="userIndustry">
+        SELECT
+			KC_PID
+		FROM
+			`WK_T_CLASSIFICATION`
+		WHERE
+			KC_ID = #{industry}
+    
+    </select>
+    
+    
+	<!--  -->
+	<select id="getYqmsCountByCustomerId" parameterType = "String" resultType = "int">
+		SELECT
+			count(0)
+		FROM
+			`WK_T_USERBASEINFO`
+		WHERE
+			KU_TYPE = 'SSO_YQMSCUSTOMER_ID'
+		AND KU_ID = #{userId}
+	</select>
+    
+    
+      
+	<!--  -->
+	<select id="getYqmsAccountCountByssoId" parameterType = "String" resultType = "int">
+		SELECT
+			count(0)
+		FROM
+			`ms_account`
+		WHERE
+			sso_account_id = #{ssoAccountId}
+		AND product_type = 2
+	</select>
+     
+    <update id="deletePhoneList">
+       DELETE
+		FROM
+			WK_T_PHONELIST
+		WHERE
+			MACID = #{macid}
+     </update>
+     
+     
+     <update id="deletePhoneMacid">
+       DELETE
+		FROM
+			WK_T_YQMSONLYUSER
+		WHERE
+			MACID = #{macid}
+     </update>
+     
+   <select id="getUserInfo" parameterType = "Integer" resultType = "java.util.Map">
+		SELECT
+			KU_LID as username,
+			KU_PASSWD as password
+		FROM
+			WK_T_USER
+		WHERE
+			KU_ID = #{userid}
+	</select> 
+     
+    <delete id="delAccountByAccountId">
+       DELETE
+        FROM
+           ms_account 
+       WHERE account_id =#{accountId}
+    </delete> 
+	
+</mapper>

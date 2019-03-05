@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.MobileCloudEventInfo">
+
+	<!-- 获取推荐专题事件词 -->
+	<resultMap type="com.zhxg.yqzj.entities.v1.MobileCloudEventInfo" id="MobileCloudEventInfos">
+		<result property="id" column="id"/>
+		<result property="departmentId" column="departmentId"/>
+		<result property="subjectWord" column="subjectWord"/>
+		<result property="thematicName" column="thematicName"/>
+		<result property="eventWord" column="eventWord"/>
+	</resultMap>
+	<select id="getEventWord" parameterType = "java.util.Map" resultMap="MobileCloudEventInfos">
+		select 
+			T1.id,
+			T1.departmentId,
+			T1.subjectWord,
+			T1.thematicName,
+			T1.eventWord
+		from 
+			MobileCloudEvent T1
+		where 
+			T1.departmentId = #{departmentId}
+		<if test="specialTopicIdArr != null and specialTopicIdArr.length != 0">
+			and T1.id in 
+			<foreach collection="specialTopicIdArr" index="index" item="specialTopicId" open="(" separator="," close=")">
+				#{specialTopicId}
+			</foreach>
+		</if> 
+	</select>
+	
+</mapper>

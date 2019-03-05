@@ -1,0 +1,4 @@
+package com.zhxg.fgw.service;
+
+public interface UserService {
+}

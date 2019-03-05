@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.YqllLableInfo">
+
+	
+	<resultMap type="com.zhxg.yqzj.entities.v1.YqllLableInfo" id="YqllLableInfos">
+		<result property="nickNameId" column="id"/>
+		<result property="nickName" column="nickname"/>
+	</resultMap>
+	<!-- 获取行业下所有标签 -->
+	<select id="getAllLableInfo" parameterType = "java.util.Map" resultMap="YqllLableInfos">
+	  	SELECT 
+	  		id,
+	  		nickname
+	  	FROM 
+	  		yqht.b_event_word_nickname_new
+	  	WHERE
+	  		industry = #{lableIndustry}
+	</select>
+	<!-- 动态获取推荐标签 -->
+	<select id="getRecommentLable" parameterType = "java.util.Map" resultMap="YqllLableInfos">
+	  	<bind name="word1" value="'^'+eventWord+' '"/>
+	  	<bind name="word2" value="' '+eventWord+' '"/>
+	  	<bind name="word3" value="' '+eventWord+'$'"/>
+	  	
+	  	<bind name="word4" value="'\\|'+eventWord+'\\|'"/>
+	  	<bind name="word5" value="'\\('+eventWord+'\\|'"/>
+	  	<bind name="word6" value="'\\|'+eventWord+'\\)'"/>
+	  	
+	  	<bind name="word7" value="'“'+eventWord+'”'"/>
+		SELECT 
+		   	 DISTINCT a.id,
+			 a.nickname
+		FROM
+		    yqht.b_event_word_nickname_new a,
+		    yqht.b_eventword_industry_project_new b,
+		    yqht.b_event_project_new c,
+		    yqms2.WK_T_USERSERVICE s,
+		    yqms2.WK_T_CLASSIFICATION f
+		WHERE
+		    a.id = b.nickname_id
+		        AND b.project_id = c.id
+		        and f.KC_LABLEID = a.industry
+		        and f.KC_ID = s.KU_INDUSTRY
+		        and s.ku_id = #{_KUID}
+		        AND (
+		        c.word REGEXP #{word1}
+		        OR c.word REGEXP #{word2}
+		        OR c.word REGEXP #{word3}
+		        OR c.word REGEXP #{word4}
+		        OR c.word REGEXP #{word5}
+		        OR c.word REGEXP #{word6}
+		        OR c.word REGEXP #{word7})
+	</select>
+</mapper>

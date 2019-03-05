@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.LocationInfo">
+
+    <resultMap id="locationInfo" type="LocationInfo">
+    	<result property="id" column="sourceCode"/>
+        <result property="name" column="sourceName"/>
+        <result property="parentId" column="sourceName"/>
+    </resultMap>
+	
+   <select id="getLocationInfo" resultMap="locationInfo">
+		SELECT
+			t.ID,
+			t.NAME,
+			t.PARENTID
+		FROM
+			area_info.`allsite_locationinfo` t
+		WHERE
+			t.id = #{regionId};
+	</select> 
+	
+</mapper>

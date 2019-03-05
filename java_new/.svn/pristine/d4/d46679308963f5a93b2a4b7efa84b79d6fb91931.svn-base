@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.MobileCloudIndustryInfo">
+
+	<!-- 行业部门一对多 -->
+	<resultMap type="com.zhxg.yqzj.entities.v1.MobileCloudIndustryInfo" id="MobileCloudIndustryInfos">
+		<result property="kcId" column="KC_ID"/>
+		<result property="kcName" column="KC_NAME"/>
+		<collection property="departments" ofType="MobileCloudIndustryDepartmentInfo" select="getAllDepartment" column="{kcId=KC_ID}"/>
+	</resultMap>
+	<select id="getAllIndustryInfo" parameterType = "java.util.Map" resultMap="MobileCloudIndustryInfos">
+		select 
+			T1.KC_ID,
+			T1.KC_NAME
+		from 
+			WK_T_CLASSIFICATION T1
+		where 
+			T1.KC_PID = 0
+	</select>
+	<select id="getAllDepartment" parameterType="java.util.Map" resultType="MobileCloudIndustryDepartmentInfo">
+		SELECT
+			T2.KC_id as departmentId,
+			T2.KC_NAME as departmentName
+		FROM
+			WK_T_CLASSIFICATION T2
+		WHERE 
+			T2.KC_PID = #{kcId}
+	</select>
+	
+</mapper>

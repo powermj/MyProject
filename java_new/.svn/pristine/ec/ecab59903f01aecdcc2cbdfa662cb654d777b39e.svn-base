@@ -1,0 +1,70 @@
+package com.zhxg.fgw.service.impl;
+
+import com.zhxg.fgw.entity.po.SysDept;
+import com.zhxg.fgw.entity.po.SysRole;
+import com.zhxg.fgw.entity.po.SysUser;
+import com.zhxg.fgw.service.UserService;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 用户及授权等相关管理
+ */
+@Service("rhUserServiceImpl")
+public class UserServiceImpl implements UserService {
+    @Resource
+    private JdbcTemplate jdbcTemplate;
+
+//    @Override
+//    public List<SysUser> findAllByDeptId(int deptId) {
+//        return jdbcTemplate.query("select * from sys_user where dept_id = ?", BeanPropertyRowMapper.newInstance(SysUser.class), deptId);
+//    }
+
+    @Override
+    public Map<String, Object> queryUserById(int userId) {
+        SysUser sysUser = jdbcTemplate.queryForObject("select * from sys_user where user_id = ? ", BeanPropertyRowMapper.newInstance(SysUser.class) , userId);
+
+        List<SysRole> sysRoles = jdbcTemplate.query("select * from sys_role ", BeanPropertyRowMapper.newInstance(SysRole.class));
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("sysUser",sysUser);
+        resultMap.put("roleList",sysRoles);
+        return resultMap;
+    }
+
+    @Override
+    public void authorization(int userId, String roleId) {
+        int update = jdbcTemplate.update("update sys_user_role set role_id = ? where user_id = ?", roleId, userId);
+    }
+
+    @Transactional
+    @Override
+    public Map<String, Object> listDeptAndUser(int deptId) {
+        //查询子部门
+        List<SysDept> sysDepts = jdbcTemplate.query("select * from sys_dept where pid = ?", BeanPropertyRowMapper.newInstance(SysDept.class),deptId);
+        //查询部门员工
+        List<SysUser> sysUsers = jdbcTemplate.query("select * from sys_user where dept_id = ?", BeanPropertyRowMapper.newInstance(SysUser.class), deptId);
+        Map<String,Object> resultMap = new HashMap<>();
+        if (sysDepts!= null && sysDepts.size()>0){
+            resultMap.put("depts",sysDepts);
+        }
+        if (sysUsers!=null&&sysUsers.size()>0){
+            resultMap.put("users",sysUsers);
+        }
+        return resultMap;
+    }
+
+    @Override
+    public List<SysUser> findUser(String nickName) {
+
+        return null;
+    }
+
+}

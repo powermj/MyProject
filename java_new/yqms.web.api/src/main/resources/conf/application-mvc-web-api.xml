@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+    http://www.springframework.org/schema/context 
+    http://www.springframework.org/schema/context/spring-context-4.0.xsd
+    http://www.springframework.org/schema/mvc 
+    http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+
+	<!-- 引入spring统一配置文件 -->
+	<import resource="classpath*:/conf/application-context.xml" />
+
+	<!-- 导入数据源选择拦截器 -->
+	<import resource="classpath*:/conf/application-interceptor.xml" />
+
+	<!--配置拦截器, 多个拦截器,顺序执行 -->
+	<mvc:interceptors>
+<!-- 		<mvc:interceptor> -->
+<!-- 			<mvc:mapping path="/v1/login" /> -->
+<!-- 			<bean class="com.zhxg.sso.interceptor.AccessTokenInterceptor"></bean> -->
+<!-- 		</mvc:interceptor> -->
+		<mvc:interceptor>
+			<!-- 匹配的是url路径， 如果不配置或/**,将拦截所有的Controller -->
+			<mvc:mapping path="/v1/**" />
+			<!-- 例外的url -->
+			<mvc:exclude-mapping path="/v1/login/**" />
+			<mvc:exclude-mapping path="/v2/api-docs/**" />
+			<mvc:exclude-mapping path="/api/ecloud/**"/>
+			<mvc:exclude-mapping path="/api/saascloud/login"/>
+			<mvc:exclude-mapping path="/api/saascloud/customer/create"/>
+			<mvc:exclude-mapping path="/api/nsfocus/**"/>
+			<mvc:exclude-mapping path="/v1/eventAnalysis/uploadEventAnalysisImage/**" />
+			<bean class="com.zhxg.framework.base.interceptor.AuthorityTokenInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+	
+		<!--配置拦截器, 多个拦截器,顺序执行 -->
+	<mvc:interceptors>
+<!-- 		<mvc:interceptor> -->
+<!-- 			<mvc:mapping path="/v1/login" /> -->
+<!-- 			<bean class="com.zhxg.sso.interceptor.AccessTokenInterceptor"></bean> -->
+<!-- 		</mvc:interceptor> -->
+		<mvc:interceptor>
+			<!-- 匹配的是url路径， 如果不配置或/**,将拦截所有的Controller -->
+			<mvc:mapping path="/app/**" />
+			<!-- 例外的url -->
+			<mvc:exclude-mapping path="/app/login/**" />
+			<mvc:exclude-mapping path="/app/applyForTrial/**" />
+			<mvc:exclude-mapping path="/app/logoff/**" />			
+			<mvc:exclude-mapping path="/app/bindingCellPhoneNumber/**" />
+			<mvc:exclude-mapping path="/app/getUserInfo/**" />
+			<mvc:exclude-mapping path="/app/EventAnalysisDataApp/**" />				
+			<mvc:exclude-mapping path="/v2/api-docs/**" />
+			
+			<bean class="com.zhxg.framework.base.interceptor.AppAuthorityTokenInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
+
+	<!-- 开启spring自动注解 -->
+	<mvc:annotation-driven>
+		<!-- 返回结果转换json -->
+		<mvc:message-converters register-defaults="true">
+			<bean
+				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+				<property name="supportedMediaTypes">
+					<list>
+						<value>text/plain;charset=utf-8</value>
+						<value>text/html;charset=UTF-8</value>
+						<value>text/json;charset=UTF-8</value>
+						<value>application/json;charset=utf-8</value>
+					</list>
+				</property>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+	<!-- 文件上传解析器 -->
+		<bean id="multipartResolver"
+		    class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		    <property name="maxUploadSize" ref="maxUploadSize"></property>
+		</bean>
+		
+		<!-- 上传文件 最大 50M -->
+		<bean id="maxUploadSize" class="java.lang.Long" >
+		    <constructor-arg index="0">
+		        <value>52428800</value>
+		    </constructor-arg>
+		</bean>
+
+	<!-- 加载系统初始化bean -->
+	<bean class="com.zhxg.framework.spring.init.SystemBootstrap"
+		scope="singleton" init-method="systemInit"></bean>
+</beans>

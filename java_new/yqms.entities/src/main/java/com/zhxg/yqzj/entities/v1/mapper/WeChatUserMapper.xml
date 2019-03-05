@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.WeChatUser">
+	
+	<resultMap id="weChatUser" type="WeChatUser">
+		<id property="openid" column="openid" />
+		<result property="subscribe" column="subscribe" />
+		<result property="nickname" column="nickname" />
+		<result property="sex" column="sex" /> 
+		<result property="city" column="city" />
+		<result property="province" column="province" />
+		<result property="country" column="country" />
+		<result property="headimgurl" column="headimgurl" />
+		<result property="subscribe_time" column="subscribe_time" />
+		<result property="subscribe_scene" column="subscribe_scene" />
+	</resultMap>
+	<select id="getWeChatList" resultMap="weChatUser">
+		SELECT 
+		  * 
+		FROM 
+		  push_server.push_wechat_user_info 
+		WHERE 
+		  userid = #{userid}				
+	</select>
+	
+	<resultMap type="java.util.Map" id="countMap">
+        <result property="total" column="total" />
+    </resultMap> 
+
+    <select id="getWechatCount" resultMap="countMap">
+        SELECT
+            count(KU_ID) as total
+        FROM
+            yqms2.YQZB_T_WEIXIN
+        WHERE 
+            KU_ID = #{userid}
+    </select>
+    
+    <select id="getQQCount" resultMap="countMap">
+        SELECT
+            count(KU_ID) as total
+        FROM
+            yqms2.YQZB_T_QQ
+        WHERE 
+            KU_ID = #{userid}
+    </select>
+
+</mapper>

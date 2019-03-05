@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.User">
+	
+	<resultMap id="userInfo" type="User">
+		<id property="userId" column="KU_ID" />
+		<result property="userName" column="KU_LID" />
+		<result property="dbHost" column="KU_DBNAME" />
+		<result property="sex" column="KU_SEX" />
+		<result property="birthday" column="KU_BIRTHDAY" />
+		<result property="email" column="KU_EMAIL" />
+		<result property="phone" column="KU_PHONE" />
+		<result property="agentId" column="KD_ID" />
+		<result property="level" column="KU_LEVEL" />
+		<result property="ltime" column="KU_LTIME" />
+		<result property="rtime" column="KU_RTIME" />
+		<result property="lastAddr" column="KU_LASTADDR" />
+		<result property="online" column="KU_ONLINE" />
+		<result property="ltimes" column="KU_LTIMES" />
+		<result property="limit" column="KU_LIMIT" />
+		<result property="style" column="KU_STYLE" />
+		<result property="salesPerson" column="KU_XIAOSHOU" />
+		<result property="template" column="KU_TEMPLATE" />
+		<result property="searchOpen" column="KU_SEARCH" />
+		<result property="isAbroadOpen" column="KU_COMPANY" />
+		<!-- 以下属性来自userservice表 -->
+		<result property="mailCount" column="KU_MAILCOUNT" />
+		<result property="phoneCount" column="KU_PHONECOUNT" />
+		<result property="topicCount" column="KU_TOPICCOUNT" />
+		<result property="tradeCount" column="KU_TRADECOUNT" />
+		<result property="dayReportOpen" column="KU_DAYREPORT" />
+		<result property="userState" column="KU_USERSTATUS" />
+		<result property="saveDays" column="KU_SAVEDAYS" />
+		<result property="expirationTime" column="KU_TRYSDATE" />
+		<result property="keyWordCount" column="KU_WORDCOUNT" />
+		<result property="dayReportTime" column="KU_DAYREPORTTIME" />
+		<result property="warningWordCount" column="KU_YJWORDCOUNT" />
+		<result property="weiboWarningOpen" column="KU_WEIBOYJ" />
+		<result property="warningDistinctHours" column="KU_OVERTIME" />
+		<result property="qq" column="KU_QQ" />
+		<result property="commonWariningOpen" column="KU_COMMYJ" />
+		<result property="sendReportOpen" column="KU_SENDREPORT" />
+		<result property="preciseOpen" column="KU_JINGZHUN" />
+		<result property="allExportOpen" column="KU_ALLEXPORT" />
+		<result property="reportTemplate" column="KU_REPORTTEMPLATE" />
+		<result property="weixin" column="KU_WEIXIN" />
+		<result property="orderTimeType" column="KU_ORDERTIME" />
+		<result property="noiseOpen" column="KU_ZAOYIN" />
+		<result property="systemNoiseOpen" column="KU_XTZAOYIN" />
+		<result property="dataTypeCarOpen" column="KU_CAR" />
+		<result property="dataTypeFinanceOpen" column="KU_FINANCE" />
+		<result property="dataTypeTravelOpen" column="KU_TRAVEL" />
+		<result property="subjectSetOpen" column="KU_SUBJECT" />
+		<result property="isOpenSysPass" column="KU_ISOPENSYSPASS" />
+		<result property="templateSetOpen" column="KU_MOBAN" />
+		<result property="subjectManagerOpen" column="KU_SUNMANAGE" />
+		<result property="isValidEmail" column="IS_VALID_EMAIL" />
+		<result property="locationInfoOpen" column="KU_ISLOCATIONREF" />
+		<result property="isTibetan" column="KU_ISTIBETAN" />
+		<result property="isForlanguage" column="KU_ISFORLANGUAGE" />
+		<result property="userGenre" column="KU_USERGENRE" />
+		<result property="alertWinOpen" column="KU_ALERTWIN" />
+		<result property="weixinPushOpen" column="KU_ISWXPUSH" />
+		<result property="oaId" column="KU_OAID" />
+		<result property="tvLastDownloadNum" column="KU_TVLASTDOWNLOADNUM" />
+		<result property="keyWordNum" column="KU_KEYWORDNUM" />
+		<result property="tvKeyWordNum" column="KU_TVKEYWSNUM" />
+		<result property="tvDownloadNum" column="KU_TVDOWNLOADNUM" />
+		<result property="tvOpen" column="KU_TVISOPEN" />
+		<result property="reportCondition" column="KU_REPORT_CONDITION" />
+		<result property="specialSpacingOpen" column="KU_SPECIALSPACING" />
+		<result property="topicRefreshOpen" column="KU_TOPICREFRESH" />
+		<result property="subjectRecollectOpen" column="KU_ZTRECOLLECT" />
+		<result property="everydayMaxDataCount" column="KU_USERDAYMAXDATA" />
+		<result property="subjectMaxDataCount" column="KU_KWSDAYMAXDATA" />
+		<result property="isSaveOverDueData" column="KU_ISSAVEOVERDUEDATA" />
+		<result property="weiboCommentOpen" column="KU_WEIBOCOMMENT" />
+		<result property="bigVCommentOpen" column="KU_BIGV" />
+		<result property="commentOpen" column="KU_COMMENT" />
+		<result property="migr" column="KU_MIGR" />
+		<result property="templateType" column="KU_TEMPLATETYPE" />
+		<result property="groupId" column="KU_GROUPID" />
+		<result property="tuiSongCount" column="KU_TUISONGCOUNT" />
+		<!-- 补充字段 -->
+		<result property="answer" column="KU_ANSWER" />
+		<result property="bbsView" column="KU_BBSVIEW" />
+		<result property="nickname" column="KU_NAME" />
+		<result property="registDate" column="KU_REGDATE" />
+		<result property="state" column="KU_STATUS" />
+		<result property="autoShow" column="KU_AUTOSHOW" />
+		<result property="autoEnter" column="KU_AUTOENTER" />
+		<result property="bindType" column="KU_BINDTYPE" />
+		<result property="bindAddr" column="KU_BINDADDR" />
+		<result property="question" column="KU_QUESTION" />
+		<result property="oldLid" column="OLDLID" />
+		<result property="refName" column="KU_REFNAME" />
+		<result property="jzqb" column="KU_JZQB" />
+		<result property="sysPassword" column="KU_PASSWDXT" />
+		<result property="type" column="KU_T_TYPE" />
+		<result property="blog" column="KU_T_BLOG" />
+		<result property="phoneCount_t" column="KU_T_PHONECOUNT" />
+		<result property="showAll" column="KU_T_SHOWALL" />
+		<result property="insertInfo" column="KU_INSERTINFO" />
+		<result property="showAllSub" column="KU_SHOWALLSUB" />
+		<result property="single" column="KU_SINGLE" />
+		<result property="reportTitle" column="KU_REPORTTITLE" />
+		<result property="areaSet" column="KU_AREASET" />
+		<result property="showSource" column="KU_SHOWSOURCE" />
+		<result property="sendInfo" column="KU_SENDINFO" />
+		<result property="bbsAllInfo" column="KU_BBSALLINFO" />
+		<result property="size" column="KU_SIZE" />
+		<result property="showAbs" column="KU_SHOWABS" />
+		<result property="openZS" column="KU_OPENZS" />
+		<result property="test" column="KU_TEST" />
+		<result property="zsDate" column="KU_ZSDATE" />
+		<result property="userTrend" column="KU_USERTREND" />
+		<result property="localBBSWarning" column="KU_LOCALBBSYJ" />
+		<result property="sourceType" column="KU_SOURCETYPE" />
+		<result property="userDateType" column="KU_USERDATATYPE" />
+		<result property="openedZSUser" column="KU_OPENEDZSUSER" />
+		<result property="sound" column="KU_SOUND" />
+		<result property="zfWords" column="KU_ZFWORDS" />
+		<result property="setReport" column="KU_SETREPORT" />
+		<result property="showReport" column="KU_SHOWREPORT" />
+		<result property="setAbstract" column="KU_SETABSTRACT" />
+		<result property="classify" column="KU_CLASSIFY" />
+		<result property="orderSubjectTJ" column="KU_ORDERZTTJ" />
+		<result property="zsTime" column="KU_ZSTIME" />
+		<result property="syTime" column="KU_SYTIME" />
+		<result property="tryTime" column="KU_TRYTIME" />
+		<result property="repeat" column="KU_REPEAT" />
+		<result property="homeQuery" column="KU_HOMEQUERY" />
+		<result property="weixinCheck" column="KU_WEIXINCHECK" />
+		<result property="openHighSet" column="KU_OPENHIGHSET" />
+		<result property="weixinNumCount" column="KU_WEIXINNUMCOUNT" />
+		<result property="weixinGroupCount" column="KU_WEIXINGROUPCOUNT" />
+		<result property="qqcount" column="KU_QQCOUNT" />
+		<result property="zqRubbish" column="KU_ZQRUBBISH" />
+		<result property="warningTime" column="KU_YJTIME" />
+		<result property="sale" column="KU_SALE" />
+		<result property="maint" column="KU_MAINT" />
+		<result property="isZSQY" column="KU_ISZXQY" />
+		<result property="isWF" column="KU_ISWF" />
+		<result property="version" column="KU_VERSION" />
+		<result property="changeVersion" column="KU_CHANGEVERSION" />
+		<result property="commonSubjectSendOpen" column="KU_COMMZT" />
+		
+		<collection property="configInfo" column="KU_ID" select="com.zhxg.yqzj.entities.v1.UserConfig.getUserConfigByUserId"/>
+	</resultMap>
+	<resultMap id="userArtificialWaringInfo" type="User" extends="userInfo">
+		<collection property="artificialWaringSubjects" column="KU_ID" select="com.zhxg.yqzj.entities.v1.Subject.getArtificialWaringSubjectList"/>
+	</resultMap>
+	<!-- 查询所有用户，默认10条 -->
+	<select id="getUsers" resultMap="userInfo">
+		SELECT
+			*
+		FROM
+			yqms2.WK_T_USER a,
+			yqms2.WK_T_USERSERVICE b
+		WHERE
+			a.ku_id = b.ku_id
+	</select>
+	<!-- 根据kuId查询用户详情 -->
+	<select id="getUserByKuId" resultMap="userInfo">
+		SELECT
+			*
+		FROM
+			yqms2.WK_T_USER a,
+			yqms2.WK_T_USERSERVICE b
+		WHERE
+			a.KU_ID = b.KU_ID
+		AND
+			a.KU_ID = #{userid}
+	</select>
+	
+	<select id="getUserArtificialWaringSubjects" resultMap="userArtificialWaringInfo">
+		SELECT
+			*
+		FROM
+			yqms2.WK_T_USER
+		WHERE 
+			KU_ID = #{userid}
+	</select>
+	
+	<resultMap type="java.util.Map" id="userMap">
+        <result property="userName" column="KU_LID" />
+        <result property="password" column="KU_PASSWD" />
+    </resultMap> 
+	
+	<select id="getUser" resultMap="userMap">
+        SELECT
+            KU_LID,KU_PASSWD
+        FROM
+            yqms2.WK_T_USER
+        WHERE 
+            KU_LID = #{kulid}
+    </select>
+    
+    <select id="getUserByThirdId" resultMap="userMap">
+        SELECT
+            KU_ID,KU_LID,KU_PASSWD,KU_SEX
+        FROM
+            yqms2.WK_T_USER             
+        WHERE 
+            KU_ID = (select KU_ID from yqms2.WK_T_USERBASEINFO where KU_TYPE='KU_THIRDID' and KU_VALUE= #{thirdId})
+    </select>
+    
+    <select id="checkFirstLogin" resultType = "java.util.Map">
+        SELECT 
+		    KU_VALUE
+		FROM
+		    WK_T_USERBASEINFO
+		WHERE
+		    KU_ID = #{userid} AND KU_TYPE = 'FIRST_LOGIN';
+    </select>
+    
+    <update id="confirmAlert">
+        <![CDATA[
+            INSERT INTO 
+                WK_T_USERBASEINFO(ku_id,ku_type,ku_value) 
+            VALUES 
+                (#{userid},'FIRST_LOGIN','1') 
+            ON DUPLICATE KEY UPDATE 
+                ku_value='1'
+            ]]>
+     </update>
+     
+     <select id="getAgentId" parameterType="java.util.Map" resultType="String">
+		SELECT
+			u.KD_ID
+		FROM
+			WK_T_USER u,
+			WK_T_AGENTS a
+		WHERE
+			u.KD_ID = a.KA_ID
+		AND u.ku_id = #{_KUID}
+	</select>
+	
+	<!-- 根据kuId查询最新用户详情 -->
+	<select id="getNewUserByKuId" resultType="java.util.HashMap">
+		<![CDATA[
+		SELECT
+			a.KU_NAME,
+			a.KU_PHONE,
+			a.KU_SEX,
+			b.KU_KEYWORDNUM,
+			b.KU_INDUSTRY,
+			c.province_id,
+			c.city_id
+		FROM
+			yqms2.WK_T_USER a,
+			yqms2.WK_T_USERSERVICE b,
+			yqms2.WK_T_USER_AREA_NEW c
+		WHERE
+			a.KU_ID = b.KU_ID
+		AND 
+			a.KU_ID = c.ku_id
+		AND
+			a.KU_ID = #{kuId}
+		AND 
+			b.KU_USERSTATUS < '3'
+		]]>
+	</select>
+	
+	<resultMap type="java.util.Map" id="customerIdMap">
+        <result property="customerId" column="KU_VALUE" />
+    </resultMap> 
+	
+	<select id="selectCustomerId" resultMap = "customerIdMap">
+        SELECT 
+            KU_VALUE
+        FROM
+            WK_T_USERBASEINFO
+        WHERE
+            KU_ID = #{userid} AND KU_TYPE = 'SSO_YQMSCUSTOMER_ID';
+    </select>
+    
+    <resultMap type="java.util.Map" id="agentsAppInfoMap">
+        <result property="appName" column="APP_NAME" />
+        <result property="picInfo" column="PIC_INFO" />
+        <result property="fbAddress" column="KR_FBADDRESS" />
+        <result property="aid" column="AID" />
+    </resultMap> 
+    
+    <select id="getAgentsAppInfo" resultMap = "agentsAppInfoMap">
+		SELECT
+		    APP_NAME,
+		    PIC_INFO,
+		    AID,
+		    (
+		        SELECT
+		            KR_FBADDRESS
+		        FROM
+		            WK_T_UPDATERECORD
+		        WHERE
+		            KA_UUID = #{platform}
+		        ORDER BY
+		            KR_CTIME DESC
+		        LIMIT 1
+		    ) AS KR_FBADDRESS
+		FROM
+		    WK_T_AGENT_APP
+		WHERE
+		    APP_PLATFORM = #{platform}
+		LIMIT 1
+    </select>   
+    
+    <select id="getUserSubcribeStatus" parameterType="java.util.Map" resultType="int">
+ 		   SELECT 
+ 		   		KU_DAYREPORT
+ 		   FROM
+ 		   		WK_T_USERSERVICE
+ 		   WHERE 
+ 		   		KU_ID = #{_KUID}
+    </select>
+    
+    <update id="updateUserSubcribeStatus" parameterType="java.util.Map">
+ 		   UPDATE
+    			WK_T_USERSERVICE
+    		SET
+    			KU_DAYREPORT = #{status }
+			WHERE
+				KU_ID = #{_KUID}
+    </update>
+    
+    
+    <select id="getUserReceiveTime" parameterType="java.util.Map" resultType="string">
+ 		   SELECT 
+ 		   		KU_DAYREPORTTIME
+ 		   FROM
+ 		   		WK_T_USERSERVICE
+ 		   WHERE 
+ 		   		KU_ID = #{_KUID}
+    </select>
+    
+    <update id="updateUserReceiveTime" parameterType="java.util.Map">
+    		UPDATE
+    			WK_T_USERSERVICE
+    		SET
+    			KU_DAYREPORTTIME = #{receiveTime}
+			WHERE
+				KU_ID = #{_KUID}
+    </update>
+    
+    <update id="setUserReportCondition" parameterType="java.util.Map">
+ 		   UPDATE
+    			WK_T_USERSERVICE
+    		SET
+    			KU_REPORT_CONDITION = #{condition}
+			WHERE
+				KU_ID = #{_KUID}
+    </update>
+    
+    <select id="getUserReportCondition" parameterType="java.util.Map" resultType="string">
+ 		   SELECT 
+ 		   		KU_REPORT_CONDITION
+ 		   FROM
+ 		   		WK_T_USERSERVICE
+ 		   WHERE 
+ 		   		KU_ID = #{_KUID}
+    </select>
+</mapper>

@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.Warning">
+	
+	<resultMap id="warning" type="Warning">
+		<id property="uuid" column="KS_UUID" />
+		<result property="infoId" column="KV_UUID" />
+		<result property="warningTime" column="KS_TIME" />
+		<result property="warningType" column="KS_AOTO" /> 
+		<result property="title" column="KS_TITLE" />
+		<result property="publishTime" column="KS_CTIME" />
+		<result property="sourceType" column="kS_SOURCETYPE" />
+		<result property="abstracts" column="KV_ABSTRACT" />
+		<result property="webname" column="KV_WEBNAME" />
+		<result property="keyword" column="KV_ARG1" />
+		<result property="author" column="KV_ARG3" />
+		<result property="url" column="KS_URL" />
+	</resultMap>
+	<select id="getIndexWaringList" resultMap="warning">
+		SELECT
+			*
+		FROM
+			${_DBNAME}.YQZB_T_YJXX 		
+
+		WHERE 
+ 		<choose> 
+ 	        <when test="isArtificial"> 
+ 	            KS_AOTO = 5 
+ 	        </when> 
+	        <otherwise>
+	            KS_AOTO != 5 
+	        </otherwise> 
+ 	    </choose> 
+
+	    order by KS_TIME desc				
+	</select>
+
+	<resultMap type="java.util.Map" id="waringCountSize">
+		<result property="waringCount" column="waringCount"  javaType="int" jdbcType="INTEGER"/>  
+		<result property="waringTotal" column="waringTotal"  javaType="int" jdbcType="INTEGER"/>  
+	</resultMap>  
+	
+	
+	<select id="getWaringCount" resultMap="waringCountSize">
+		SELECT 
+			COUNT(1) AS waringCount,1000 AS waringTotal
+		FROM 
+			${_DBNAME}.YQZB_T_YJXX 
+		WHERE 
+			KS_STATE != 'x' 
+		AND 
+		    KS_AOTO = 5 	
+		AND
+			SUBSTR(KS_CTIME,1,8) = ${ksTime};
+			
+	</select>
+	
+	<!-- 查询预警列表 -->
+	<select id="selectList" parameterType = "java.util.Map" resultType = "java.util.Map">
+		SELECT    tb.KS_UUID,
+			      tb.KV_UUID,
+		          tb.KU_ID,
+		          tb.KS_INFO,
+		          tb.KS_TITLE,
+		          tb.KS_CTIME,
+		          tb.KV_ABSTRACT,
+		          tb.KV_WEBNAME,
+		          tb.KS_URL,
+		          tb.KV_CONTENT
+		FROM      ${_DBNAME}.YQZB_T_YJXX tb
+		WHERE  1 = 1
+		<if test="kvIdList != null and kvIdList != ''">
+			AND tb.KV_UUID IN
+			<foreach collection="kvIdList" index="index" item="item" open="(" separator="," close=")">        
+				#{item}    
+			</foreach>
+		</if>
+		<if test="kuId != null and kuId != ''">
+			AND tb.KU_ID = #{kuId}
+		</if>
+	</select>
+	<!-- 添加预警 -->
+    <insert id="insertYqyjSelective" parameterType="java.util.Map" >
+	    insert into ${_DBNAME}.YQZB_T_YJXX
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="KS_UUID != null" >
+	        KS_UUID,
+	      </if>
+	      <if test="KV_UUID != null" >
+	        KV_UUID,
+	      </if>
+	      <if test="KU_ID != null" >
+	        KU_ID,
+	      </if>
+	      <if test="KS_TYPE != null" >
+	        KS_TYPE,
+	      </if>
+	      <if test="KS_INFO != null" >
+	        KS_INFO,
+	      </if>
+	      <if test="KS_TIME != null" >
+	        KS_TIME,
+	      </if>
+	      <if test="KS_STATE != null" >
+	        KS_STATE,
+	      </if>
+	      <if test="KS_FLAG != null" >
+	        KS_FLAG,
+	      </if>
+	      <if test="KS_CHECK != null" >
+	        KS_CHECK,
+	      </if>
+	      <if test="KS_CHECKDEL != null" >
+	        KS_CHECKDEL,
+	      </if>
+	      <if test="KS_LATE != null" >
+	        KS_LATE,
+	      </if>
+	      <if test="KS_AOTO != null" >
+	        KS_AOTO,
+	      </if>
+	      <if test="KS_SIMHASH != null" >
+	        KS_SIMHASH,
+	      </if>
+	      <if test="KS_MUSTKEYS != null" >
+	        KS_MUSTKEYS,
+	      </if>
+	      <if test="KS_SHOULDKEYS != null" >
+	        KS_SHOULDKEYS,
+	      </if>
+	      <if test="KS_EVENTKEYS != null" >
+	        KS_EVENTKEYS,
+	      </if>
+	      <if test="KS_YJKID != null" >
+	        KS_YJKID,
+	      </if>
+	      <if test="KS_CALINFO != null" >
+	        KS_CALINFO,
+	      </if>
+	      <if test="KS_USERCOMMYJTYPE != null" >
+	        KS_USERCOMMYJTYPE,
+	      </if>
+	      <if test="KS_USERWEIBOYJTYPE != null" >
+	        KS_USERWEIBOYJTYPE,
+	      </if>
+	      <if test="KS_CALCOMMYJ != null" >
+	        KS_CALCOMMYJ,
+	      </if>
+	      <if test="KS_CALZHUTIYJ != null" >
+	        KS_CALZHUTIYJ,
+	      </if>
+	      <if test="KS_TITLE != null" >
+	        KS_TITLE,
+	      </if>
+	      <if test="KS_CTIME != null" >
+	        KS_CTIME,
+	      </if>
+	      <if test="KS_SOURCETYPE != null" >
+	        kS_SOURCETYPE,
+	      </if>
+	      <if test="KS_INFOTYPE != null" >
+	        KS_INFOTYPE,
+	      </if>
+	      <if test="KS_KID != null" >
+	        KS_KID,
+	      </if>
+	      <if test="KV_ABSTRACT != null" >
+	        KV_ABSTRACT,
+	      </if>
+	      <if test="KV_ORIENTATION != null" >
+	        KV_ORIENTATION,
+	      </if>
+	      <if test="KS_USERLOCALBBSTYPE != null" >
+	        KS_USERLOCALBBSTYPE,
+	      </if>
+	      <if test="KS_KIDALLOWOURCETYPE != null" >
+	        KS_KIDALLOWOURCETYPE,
+	      </if>
+	      <if test="KS_UIDALLOWOURCETYPE != null" >
+	        KS_UIDALLOWOURCETYPE,
+	      </if>
+	      <if test="KS_SHIELDDATA != null" >
+	        KS_SHIELDDATA,
+	      </if>
+	      <if test="ISREAD != null" >
+	        ISREAD,
+	      </if>
+	      <if test="KV_WEBNAME != null" >
+	        KV_WEBNAME,
+	      </if>
+	      <if test="KV_ARG1 != null" >
+	        KV_ARG1,
+	      </if>
+	      <if test="KV_ARG2 != null" >
+	        KV_ARG2,
+	      </if>
+	      <if test="KV_ARG3 != null" >
+	        KV_ARG3,
+	      </if>
+	      <if test="KV_ARG4 != null" >
+	        KV_ARG4,
+	      </if>
+	      <if test="KV_ARG5 != null" >
+	        KV_ARG5,
+	      </if>
+	      <if test="KS_URL != null" >
+	        KS_URL,
+	      </if>
+	      <if test="KV_CONTENT != null" >
+	        KV_CONTENT,
+	      </if>
+	       <if test="KV_DTCTIME != null" >
+	        KV_DTCTIME,
+	      </if>
+	       <if test="KV_DTTIME != null" >
+	        KV_DTTIME,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="KS_UUID != null" >
+	        #{KS_UUID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_UUID != null" >
+	        #{KV_UUID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KU_ID != null" >
+	        #{KU_ID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_TYPE != null" >
+	        #{KS_TYPE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_INFO != null" >
+	        #{KS_INFO,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_TIME != null" >
+	        #{KS_TIME,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_STATE != null" >
+	        #{KS_STATE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_FLAG != null" >
+	        #{KS_FLAG,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_CHECK != null" >
+	        #{KS_CHECK,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_CHECKDEL != null" >
+	        #{KS_CHECKDEL,jdbcType=INTEGER},
+	      </if>
+	      <if test="KS_LATE != null" >
+	        #{KS_LATE,jdbcType=INTEGER},
+	      </if>
+	      <if test="KS_AOTO != null" >
+	        #{KS_AOTO,jdbcType=INTEGER},
+	      </if>
+	      <if test="KS_SIMHASH != null" >
+	        #{KS_SIMHASH,jdbcType=INTEGER},
+	      </if>
+	      <if test="KS_MUSTKEYS != null" >
+	        #{KS_MUSTKEYS,jdbcType=INTEGER},
+	      </if>
+	      <if test="KS_SHOULDKEYS != null" >
+	        #{KS_SHOULDKEYS,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_EVENTKEYS != null" >
+	        #{KS_EVENTKEYS,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_YJKID != null" >
+	        #{KS_YJKID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_CALINFO != null" >
+	        #{KS_CALINFO,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_USERCOMMYJTYPE != null" >
+	        #{KS_USERCOMMYJTYPE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_USERWEIBOYJTYPE != null" >
+	        #{KS_USERWEIBOYJTYPE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_CALCOMMYJ != null" >
+	        #{KS_CALCOMMYJ,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_CALZHUTIYJ != null" >
+	        #{KS_CALZHUTIYJ,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_TITLE != null" >
+	        #{KS_TITLE,jdbcType=INTEGER},
+	      </if>
+	      <if test="KS_CTIME != null" >
+	        #{KS_CTIME,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_SOURCETYPE != null" >
+	        #{KS_SOURCETYPE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_INFOTYPE != null" >
+	        #{KS_INFOTYPE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_KID != null" >
+	        #{KS_KID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_ABSTRACT != null" >
+	        #{KV_ABSTRACT,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_ORIENTATION != null" >
+	        #{KV_ORIENTATION,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_USERLOCALBBSTYPE != null" >
+	        #{KS_USERLOCALBBSTYPE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_KIDALLOWOURCETYPE != null" >
+	        #{KS_KIDALLOWOURCETYPE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_UIDALLOWOURCETYPE != null" >
+	        #{KS_UIDALLOWOURCETYPE,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_SHIELDDATA != null" >
+	        #{KS_SHIELDDATA,jdbcType=VARCHAR},
+	      </if>
+	      <if test="ISREAD != null" >
+	        #{ISREAD,jdbcType=INTEGER},
+	      </if>
+	      <if test="KV_WEBNAME != null" >
+	        #{KV_WEBNAME,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_ARG1 != null" >
+	        #{KV_ARG1,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_ARG2 != null" >
+	        #{KV_ARG2,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_ARG3 != null" >
+	        #{KV_ARG3,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_ARG4 != null" >
+	        #{KV_ARG4,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_ARG5 != null" >
+	        #{KV_ARG5,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KS_URL != null" >
+	        #{KS_URL,jdbcType=VARCHAR},
+	      </if>
+	      <if test="KV_CONTENT != null" >
+	        #{KV_CONTENT,jdbcType=LONGVARCHAR},
+	      </if>
+	      <if test="KV_DTCTIME != null" >
+	        #{KV_DTCTIME,jdbcType=TIMESTAMP},
+	      </if>
+	      <if test="KV_DTTIME != null" >
+	        #{KV_DTTIME,jdbcType=TIMESTAMP},
+	      </if>
+	    </trim>
+	  </insert>
+	  <!-- 查询预警是否添加过 -->
+      <select id="getCountByUrl" parameterType = "java.util.Map" resultType = "int">
+		SELECT
+			count(KS_URL)
+		FROM
+			${_DBNAME}.YQZB_T_YJXX
+		WHERE
+			KS_URL = #{kvUrl,jdbcType=VARCHAR}
+	</select>
+
+</mapper>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.MobileCloudCourse">
+
+	<!-- 舆情课程课件一对多 -->
+	<resultMap type="com.zhxg.yqzj.entities.v1.MobileCloudCourse" id="MobileCloudCourses">
+		<result property="id" column="id"/>
+		<result property="courseTitle" column="courseTitle"/>
+		<result property="courseSummary" column="courseSummary"/>
+		<result property="courseLectuer" column="courseLectuer"/>
+		<result property="courseReleaseTime" column="courseReleaseTime"/>
+		<result property="courseNum" column="courseNum"/>
+		<result property="coursePicUrl" column="coursePicUrl"/>
+		<result property="lectuerId" column="lectuerId"/>
+		<collection property="coursewares" ofType="MobileCloudCourseware" select="getAllCourseware" column="{coursewareId=id}"/>
+		<collection property="courseLectuers" ofType="MobileCloudCourseLectuer" select="getAllCourseLectuer" column="{lectuerId=lectuerId}"/>
+	</resultMap>
+	<select id="getAllCourse" parameterType = "java.util.Map" resultMap="MobileCloudCourses">
+	  	SELECT 
+			id,
+			courseTitle,
+			courseSummary,
+			courseLectuer,
+			courseReleaseTime,
+			courseNum ,
+			coursePicUrl,
+			lectuerId
+		FROM 
+			MobileCloudCourse
+		WHERE 
+			id = #{courseId}
+	</select>
+	<select id="getAllCourseware" parameterType="java.util.Map" resultType="MobileCloudCourseware">
+		SELECT
+			id,
+			courseId,
+			coursewareTitle,
+			coursewareVideoUrl,
+			coursewareVideoLength
+		FROM
+			MobileCloudCourseware
+		WHERE 
+			courseId = #{coursewareId}
+	</select>
+	<select id="getAllCourseLectuer" parameterType="java.util.Map" resultType="MobileCloudCourseLectuer">
+		SELECT
+			id,
+			lectuerName,
+			lectuerSummary,
+			lectuerPicUrl
+		FROM
+			MobileCloudCourseLectuer
+		WHERE 
+			id in (${lectuerId})
+	</select>
+	
+	<!-- 获取舆情课程列表 -->
+	<resultMap type="com.zhxg.yqzj.entities.v1.MobileCloudCourse" id="MobileCloudCourseList">
+		<result property="id" column="id"/>
+		<result property="courseTitle" column="courseTitle"/>
+		<result property="courseSummary" column="courseSummary"/>
+		<result property="courseLectuer" column="courseLectuer"/>
+		<result property="courseReleaseTime" column="courseReleaseTime"/>
+		<result property="courseNum" column="courseNum"/>
+		<result property="coursePicUrl" column="coursePicUrl"/>
+		<result property="lectuerId" column="lectuerId"/>
+	</resultMap>
+	<select id="getCourseList" parameterType = "java.util.Map" resultMap="MobileCloudCourseList">
+	<![CDATA[
+		SELECT 
+			id,
+			courseTitle,
+			courseSummary,
+			courseLectuer,
+			courseReleaseTime,
+			courseNum ,
+			coursePicUrl,
+			lectuerId
+		FROM 
+			MobileCloudCourse
+		WHERE
+			onlineTime <= #{onlineTime}
+	]]>
+	</select>
+	
+	<!-- 获取课件所有信息 -->
+	<resultMap type="com.zhxg.yqzj.entities.v1.MobileCloudCourse" id="MobileCloudCoursewareList">
+		<result property="id" column="id"/>
+		<result property="courseTitle" column="courseTitle"/>
+		<result property="coursePicUrl" column="coursePicUrl"/>
+		<collection property="coursewares" ofType="MobileCloudCourseware" select="getCoursewareList" column="{coursewareId=id}"/>
+	</resultMap>
+	<select id="getAllCoursewareInfo" parameterType = "java.util.Map" resultMap="MobileCloudCoursewareList">
+	  	SELECT 
+			id,
+			courseTitle,
+			coursePicUrl
+		FROM 
+			MobileCloudCourse
+		WHERE 
+			id = #{courseId}
+	</select>
+	<select id="getCoursewareList" parameterType="java.util.Map" resultType="MobileCloudCourseware">
+		SELECT
+			id,
+			courseId,
+			coursewareTitle,
+			coursewareVideoUrl,
+			coursewareVideoLength
+		FROM
+			MobileCloudCourseware
+		WHERE 
+			courseId = #{coursewareId}
+	</select>
+</mapper>

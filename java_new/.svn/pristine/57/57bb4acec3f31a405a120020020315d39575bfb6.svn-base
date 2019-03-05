@@ -1,0 +1,602 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.Log">
+
+
+	<resultMap type="Log" id="log">
+		<result property="infoUuid" column="KR_UUID"/>             <!-- 信息主键id -->
+		<result property="kvUuid" column="KV_UUID"/>    <!-- 信息id -->
+		<result property="infoType" column="KR_INFOTYPE"/>    <!-- 信息对应类型：0用户1行业2区域 -->
+		<result property="subjectId" column="KR_KEYWORDID"/>    <!-- 专题UUID -->
+		<result property="userId" column="KR_UID"/>    <!-- 用户ID -->
+		<result property="infoState" column="KR_STATE"/>    <!-- 信息状态 -->
+		<result property="publishTime" column="KR_CTIME"/>    <!-- 发布时间 -->
+		<result property="isLocal" column="KR_ISLOCAL"/>    <!-- 境内外信息：0境内1境外 -->
+		<result property="warningFlag" column="KV_FLAG"/>    <!-- 记录预警发送标识, 弹出框是否点过0 未点过（默认）1 点过--> 
+		<result property="isAccurate" column="ARG1"/>    <!-- 是否精准信息 -->
+		<result property="forwardSource" column="ARG2"/>    <!-- 转发来源（原网站） -->
+		<result property="forwardStatusUrl" column="ARG3"/>    <!-- 未知 -->
+		<result property="keyWord" column="KEYWORD"/>    <!-- 关键词 -->
+		<result property="orientation" column="ORIENTATION"/>    <!-- 倾向性：0：未处理1：正向2：负向  -->
+		<result property="isWarning" column="ISYJ"/>    <!-- 是否预警信息：0 否1 是 -->
+		<result property="isRead" column="ISREAD"/>    <!-- 是否已读信息：0 否1 是 -->
+		<result property="isAttention" column="ISMYATTENTION"/>    <!-- 是否加入我的关注：0 否1 是 -->
+		<result property="isFeedback" column="ISFEEDBACK"/>    <!-- 是否已经反馈：0 否1 是 -->
+		<result property="praiseCount" column="ARG4"/>    <!-- 点赞数 -->
+		<result property="forwardCount" column="ARG5"/>    <!-- 转发数 -->
+		<result property="visitCount" column="KV_VISITCOUNT"/>    <!-- 访问数（阅读数） -->
+		<result property="replyCount" column="KV_REPLY"/>    <!-- 回复数（评论数） -->
+		<result property="simhash" column="KV_SIMHASH"/>    <!-- Simhash -->
+		<result property="webName" column="KV_WEBNAME"/>    <!-- 网站名称 -->
+		<result property="insertTime" column="KV_COLLECTTIME"/>    <!-- 入库时间 -->
+		<result property="sourceType" column="KV_SOURCETYPE"/>    <!-- 来源类型 01新闻02论坛03博客04微博05平媒06微信07视频08长微博09 APP10评论99其他-->
+		<result property="hotValue" column="KV_HOT"/>    <!-- 热度值 -->
+		<result property="isAbrupt" column="KV_ISTF"/>    <!-- 是否突发事件 1是突发 -->
+		<result property="isHotEvents" column="KV_ISRD"/>    <!-- 是否热点事件 -->
+		<result property="isUserMain" column="ISUSERMAIN"/>    <!-- 是否为用户的主信息，多专题同信息主为0，从为1 -->
+		<result property="isMainSimhash" column="ISMAINSIMHASH"/>    <!-- 是否为用户下相似信息的主信息，主为0，从为1 -->
+		<result property="title" column="KV_TITLE"/>    <!-- 标题 -->
+		<result property="losttime" column="LOSTTIME"/>    <!-- 信息保留日期 -->
+		<result property="orienLevel" column="KV_ORIEN_LEVEL"/>    <!-- 倾向性等级 -->
+		<result property="noiseState" column="NOISESTATUS"/>    <!-- 垃圾分类 -->
+		<result property="summary" column="KV_ABSTRACT"/>    <!-- 摘要内容 -->
+		<result property="infoUrl" column="KV_URL"/>    <!-- 原文链接 -->
+		<result property="redWord" column="KV_KEYWORD"/>    <!-- 标红字段 -->
+		<result property="authorPic" column="KV_WBAUTHORPIC"/>    <!-- 微博作者头像地址 -->
+		<result property="author" column="KV_AUTHOR"/>    <!-- 作者、发帖人 -->
+		<result property="clloectTime" column="KR_GTIME"/>    <!-- 采集时间 -->
+		<result property="isPic" column="KV_ISPIC"/>    <!-- 是否有图片 0没有 1有 -->
+		<result property="isVideo" column="KV_ISVIDEO"/>    <!-- 是否有视频 0 没有 1 有 -->
+		<result property="imgUrl" column="KV_IMGURL"/>    <!-- 图片url -->
+		<result property="vedioUrl" column="KV_VEDEOURL"/>    <!-- 视频url -->
+		<result property="isMatchTitle" column="KV_TITLEMATCH"/>    <!-- 标题是否匹配 -->
+		<result property="mustWordBeeline" column="KV_MUSTWORDMININDEX"/>    <!-- 地域词距离文章开头最短距离 -->
+		<result property="keyWordsBeeline" column="KV_KEYWORDSMININDEX"/>    <!-- 关键词间最短距离 -->
+		<result property="isOnlyLocal" column="KV_ONLYLOCAL"/>    <!-- 是否唯一地域 -->
+		<result property="microIsEarlyData" column="KV_WEIBOOVERTIME"/>    <!-- 微博是否是早期数据 -->
+		<result property="microSignLocalNoise" column="KV_WEIBOSIGNLOCALNOISE"/>    <!-- 排除微博签到数据后，是否匹配用户专题 -->
+		<result property="microTopicNoise" column="KV_WEIBOTOPICNOISE"/>    <!-- 排除微博话题数据后，是否匹配用户专题 -->
+		<result property="microAtNoise" column="KV_WEIBOATNOISE"/>    <!-- 排除微博@数据后，是否匹配用户专题 -->
+		<result property="currentTime" column="KV_DTTIME"/>    <!-- 获取系统当前时间 -->
+		<result property="webChannel" column="KV_WEBCHANNEL"/>    <!-- 频道名称 -->
+		<result property="hotWord" column="KV_HOTKEYWORD"/>    <!-- 热词 -->
+		<result property="domain" column="KV_DOMAIN"/>   <!-- 域名  -->
+		<result property="siteId" column="KV_SITEID"/>    <!-- 配置ID -->
+		<result property="warningInfoState" column="KV_INFORMATIONSTATE"/>    <!-- 平台预警信息状态 -->
+		<result property="importanceWeight" column="IMPORTANCE_WEIGHT"/>    <!-- 重要度 -->
+		<result property="extendField" column="KV_EXTEND_FIELD"/>    <!-- 扩展JSON字段 -->
+		<result property="inputDataType" column="KV_INPUTDATATYPE"/>    <!-- 1:系统录入 2：手动录入 -->
+		
+		<result property="warningInfoType" column="KS_TYPE"/>    <!-- 4 日常报警信息5 话题挖掘提醒 -->
+		<result property="warningInfo" column="KS_INFO"/>    <!-- 标预警时弹框内容 -->
+		<result property="warningTime" column="KS_TIME"/>    <!-- 预警时间 -->
+		<result property="isCheck" column="KS_CHECK"/>    <!-- 是否审核0 未审核（默认）1 审核 -->
+		<result property="isdelete" column="KS_CHECKDEL"/>    <!-- 是否删除 默认为1 -->
+		<result property="warningType" column="KS_AOTO"/>    <!-- 是否为超时信息1 公共预警2 关键词预警3 人工预警4 推送 -->
+		
+		<result property="content" column="KV_CONTENT"/>    <!-- 内容 -->
+		
+		<result property="type" column="type"/>    <!-- 模块类型 1舆情浏览 2 舆情预警 -->		
+		<result property="operationUserId" column="operation_userid"/>    <!-- 操作用户id -->		
+		<result property="operationIp" column="operation_ip"/>    <!-- 操作ip -->
+		<result property="operationTime" column="operation_time"/>    <!-- 操作时间 -->
+		
+	</resultMap>
+	
+	
+	<sql id="baseYqllParams">
+		KR_UUID,KV_UUID,KR_INFOTYPE,KR_KEYWORDID,KR_UID,KR_STATE,KR_CTIME,KR_ISLOCAL,KV_FLAG,ARG1,ARG2,ARG3,KEYWORD,ORIENTATION,
+		ISYJ,ISREAD,ISMYATTENTION,ISFEEDBACK,ARG4,ARG5,KV_VISITCOUNT,KV_REPLY,KV_SIMHASH,KV_WEBNAME,KV_COLLECTTIME,KV_SOURCETYPE,
+		KV_HOT,KV_ISTF,KV_ISRD,ISUSERMAIN,ISMAINSIMHASH,KV_TITLE,LOSTTIME,KV_ORIEN_LEVEL,NOISESTATUS,KV_ABSTRACT,KV_URL,KV_KEYWORD,
+		KV_WBAUTHORPIC,KV_AUTHOR,KR_GTIME,KV_ISPIC,KV_ISVIDEO,KV_IMGURL,KV_VEDEOURL,KV_TITLEMATCH,KV_MUSTWORDMININDEX,KV_KEYWORDSMININDEX,
+		KV_ONLYLOCAL,KV_WEIBOOVERTIME,KV_WEIBOSIGNLOCALNOISE,KV_WEIBOTOPICNOISE,KV_WEIBOATNOISE,KV_DTTIME,KV_WEBCHANNEL,
+		KV_HOTKEYWORD,KV_DOMAIN,KV_SITEID,KV_INFORMATIONSTATE,IMPORTANCE_WEIGHT,KV_EXTEND_FIELD,KV_INPUTDATATYPE
+	</sql>
+	
+	
+	<sql id="baseWarningParams">
+		`KS_UUID` AS KR_UUID,`KV_UUID`,`KU_ID` AS KR_UID,`KS_TYPE` ,`KS_INFO` ,`KS_TIME` ,`KS_STATE` AS KR_STATE,`KS_FLAG` AS KV_FLAG,
+		`KS_CHECK` ,`KS_CHECKDEL` ,`KS_LATE` AS ARG1,`KS_AOTO` ,`KS_SIMHASH` AS KV_SIMHASH,`KS_TITLE` AS KV_TITLE,`KS_CTIME` AS KR_CTIME,
+  		`kS_SOURCETYPE` AS KV_SOURCETYPE,`KS_INFOTYPE` AS KR_INFOTYPE,`KS_KID` AS KR_KEYWORDID,`KV_ABSTRACT` ,`KV_ORIENTATION` AS ORIENTATION,
+  		`ISREAD`,`KV_WEBNAME` ,`KV_ARG1` AS KEYWORD,`KV_ARG2` AS IMPORTANCE_WEIGHT,`KV_ARG3` AS KV_AUTHOR,`KS_URL` AS KV_URL,`KV_CONTENT` ,`KV_DTTIME`
+	</sql>
+	
+	
+	<select id="getYqllListByKruuid" parameterType = "java.util.Map" resultMap="log">
+			SELECT 
+				<include refid="baseYqllParams"></include>
+			FROM 
+				${_OTHER_DBNAME}.WK_T_VALIDATION_REF
+			WHERE  
+				KR_UUID = #{uuid}
+	</select>
+	
+	
+	<select id="getWarningListByKsuuid" parameterType = "java.util.Map" resultMap="log">
+			SELECT 
+				<include refid="baseWarningParams"></include>
+			FROM 
+				${_DBNAME}.YQZB_T_YJXX
+			WHERE  
+				KS_UUID = #{uuid}
+	</select>
+	
+	<!-- 获取详情内容超出7天 -->
+	<select id="getDetailInfoCnt_other"  parameterType = "java.util.Map" resultType = "String">
+		SELECT
+			KV_CONTENT
+		FROM
+			${_OTHER_DBNAME}.WK_T_VALIDATION_INFOCNT
+		WHERE
+			KV_UUID = #{kvUuid}
+	</select>
+	
+	<!-- 获取详情内容7天内 -->
+	<select id="getDetailInfoCnt_info"  parameterType = "java.util.Map" resultType = "String">
+		SELECT
+			kv_content AS KV_CONTENT
+		FROM
+			WK_T_VALIDATION_INFOCNT_${dbTableTime}
+		WHERE
+			KV_UUID = #{kvUuid}
+	</select>
+
+	<insert id="insertLog" parameterType="com.zhxg.yqzj.entities.v1.Log">
+    	insert into java_copylink_log
+		    <trim prefix="(" suffix=")" suffixOverrides="," >
+		      <if test="infoUuid != null" >
+		        info_uuid,
+		      </if>
+		      <if test="kvUuid != null" >
+		        kv_uuid,
+		      </if>
+		      <if test="infoType != null" >
+		        info_type,
+		      </if>
+		      <if test="subjectId != null" >
+		        subject_id,
+		      </if>
+		      <if test="userId != null" >
+		        user_id,
+		      </if>
+		      <if test="infoState != null" >
+		        info_state,
+		      </if>
+		      <if test="publishTime != null" >
+		        publish_time,
+		      </if>
+		      <if test="isLocal != null" >
+		        is_local,
+		      </if>
+		      <if test="warningFlag != null" >
+		        warning_flag,
+		      </if>
+		      <if test="isAccurate != null" >
+		        is_accurate,
+		      </if>
+		      <if test="forwardSource != null" >
+		        forward_source,
+		      </if>
+		      <if test="forwardStatusUrl != null" >
+		        forward_status_url,
+		      </if>
+		      <if test="keyWord != null" >
+		        key_word,
+		      </if>
+		      <if test="orientation != null" >
+		        orientation,
+		      </if>
+		      <if test="isWarning != null" >
+		        is_warning,
+		      </if>
+		      <if test="isRead != null" >
+		        is_read,
+		      </if>
+		      <if test="isAttention != null" >
+		        is_attention,
+		      </if>
+		      <if test="isFeedback != null" >
+		        is_feedback,
+		      </if>
+		      <if test="praiseCount != null" >
+		        praise_count,
+		      </if>
+		      <if test="forwardCount != null" >
+		        forward_count,
+		      </if>
+		       <if test="visitCount != null" >
+		        visit_count,
+		      </if>
+		       <if test="replyCount != null" >
+		        reply_count,
+		      </if>
+		       <if test="simhash != null" >
+		        simhash,
+		      </if>
+		       <if test="webName != null" >
+		        web_name,
+		      </if>
+		       <if test="insertTime != null" >
+		        insert_time,
+		      </if>
+		       <if test="sourceType != null" >
+		        source_type,
+		      </if>
+		       <if test="hotValue != null" >
+		        hot_value,
+		      </if>
+		       <if test="isAbrupt != null" >
+		        is_abrupt,
+		      </if>
+		       <if test="isHotEvents != null" >
+		        is_hot_events,
+		      </if>
+		       <if test="isUserMain != null" >
+		        is_user_main,
+		      </if>
+		       <if test="isMainSimhash != null" >
+		        is_main_simhash,
+		      </if>
+		       <if test="title != null" >
+		        title,
+		      </if>
+		       <if test="losttime != null" >
+		        lost_time,
+		      </if>
+		       <if test="orienLevel != null" >
+		        orien_level,
+		      </if>
+		       <if test="noiseState != null" >
+		        noise_state,
+		      </if>
+		       <if test="summary != null" >
+		        summary,
+		      </if>
+		       <if test="infoUrl != null" >
+		        info_url,
+		      </if>
+		       <if test="redWord != null" >
+		        red_word,
+		      </if>
+		       <if test="authorPic != null" >
+		        author_pic,
+		      </if>
+		       <if test="author != null" >
+		        author,
+		      </if>
+		       <if test="clloectTime != null" >
+		        clloect_time,
+		      </if>
+		       <if test="isPic != null" >
+		        is_pic,
+		      </if>
+		       <if test="isVideo != null" >
+		        is_video,
+		      </if>
+		       <if test="imgUrl != null" >
+		        img_url,
+		      </if>
+		       <if test="vedioUrl != null" >
+		        vedio_url,
+		      </if>
+		       <if test="isMatchTitle != null" >
+		        is_match_title,
+		      </if>
+		       <if test="mustWordBeeline != null" >
+		        must_word_beeline,
+		      </if>
+		       <if test="keyWordsBeeline != null" >
+		        key_words_beeline,
+		      </if>
+		       <if test="isOnlyLocal != null" >
+		        is_only_local,
+		      </if>
+		       <if test="microIsEarlyData != null" >
+		        micro_is_earlydata,
+		      </if>
+		       <if test="microSignLocalNoise != null" >
+		        micro_sign_local_noise,
+		      </if>
+		        <if test="microTopicNoise != null" >
+		        micro_topic_noise,
+		      </if>
+		        <if test="microAtNoise != null" >
+		        micro_at_noise,
+		      </if>
+		        <if test="currentTime != null" >
+		        `current_time`,
+		      </if>
+		        <if test="webChannel != null" >
+		        web_channel,
+		      </if>
+		        <if test="hotWord != null" >
+		        hot_word,
+		      </if>
+		        <if test="domain != null" >
+		        domain,
+		      </if>
+		        <if test="siteId != null" >
+		        site_id,
+		      </if>
+		        <if test="warningInfoState != null" >
+		        warning_info_state,
+		      </if>
+		      <if test="importanceWeight != null" >
+		        importance_weight,
+		      </if>
+		        <if test="extendField != null" >
+		        extend_field,
+		      </if>
+		        <if test="inputDataType != null" >
+		        input_data_type,
+		      </if>
+		        <if test="warningInfoType != null" >
+		        warning_info_type,
+		      </if>
+		        <if test="warningInfo != null" >
+		        warning_info,
+		      </if>
+		        <if test="warningTime != null" >
+		        warning_time,
+		      </if>
+		        <if test="isCheck != null" >
+		        is_check,
+		      </if>
+		        <if test="isdelete != null" >
+		        is_delete,
+		      </if>
+		      <if test="warningType != null" >
+		        warning_type,
+		      </if>
+		        <if test="content != null" >
+		        content,
+		      </if>
+		        <if test="type != null" >
+		        type,
+		      </if>
+		        <if test="operationUserId != null" >
+		        operation_userid,
+		      </if>
+		        <if test="operationUserIp != null" >
+		        operation_ip,
+		      </if>
+		      <if test="operationUserName != null" >
+		        operation_user_name,
+		      </if>
+		      <if test="functionType != null" >
+		        function_type,
+		      </if>
+		        operation_time,
+		        
+		    </trim>
+		    <trim prefix="values (" suffix=")" suffixOverrides="," >
+		      <if test="infoUuid != null" >
+		        #{infoUuid},
+		      </if>
+		      <if test="kvUuid != null" >
+		        #{kvUuid},
+		      </if>
+		      <if test="infoType != null" >
+		        #{infoType},
+		      </if>
+		      <if test="subjectId != null" >
+		        #{subjectId},
+		      </if>
+		      <if test="userId != null" >
+		        #{userId},
+		      </if>
+		      <if test="infoState != null" >
+		        #{infoState},
+		      </if>
+		      <if test="publishTime != null" >
+		        #{publishTime},
+		      </if>
+		      <if test="isLocal != null" >
+		        #{isLocal},
+		      </if>
+		      <if test="warningFlag != null" >
+		        #{warningFlag},
+		      </if>
+		      <if test="isAccurate != null" >
+		        #{isAccurate},
+		      </if>
+		      <if test="forwardSource != null" >
+		        #{forwardSource},
+		      </if>
+		      <if test="forwardStatusUrl != null" >
+		        #{forwardStatusUrl},
+		      </if>
+		      <if test="keyWord != null" >
+		        #{keyWord},
+		      </if>
+		      <if test="orientation != null" >
+		        #{orientation},
+		      </if>
+		      <if test="isWarning != null" >
+		        #{isWarning},
+		      </if>
+		      <if test="isRead != null" >
+		        #{isRead},
+		      </if>
+		      <if test="isAttention != null" >
+		        #{isAttention},
+		      </if>
+		      <if test="isFeedback != null" >
+		        #{isFeedback},
+		      </if>
+		      <if test="praiseCount != null" >
+		        #{praiseCount},
+		      </if>
+		      <if test="forwardCount != null" >
+		        #{forwardCount},
+		      </if>
+		       <if test="visitCount != null" >
+		        #{visitCount},
+		      </if>
+		       <if test="replyCount != null" >
+		        #{replyCount},
+		      </if>
+		       <if test="simhash != null" >
+		        #{simhash},
+		      </if>
+		       <if test="webName != null" >
+		        #{webName},
+		      </if>
+		       <if test="insertTime != null" >
+		        #{insertTime},
+		      </if>
+		       <if test="sourceType != null" >
+		        #{sourceType},
+		      </if>
+		       <if test="hotValue != null" >
+		        #{hotValue},
+		      </if>
+		       <if test="isAbrupt != null" >
+		        #{isAbrupt},
+		      </if>
+		       <if test="isHotEvents != null" >
+		        #{isHotEvents},
+		      </if>
+		       <if test="isUserMain != null" >
+		        #{isUserMain},
+		      </if>
+		       <if test="isMainSimhash != null" >
+		        #{isMainSimhash},
+		      </if>
+		       <if test="title != null" >
+		        #{title},
+		      </if>
+		       <if test="losttime != null" >
+		        #{losttime},
+		      </if>
+		       <if test="orienLevel != null" >
+		        #{orienLevel},
+		      </if>
+		       <if test="noiseState != null" >
+		        #{noiseState},
+		      </if>
+		       <if test="summary != null" >
+		        #{summary},
+		      </if>
+		       <if test="infoUrl != null" >
+		        #{infoUrl},
+		      </if>
+		       <if test="redWord != null" >
+		        #{redWord},
+		      </if>
+		       <if test="authorPic != null" >
+		        #{authorPic},
+		      </if>
+		       <if test="author != null" >
+		        #{author},
+		      </if>
+		       <if test="clloectTime != null" >
+		        #{clloectTime},
+		      </if>
+		       <if test="isPic != null" >
+		        #{isPic},
+		      </if>
+		       <if test="isVideo != null" >
+		        #{isVideo},
+		      </if>
+		       <if test="imgUrl != null" >
+		        #{imgUrl},
+		      </if>
+		       <if test="vedioUrl != null" >
+		        #{vedioUrl},
+		      </if>
+		       <if test="isMatchTitle != null" >
+		        #{isMatchTitle},
+		      </if>
+		       <if test="mustWordBeeline != null" >
+		        #{mustWordBeeline},
+		      </if>
+		       <if test="keyWordsBeeline != null" >
+		        #{keyWordsBeeline},
+		      </if>
+		       <if test="isOnlyLocal != null" >
+		        #{isOnlyLocal},
+		      </if>
+		       <if test="microIsEarlyData != null" >
+		        #{microIsEarlyData},
+		      </if>
+		       <if test="microSignLocalNoise != null" >
+		        #{microSignLocalNoise},
+		      </if>
+		        <if test="microTopicNoise != null" >
+		        #{microTopicNoise},
+		      </if>
+		        <if test="microAtNoise != null" >
+		        #{microAtNoise},
+		      </if>
+		        <if test="currentTime != null" >
+		        #{currentTime},
+		      </if>
+		        <if test="webChannel != null" >
+		        #{webChannel},
+		      </if>
+		        <if test="hotWord != null" >
+		        #{hotWord},
+		      </if>
+		        <if test="domain != null" >
+		        #{domain},
+		      </if>
+		        <if test="siteId != null" >
+		        #{siteId},
+		      </if>
+		        <if test="warningInfoState != null" >
+		        #{warningInfoState},
+		      </if>
+		      <if test="importanceWeight != null" >
+		        #{importanceWeight},
+		      </if>
+		        <if test="extendField != null" >
+		        #{extendField},
+		      </if>
+		        <if test="inputDataType != null" >
+		        #{inputDataType},
+		      </if>
+		        <if test="warningInfoType != null" >
+		        #{warningInfoType},
+		      </if>
+		        <if test="warningInfo != null" >
+		        #{warningInfo},
+		      </if>
+		        <if test="warningTime != null" >
+		        #{warningTime},
+		      </if>
+		        <if test="isCheck != null" >
+		        #{isCheck},
+		      </if>
+		        <if test="isdelete != null" >
+		        #{isdelete},
+		      </if>
+		      <if test="warningType != null" >
+		        #{warningType},
+		      </if>
+		       <if test="content != null" >
+		         #{content},
+		      </if>
+		        <if test="type != null" >
+		         #{type},
+		      </if>
+		        <if test="operationUserId != null" >
+		         #{operationUserId},
+		      </if>
+		        <if test="operationUserIp != null" >
+		         #{operationUserIp},
+		      </if>
+		      <if test="operationUserName != null" >
+		         #{operationUserName},
+		      </if>
+		        <if test="functionType != null" >
+		         #{functionType},
+		      </if>
+		         now(),
+		    </trim>
+ 	 </insert>
+	
+	
+	
+</mapper>

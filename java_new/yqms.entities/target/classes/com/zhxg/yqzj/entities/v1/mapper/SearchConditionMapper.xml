@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.SearchCondition">
+
+    <resultMap id="searchCondition" type="SearchCondition">
+        <result property="id" column="ID"/>
+        <result property="kuId" column="KU_ID" />
+        <result property="ksCondition" column="KS_CONDITION" />
+        <result property="kkId" column="KK_ID" />
+        <result property="ksType" column="KS_TYPE" />
+    </resultMap>
+	
+	<!-- 添加上传数据 -->
+	<insert id="insertCondition" parameterType="com.zhxg.yqzj.entities.v1.SearchCondition">
+		<selectKey keyProperty="id" resultType="int" >  
+            select LAST_INSERT_ID()  
+        </selectKey> 
+		<![CDATA[
+        INSERT INTO 
+            `yqms2`.`WK_T_SEARCH_CONDITION` (
+            `KU_ID`, 
+            `KS_CONDITION`, 
+            `KK_ID`,  
+            `KS_TYPE`)
+        VALUES (
+            #{kuId},
+            #{ksCondition},
+            #{kkId},
+            #{ksType})
+            ]]>
+	</insert>
+	<!-- 查询筛选条件列表 -->
+	<select id="selectList" parameterType = "java.util.Map" resultType = "java.util.Map">
+		SELECT    tb.ID,
+			      tb.KU_ID,
+		          tb.KK_ID,
+		          tb.KS_CONDITION,
+		          tb.KS_TYPE
+		FROM      yqms2.WK_T_SEARCH_CONDITION tb
+		WHERE  1 = 1
+		<if test="kuId != null and kuId != ''">
+			AND tb.KU_ID = #{kuId}
+		</if>
+		<if test="ksType != null and ksType != ''">
+			AND tb.KS_TYPE = #{ksType}
+		</if>
+		ORDER BY tb.C_TIME DESC 
+		LIMIT 1
+	</select>
+</mapper>

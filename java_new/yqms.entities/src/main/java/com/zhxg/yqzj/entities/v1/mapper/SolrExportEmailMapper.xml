@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.UserMailExport">
+
+    <resultMap id="userMailExport" type="UserMailExport">
+        <result property="kmUuid" column="KM_UUID"/>
+        <result property="kuId" column="KU_ID" />
+        <result property="kmName" column="KM_NAME" />
+        <result property="kmEmail" column="KM_EMAIL" />
+        <result property="kmTime" column="KM_TIME" />
+        <result property="kmSelected" column="KM_SELECTED" />
+    </resultMap>
+	
+	<!-- 查询导出邮箱列表 -->
+	<select id="getExportEmail" parameterType = "java.util.Map" resultType = "userMailExport">
+		SELECT    tb.KM_UUID,
+			      tb.KU_ID,
+			      tb.KM_NAME,
+		          tb.KM_EMAIL,
+		          tb.KM_TIME,
+		          tb.KM_SELECTED
+		FROM      WK_T_USERMAIL_EXPORT tb
+		WHERE  1 = 1
+		AND tb.KU_ID = #{_KUID}
+		ORDER BY tb.KM_TIME DESC 
+	</select>
+	<!-- 获取个人信息邮箱 -->
+     <select id="getUserEmail" parameterType = "java.util.Map" resultType="String">
+		SELECT
+			KU_EMAIL
+		FROM
+			WK_T_USER
+		WHERE 
+			KU_ID = #{_KUID,jdbcType=INTEGER}
+	</select>
+	
+	<!-- 添加上传数据 -->
+	<insert id="setExportEmail" parameterType="java.util.Map">
+		<![CDATA[
+        INSERT INTO 
+            `yqms2`.`WK_T_USERMAIL_EXPORT` (
+            `KM_UUID`, 
+            `KU_ID`, 
+            `KM_EMAIL`,  
+            `KM_TIME`,
+            `KM_SELECTED`)
+        VALUES (
+            #{kmUuid},
+            #{_KUID},
+            #{kmEmail},
+            #{kmTime},
+            #{kmSelected})
+            ]]>
+	</insert>
+	<!-- 查询邮箱是否添加 -->
+	<select id="getCountByEmail" parameterType = "java.util.Map" resultType = "int">
+		SELECT
+			count(KM_EMAIL)
+		FROM
+			`WK_T_USERMAIL_EXPORT`
+		WHERE
+			KM_EMAIL = #{kmEmail,jdbcType=VARCHAR}
+		AND KU_ID = #{_KUID}
+	</select>
+	
+	
+	<!-- 查询导出邮箱列表 -->
+	<select id="getUserDefaultEmail" parameterType = "java.util.Map" resultType = "userMailExport">
+		SELECT    KM_UUID,
+			      KU_ID,
+			      KM_NAME,
+		          KM_EMAIL,
+		          KM_TIME,
+		          KM_SELECTED
+		FROM      WK_T_USERMAIL_EXPORT 
+		WHERE  1 = 1
+		AND KU_ID = #{_KUID}
+		<if test="emailIdArr != null">
+			AND KM_UUID IN
+			<foreach collection="emailIdArr" index="index" open="(" separator="," close=")" item="item">
+				#{item}
+			</foreach>
+			UNION ALL
+				(select *
+				FROM
+					WK_T_USERMAIL_EXPORT
+				WHERE
+					KU_ID = #{_KUID}
+				AND KM_UUID NOT IN 
+				<foreach collection="emailIdArr" index="index" open="(" separator="," close=")" item="item1">
+					#{item1}
+				</foreach>
+				ORDER BY KM_TIME DESC)
+		</if>
+		<if test="emailIdArr == null">
+			ORDER BY KM_TIME DESC 
+		</if>
+	</select>
+</mapper>

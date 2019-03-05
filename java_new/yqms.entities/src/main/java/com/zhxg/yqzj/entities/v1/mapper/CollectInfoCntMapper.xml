@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.CollectInfoCnt">
+
+	<!-- 查询收藏夹及内词 -->
+	<resultMap id="collectCntInfo" type="CollectInfoCnt">
+		<result property="cntId" column="cntId" />
+		<result property="userId" column="userId" />
+		<result property="contentId" column="collectId" />
+		<result property="contentName" column="contentName" />
+	</resultMap>
+	
+	<!-- 根据用户ID查询用户配置信息 -->
+	<select id="selectList" parameterType="java.lang.String" resultMap="collectCntInfo">
+		SELECT
+			cntId,
+			userId,
+			collectId,
+			contentName
+		FROM
+			SOLR_T_COLLECTINFOCNT
+		WHERE 
+			collectId = #{collectId,jdbcType=VARCHAR}
+		AND
+			userId = #{_KUID,jdbcType=VARCHAR}
+	</select>
+	
+    <!-- 添加收藏夹内词 -->
+	<insert id="insertCollectInfoCnt" parameterType="java.util.Map">
+		<selectKey keyProperty="id" resultType="int" >  
+            select LAST_INSERT_ID()  
+        </selectKey> 
+	    insert into SOLR_T_COLLECTINFOCNT
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+		  <if test="_KUID != null" >
+		        userId,
+		  </if>
+		  <if test="cntId != null" >
+		        cntId,
+		  </if>
+	      <if test="contentId != null" >
+	        collectId,
+	      </if>
+	      <if test="contentName != null" >
+	        contentName,
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="_KUID != null" >
+	        #{_KUID,jdbcType=VARCHAR},
+	      </if>
+	      <if test="cntId != null" >
+	        #{cntId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="contentId != null" >
+	        #{contentId,jdbcType=VARCHAR},
+	      </if>
+	      <if test="contentName != null" >
+	        #{contentName,jdbcType=VARCHAR},
+	      </if>
+	    </trim>
+  </insert>
+  <!-- 修改收藏夹信息 -->
+  <update id="updateCollectInfoCnt" parameterType="java.util.Map" >
+    update SOLR_T_COLLECTINFOCNT
+    <set >
+      <if test="contentName != null" >
+        contentName = #{contentName,jdbcType=INTEGER},
+      </if>
+    </set>
+    where cntId = #{cntId,jdbcType=VARCHAR}
+    and  userId = #{_KUID,jdbcType=VARCHAR}
+  </update>
+  <!-- 删除收藏夹信息 -->
+   <delete id="deleteCollectInfoCnt" parameterType="java.util.Map" >
+    delete from SOLR_T_COLLECTINFOCNT
+    where cntId = #{cntId,jdbcType=VARCHAR}
+    and  userId = #{_KUID,jdbcType=VARCHAR}
+  </delete>
+  <!-- 查重 -->
+  <select id="getCountByName" parameterType = "java.util.Map" resultType = "int">
+		SELECT
+			count(contentName)
+		FROM
+			`SOLR_T_COLLECTINFOCNT`
+		WHERE
+			contentName = #{contentName,jdbcType=VARCHAR}
+		AND collectId = #{contentId,jdbcType=VARCHAR}
+		AND userId = #{_KUID}
+	</select>
+	<!-- 删除收藏夹对应词 -->
+   <delete id="deleteCollectInfoCntAll" parameterType="java.util.Map" >
+    delete from SOLR_T_COLLECTINFOCNT
+    where collectId = #{collectId,jdbcType=VARCHAR}
+    and  userId = #{_KUID,jdbcType=VARCHAR}
+  </delete>
+</mapper>

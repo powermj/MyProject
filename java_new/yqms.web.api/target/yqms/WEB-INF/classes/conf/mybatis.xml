@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- 全部配置说明 
+        <setting name="cacheEnabled" value="true" /> 
+        <setting name="lazyLoadingEnabled" value="true" /> 
+        <setting name="multipleResultSetsEnabled" value="true" /> 
+        <setting name="useColumnLabel" value="true" /> 
+        <setting name="useGeneratedKeys" value="false" /> 
+        定义映射的等级：NONE, PARTIAL, FULL 
+        <setting name="autoMappingBehavior" value="PARTIAL" /> 
+        配置默认的执行器 
+        <setting name="defaultExecutorType" value="SIMPLE" /> 
+        <setting name="defaultStatementTimeout" value="25" /> 
+        允许在嵌套语句中使用行分界
+         <setting name="safeRowBoundsEnabled" value="false" /> 
+         <setting name="mapUnderscoreToCamelCase" value="false" /> 
+         <setting name="localCacheScope" value="SESSION" /> 
+         <setting name="jdbcTypeForNull" value="OTHER" /> 
+         <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString" /> -->
+
+    <settings>
+        <setting name="cacheEnabled" value="true" />
+        <setting name="lazyLoadingEnabled" value="true" />
+        <setting name="multipleResultSetsEnabled" value="true" />
+        <setting name="useColumnLabel" value="true" />
+        <setting name="defaultExecutorType" value="REUSE" />
+        <setting name="defaultStatementTimeout" value="25000" />
+        <setting name="mapUnderscoreToCamelCase" value="true" />
+    </settings>
+<!--    <plugins> -->
+<!--        <plugin interceptor="org.xpandaframework.base.curd.page.OffsetLimitInterceptor"> -->
+<!--            <property name="dialectClass" value="org.xpandaframework.base.curd.page.dialect.MySQLDialect" /> -->
+<!--        </plugin> -->
+<!--    </plugins> -->
+<!--    <typeAliases> -->
+<!--        <package name="com.zhxg.yqms.entities.v1" /> -->
+<!--    </typeAliases> -->
+</configuration>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.VersionUpgrade">
+	
+	<!-- app版本更新 -->
+	<select id="updateAppVersion" parameterType="java.util.Map" resultType="java.util.Map">
+	
+			SELECT
+				a.KR_EDITIONNO,a.KR_ISUPDATE,a.KR_MESSAGE,a.KR_URL,a.KR_FORCE_VER
+			FROM
+				yqms2.WK_T_UPDATERECORD_ZJ a
+			WHERE
+				a.ka_uuid = #{platform} AND 
+				a.kr_start = 1
+			AND FIND_IN_SET(
+				(
+					SELECT
+						b.KU_USERGENRE
+					FROM
+						yqms2.WK_T_USERSERVICE b
+					WHERE
+						b.ku_id = #{userId}
+				),
+				a.KR_USERTYPE
+			)
+			AND FIND_IN_SET(
+				(
+					SELECT
+						b.KU_USERSTATUS
+					FROM
+						yqms2.WK_T_USERSERVICE b
+					WHERE
+						b.ku_id = #{userId}
+				),
+				a.KR_USERSTATE
+			)
+			ORDER BY
+				a.kr_utime DESC
+			LIMIT 1
+		
+	</select>	
+    
+    
+</mapper>
+

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="yqms.app.api" />
+        <module name="yqms.core" />
+        <module name="yqms.dao" />
+        <module name="yqms.entities" />
+        <module name="yqms.service" />
+        <module name="yqms.web.api" />
+        <module name="yqms.web.fgw" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="yqms" target="1.8" />
+      <module name="yqms.app.api" target="1.8" />
+      <module name="yqms.core" target="1.8" />
+      <module name="yqms.dao" target="1.8" />
+      <module name="yqms.entities" target="1.8" />
+      <module name="yqms.service" target="1.8" />
+      <module name="yqms.web.api" target="1.8" />
+      <module name="yqms.web.fgw" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

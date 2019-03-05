@@ -1,0 +1,39 @@
+package com.zhxg.fgw.service.impl;
+
+import com.zhxg.fgw.entity.po.SysRole;
+import com.zhxg.fgw.entity.po.SysUser;
+import com.zhxg.fgw.service.UserService;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * 用户及授权等相关管理
+ */
+@Service("rhUserServiceImpl")
+public class UserServiceImpl implements UserService {
+    @Resource
+    private JdbcTemplate jdbcTemplate;
+
+    @Override
+    public List<SysRole> findAll() {
+        return jdbcTemplate.query("select * from sys_user", BeanPropertyRowMapper.newInstance(SysRole.class));
+    }
+
+    @Override
+    public Map<String, Object> queryUserById(String userId) {
+        SysUser sysUser = jdbcTemplate.queryForObject("select * from sys_user where user_id = ? ", SysUser.class);
+        List<String> stringList = jdbcTemplate.query("select * from sys_role ", BeanPropertyRowMapper.newInstance(String.class));
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("sysUser",sysUser);
+        resultMap.put("roleList",stringList);
+        return resultMap;
+    }
+
+//    public void get
+}

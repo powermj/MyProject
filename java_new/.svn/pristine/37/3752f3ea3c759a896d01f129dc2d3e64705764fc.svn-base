@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.TopicEventRegion">
+
+    <resultMap id="topicEventRegion" type="TopicEventRegion">
+        <result property="knType" column="KN_TYPE"/>
+        <result property="typeNum" column="TYPENUM"/>
+    </resultMap>
+    
+    <select id="getMediaSourceTypeNum" parameterType="java.util.Map" resultMap="topicEventRegion">
+	    <![CDATA[
+	    	SELECT
+				COUNT(T1.KN_TYPE) AS TYPENUM,
+				T1.KN_TYPE
+			FROM
+				${_OTHER_DBNAME}.TOPIC_${eventId} T1
+			WHERE 
+				KN_CTIME >= #{beginTime}
+			AND KN_CTIME < #{endTime}
+			GROUP BY T1.KN_TYPE
+		]]>
+    </select>
+	
+	<resultMap id="allMediaInfo" type="TopicEventRegion">
+		<result property="uuId" column="UUID"/>
+		<result property="knSite" column="KN_SITE"/>
+		<result property="webNameDomain" column="WEBNAMEDOMAIN"/>
+		<result property="siteNum" column="SITENUM"/>
+		<result property="knType" column="KN_TYPE"/>
+		<result property="regionId" column="REGIONID"/>
+	</resultMap>
+	<select id="getAllMediaInfo" parameterType="java.util.Map" resultMap="allMediaInfo">
+		SELECT
+			T1.UUID,
+			T1.KN_SITE,
+			T1.WEBNAMEDOMAIN,
+			COUNT(T1.KN_SITE) AS SITENUM,
+			T1.KN_TYPE,
+			T2.REGION_ID AS REGIONID
+		FROM
+			${_OTHER_DBNAME}.TOPIC_${eventId} T1
+		LEFT JOIN (
+			SELECT
+				KV_UUID,
+				MAX(REGION_ID) REGION_ID
+			FROM
+				${_OTHER_DBNAME}.TOPIC_REGION_${eventId}
+			GROUP BY
+				KV_UUID
+		) T2 
+		ON T1.UUID = T2.KV_UUID
+		<if test="regionIdsArr != null and regionIdsArr.length != 0">
+			JOIN 
+				${_OTHER_DBNAME}.TOPIC_REGION_${eventId} T3 
+			ON 
+				T1.UUID = T3.KV_UUID
+		</if>
+		WHERE
+			T1.KN_CTIME IS NOT NULL
+		<if test="sourceTypesArr != null and sourceTypesArr.length != 0">
+			AND T1.KN_TYPE IN 
+			<foreach collection="sourceTypesArr" index="index" item="sourceType" open="(" separator="," close=")">
+				#{sourceType}
+			</foreach>
+		</if>
+		<if test="regionIdsArr != null and regionIdsArr.length != 0">
+			AND T3.REGION_ID IN 
+			<foreach collection="regionIdsArr" index="index" item="regionId" open="(" separator="," close=")">
+				#{regionId}
+			</foreach>
+		</if>
+		<![CDATA[
+			AND KN_CTIME >= #{beginTime}
+			AND KN_CTIME < #{endTime}
+		]]>
+		GROUP BY T1.KN_SITE,T1.KN_TYPE
+		ORDER BY SITENUM DESC
+	</select>
+</mapper>

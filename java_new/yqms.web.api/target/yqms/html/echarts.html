@@ -1,0 +1,213 @@
+<html>
+<meta charset="UTF-8">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<head>
+<script src="../lib/jquery-1.8.3.min.js"></script>
+<script src="../lib/echarts.min.js"></script>
+</head>
+<body>
+	<!-- 因为我需要生成两个图片 所以定义了两个echarts -->
+	<!-- 为 ECharts 准备一个具备大小（宽高）的 DOM  -->
+	<div id="lineEcharts" style="height: 300px; width: 410px"></div>
+	<div id="barEcharts" style="height: 300px; width: 410px"></div>
+</body>
+<script>
+	var lineEcharts = null;
+	var barEcharts = null;
+	$(function() {
+		// 基于准备好的dom，初始化echarts实例
+		lineEcharts = echarts.init(document.getElementById('lineEcharts'));
+		barEcharts = echarts.init(document.getElementById('barEcharts'));
+		pieEcharts = echarts.init(document.getElementById('pieEcharts'));
+	});
+	
+	
+	function showpieImg(surfData) {
+        var json = eval(surfData);
+        option = {
+                title : {
+                    text: '某站点用户访问来源',
+                    x:'center'
+                },
+                legend: {
+                    orient : 'vertical',
+                    x : 'left',
+                    data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+                },
+                calculable : true,
+                series : [
+                    {
+                        name:'访问来源',
+                        type:'pie',
+                        radius : '55%',
+                        center: ['50%', '60%'],
+                        data:[
+                            {value:335, name:'直接访问'},
+                            {value:310, name:'邮件营销'},
+                            {value:234, name:'联盟广告'},
+                            {value:135, name:'视频广告'},
+                            {value:1548, name:'搜索引擎'}
+                        ]
+                    }
+                ]
+            };
+        if (surfData.length <= 0) {
+            alert("暂时没有查询到监测数据");
+            pieEcharts.clear();
+            return;
+        } else {
+            option.series = json.series;
+            option.title.text = json.title;
+            option.legend.data = json.legend;
+            pieEcharts.setOption(option);
+
+        }
+    }
+
+	function showbarImg(surfData) {
+		var json = eval(surfData);
+		option = {
+			title : {
+				text : '某地区蒸发量和降水量'
+			},
+			legend : {
+				data : [ '蒸发量', '降水量' ]
+			},
+			calculable : true,
+			xAxis : {
+				type : 'category',
+				data : [ '1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月',
+						'10月', '11月', '12月' ]
+			} ,
+			yAxis : [ {
+				type : 'value'
+			} ],
+			series : [
+					{
+						name : '蒸发量',
+						type : 'bar',
+						data : [ 2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2,
+								32.6, 20.0, 6.4, 3.3 ]
+					},
+					{
+						name : '降水量',
+						type : 'bar',
+						data : [ 2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2,
+								48.7, 18.8, 6.0, 2.3 ]
+					} ]
+		};
+		if (surfData.length <= 0) {
+			alert("暂时没有查询到监测数据");
+			barEcharts.clear();
+			return;
+		} else {
+			option.series = json.series;
+			option.title.text = json.title;
+			option.legend.data = json.legend;
+			option.xAxis.data = json.xAxis;
+			barEcharts.setOption(option);
+
+		}
+	}
+
+	function showlineImg(surfData) {
+		var json = eval(surfData);
+		var option = {
+			title : {
+				text : '倾向性'
+			},
+			legend : {
+				data : [ '邮件营销', '联盟广告', '视频广告', '直接访问', '搜索引擎' ]
+			},
+			grid : {
+				left : '3%',
+				right : '4%',
+				bottom : '3%',
+				containLabel : true
+			},
+			xAxis : {
+				type : 'category',
+				boundaryGap : false,
+				data : [ '周一', '周二', '周三', '周四', '周五', '周六', '周日' ]
+			},
+			yAxis : {
+				type : 'value'
+			},
+			series : [ {
+				name : '邮件营销',
+				type : 'line',
+				stack : '总量',
+				data : [ 120, 132, 101, 134, 90, 230, 210 ]
+			}, {
+				name : '联盟广告',
+				type : 'line',
+				stack : '总量',
+				data : [ 220, 182, 191, 234, 290, 330, 310 ]
+			}, {
+				name : '视频广告',
+				type : 'line',
+				stack : '总量',
+				data : [ 150, 232, 201, 154, 190, 330, 410 ]
+			}, {
+				name : '直接访问',
+				type : 'line',
+				stack : '总量',
+				data : [ 320, 332, 301, 334, 390, 330, 320 ]
+			}, {
+				name : '搜索引擎',
+				type : 'line',
+				stack : '总量',
+				data : [ 820, 932, 901, 934, 1290, 1330, 1320 ]
+			} ]
+		}
+		if (surfData.length <= 0) {
+			alert("暂时没有查询到监测数据");
+			lineEcharts.clear();
+			return;
+		} else {
+			option.series = json.series;
+			option.title.text = json.title;
+			option.legend.data = json.legend;
+			option.xAxis.data = json.xAxis;
+			lineEcharts.setOption(option);
+
+		}
+	}
+
+	function returnEchartImg(echartObj) {
+		return echartObj.getDataURL();
+	}
+
+	var SIGN_REGEXP = /([yMdhsm])(\1*)/g;
+	var DEFAULT_PATTERN = 'yyyy-MM-dd';
+
+	function formatData(date, pattern) {
+		pattern = pattern || DEFAULT_PATTERN;
+		return pattern.replace(SIGN_REGEXP, function($0) {
+			switch ($0.charAt(0)) {
+			case 'y':
+				return padding(date.getFullYear(), $0.length);
+			case 'M':
+				return padding(date.getMonth() + 1, $0.length);
+			case 'd':
+				return padding(date.getDate(), $0.length);
+			case 'w':
+				return date.getDay() + 1;
+			case 'h':
+				return padding(date.getHours(), $0.length);
+			case 'm':
+				return padding(date.getMinutes(), $0.length);
+			case 's':
+				return padding(date.getSeconds(), $0.length);
+			}
+		});
+	};
+	function padding(s, len) {
+		var len = len - (s + '').length;
+		for (var i = 0; i < len; i++) {
+			s = '0' + s;
+		}
+		return s;
+	};
+</script>
+</html>

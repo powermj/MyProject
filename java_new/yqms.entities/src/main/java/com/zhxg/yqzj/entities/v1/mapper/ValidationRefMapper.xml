@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.ValidationRef">
+
+	<resultMap type="ValidationRef" id="validationRefKey">
+		<result property="isYj" column="ISYJ"/>
+		<result property="isRead" column="ISREAD"/>
+		<result property="isMyAttention" column="ISMYATTENTION"/>
+		<result property="kvSimhash" column="KV_SIMHASH"/>
+		<result property="krCtime" column="KR_CTIME"/>
+		<result property="kvKeyWord" column="KV_KEYWORD"/>
+		<result property="kvVedeoUrl" column="KV_VEDEOURL"/>
+		<result property="kvWebChannel" column="KV_WEBCHANNEL"/>
+		<result property="arg2" column="ARG2"/>
+		<result property="kvSourceType" column="KV_SOURCETYPE"/>
+		<result property="kvInputDataType" column="KV_INPUTDATATYPE"/>
+		<result property="kvUuid" column="KV_UUID"/>
+		<result property="kvTitle" column="KV_TITLE"/>
+		<result property="kvUrl" column="KV_URL"/>
+		<result property="kvSite" column="KV_WEBNAME"/>
+		<result property="kvAuthor" column="KV_AUTHOR"/>
+		<result property="kvAbstract" column="KV_ABSTRACT"/>
+		<result property="kvReply" column="KV_REPLY"/>
+	</resultMap>
+	<!-- 获取信息详细关键词 -->
+	<select id="getDetailRefInfo_self" parameterType = "java.util.Map" resultMap="validationRefKey">
+		SELECT 
+			orientation,
+ 			ISYJ,
+ 			ISREAD,
+ 			ISMYATTENTION,
+ 			KV_SIMHASH,
+ 			KR_CTIME,
+ 			KV_KEYWORD,
+ 			KV_VEDEOURL,
+ 			KV_WEBCHANNEL,
+ 			ARG2,
+ 			KV_SOURCETYPE,
+ 			CAST(KV_INPUTDATATYPE AS CHAR) AS KV_INPUTDATATYPE,
+ 			KV_UUID,
+ 			KV_TITLE,
+ 			KV_WEBNAME,
+ 			KV_AUTHOR,
+ 			KV_ABSTRACT,
+ 			KV_REPLY,
+ 			KV_URL
+		FROM
+			${_DBNAME}.WK_T_VALIDATION_REF
+		WHERE
+			KR_UID = #{_KUID,jdbcType=VARCHAR}
+		AND KR_UUID = #{krUuid}
+	</select>
+	
+	<resultMap type="java.lang.String" id="simHashList">
+		<result property="kvSimhash" column="KV_SIMHASH" jdbcType="VARCHAR"/>
+	</resultMap>
+	<!-- 获取simHash批量修改倾向性 -->
+	<select id="getDetailRefInfos" parameterType = "java.util.Map" resultMap="simHashList">
+		SELECT 
+			KV_SIMHASH
+		FROM
+			${_DBNAME}.WK_T_VALIDATION_REF
+		WHERE
+			KR_UID = #{_KUID,jdbcType=VARCHAR}
+		<if test="krUuidArr != null and krUuidArr.length != 0">
+			AND KR_UUID IN
+			<foreach collection="krUuidArr" index="index" item="krUuid" open="(" separator="," close=")">
+					#{krUuid}
+			</foreach>
+		</if>
+	</select>
+	
+	<resultMap type="ValidationRef" id="validationRefSameInfo">
+		<result property="kvUuid" column="KV_UUID"/>
+		<result property="kvTitle" column="KV_TITLE"/>
+		<result property="krCtime" column="KR_CTIME"/>
+		<result property="kvSite" column="KV_WEBNAME"/>
+		<result property="kvSourceType" column="KV_SOURCETYPE"/>
+	</resultMap>
+	
+	<!-- 获取相同信息 -->
+	<select id="getDetailSameInfo_self" parameterType = "java.util.Map" resultMap="validationRefSameInfo">
+		SELECT
+			KV_UUID,
+			KV_TITLE,
+			KR_CTIME,
+			KV_WEBNAME,
+			KV_SOURCETYPE
+		FROM
+			${_DBNAME}.WK_T_VALIDATION_REF
+		WHERE
+			KV_SIMHASH = #{kvSimhash}
+		GROUP BY
+			KV_URL
+		ORDER BY
+			KR_CTIME 
+		DESC
+		LIMIT 100
+	</select>
+	
+	<!-- 获取转载数 -->
+	<select id="getReloadNumber_self" parameterType = "java.util.Map" resultType = "int">
+		SELECT
+			COUNT(DISTINCT KV_URL) AS NUM
+		FROM
+			${_DBNAME}.WK_T_VALIDATION_REF
+		WHERE
+			KV_SIMHASH = #{kvSimhash}
+	</select>
+	
+	<!-- 获取详情内容7天内 -->
+	<select id="getDetailInfoCnt_info"  parameterType = "java.util.Map" resultType = "String">
+		SELECT
+			CASE
+		WHEN (
+			kv_content_xml = ''
+			OR kv_content_xml IS NULL
+		) THEN
+			kv_content
+		ELSE
+			kv_content_xml
+		END AS KV_CONTENT
+		FROM
+			WK_T_VALIDATION_INFOCNT_${DBTABLETIME}
+		WHERE
+			KV_UUID = #{kvUuid}
+	</select>
+	<resultMap type="ValidationRef" id="validationRefContent">
+		<result property="kvContentXml" column="kv_content_xml"/>
+		<result property="kvContent" column="kv_content"/>
+	</resultMap>
+	<select id="getInfoContent_info"  parameterType = "java.util.Map" resultMap="validationRefContent">
+		SELECT
+			kv_content_xml,
+			kv_content
+		FROM
+			WK_T_VALIDATION_INFOCNT_${DBTABLETIME}
+		WHERE
+			KV_UUID = #{kvUuid}
+	</select>
+	
+	<resultMap type="ValidationRef" id="infoRefContent">
+		<result property="kvContentXml" column="KV_CONTENT_XML"/>
+		<result property="kvContent" column="KV_CONTENT"/>
+	</resultMap>	
+	
+	<!-- 获取详情内容超出7天 -->
+	<select id="getDetailInfoCnt_self"  parameterType = "java.util.Map" resultMap = "infoRefContent">
+		SELECT
+			KV_CONTENT,
+			KV_CONTENT_XML
+		FROM
+			${_DBNAME}.WK_T_VALIDATION_INFOCNT
+		WHERE
+			KV_UUID = #{kvUuid}
+	</select>
+	
+	<resultMap type="ValidationRef" id="validationRefKeyWordId">
+		<result property="krKeyWordId" column="KR_KEYWORDID"/>
+	</resultMap>
+	<!-- 获取专题ID -->
+	<select id="getDetailRelatedTopicId_self" parameterType = "java.util.Map" resultMap="validationRefKeyWordId">
+		SELECT 
+			KR_KEYWORDID
+		FROM
+			${_DBNAME}.WK_T_VALIDATION_REF
+		WHERE
+			KR_UID = #{_KUID,jdbcType=VARCHAR}
+		AND KV_UUID = #{kvUuid}
+	</select>
+	
+	<update id="updateYqllOrgiation" parameterType="java.util.Map">
+		UPDATE 
+			${_DBNAME}.WK_T_VALIDATION_REF
+		SET
+			ORIENTATION = #{orientation}
+		WHERE 
+			KV_SIMHASH IN 
+		 <if test="simHashList != null and simHashList != '' ">
+				<foreach collection="simHashList" item="simHash" open="(" separator="," close=")">
+					#{simHash}
+				</foreach>		 		
+		 </if>
+	</update>
+	<!-- 获取地域详情内容 -->
+	<select id="getDetailRegionInfoCnt"  parameterType = "java.util.Map" resultType = "String">
+		SELECT
+			CASE
+		WHEN (
+			kv_content_xml = ''
+			OR kv_content_xml IS NULL
+		) THEN
+			kv_content
+		ELSE
+			kv_content_xml
+		END AS KV_CONTENT
+		FROM
+			WK_T_VALIDATION_INFOCNT_${DBTABLETIME}
+		WHERE
+			KV_UUID = #{kvUuid}
+	</select>
+	
+	<!-- 获取分享详情内容7天内 -->
+	<select id="getDetailShareInfoCnt_info"  parameterType = "java.util.Map" resultType = "String">
+		SELECT
+			CASE
+		WHEN (
+			kv_content_xml = ''
+			OR kv_content_xml IS NULL
+		) THEN
+			kv_content
+		ELSE
+			kv_content_xml
+		END AS KV_CONTENT
+		FROM
+			WK_T_VALIDATION_INFOCNT_${DBTABLETIME}
+		WHERE
+			KV_UUID = #{kvUuid}
+	</select>
+	
+	<select id="getShareInfoContent_info"  parameterType = "java.util.Map" resultMap="validationRefContent">
+		SELECT
+			kv_content
+			kv_content_xml
+		FROM
+			WK_T_VALIDATION_INFOCNT_${DBTABLETIME}
+		WHERE
+			KV_UUID = #{kvUuid}
+	</select>
+	<!-- 获取分享详情内容超出7天 -->
+	<select id="getDetailShareInfoCnt_other"  parameterType = "java.util.Map" resultType = "String">
+		SELECT
+			KV_CONTENT
+		FROM
+			${_OTHER_DBNAME}.WK_T_VALIDATION_INFOCNT
+		WHERE
+			KV_UUID = #{kvUuid}
+	</select>
+</mapper>

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/security 
+		http://www.springframework.org/schema/security/spring-security-3.2.xsd
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/data/jpa 
+		http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+	<bean id="jedisConnFactory"
+		class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+		<property name="hostName" value="192.168.185.85" />
+		<property name="port" value="6379" />
+		<property name="password" value="" />
+		<property name="database" value="2" />
+		<property name="usePool" value="false" />
+	</bean>
+
+	<bean id="stringRedisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">
+		<property name="connectionFactory" ref="jedisConnFactory" />
+	</bean>
+	<bean id="redisUtil" class="com.zhxg.framework.base.utils.RedisUtil">
+		<property name="stringRedisTemplate" ref="stringRedisTemplate" />
+	</bean>
+	
+	
+	<bean id="jedisPool1ConnFactory"
+        class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <property name="hostName" value="192.168.185.85" />
+        <property name="port" value="6379" />
+        <property name="password" value="" />
+        <property name="database" value="2" />
+        <property name="usePool" value="false" />
+    </bean>
+
+    <bean id="stringRedisTemplate1" class="org.springframework.data.redis.core.StringRedisTemplate">
+        <property name="connectionFactory" ref="jedisPool1ConnFactory" />
+    </bean>
+    <bean id="redisPoolUtil" class="com.zhxg.framework.base.utils.RedisPoolUtil">
+        <property name="stringRedisTemplate1" ref="stringRedisTemplate1" />
+    </bean>
+</beans>

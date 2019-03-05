@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.TopicWeiBoAuthor">
+
+	<resultMap id="topicWeiBoAuthor" type="TopicWeiBoAuthor">
+		<id property="id" column="id" />
+		<result property="infoid" column="UUID" />
+		<result property="name" column="name" />
+		<result property="gender" column="gender" />
+		<result property="region" column="region" />
+		<result property="verified" column="verified" />
+		<result property="verifiedType" column="verified_type" />
+		<result property="verifiedIdentity" column="verified_identity" />
+		<result property="verifiedLevel" column="verified_level" />
+		<result property="userType" column="user_type" />
+		<result property="importance" column="importance" />
+		<result property="influence" column="influence" />
+		<result property="friendsCount" column="friends_count" />
+		<result property="fansCount" column="fans_count" />
+		<result property="statusesCount" column="statuses_count" />
+		<result property="count" column="count" />
+		<result property="orientation" column="knOrientation" />
+		<result property="avatarUrl" column="avatar_url" />
+		<result property="ctime" column="KN_CTIME" />
+		<result property="title" column="KN_TITLE" />
+		<result property="url" column="KN_URL" />
+		<result property="content" column="KN_CONTENT" />
+		<result property="site" column="KN_SITE" />
+		<result property="transport" column="KV_TRANSPORT" />
+		<result property="ktName" column="KT_NAME"/>
+	</resultMap>
+	     <!--分组统计水军-->
+    <select id="getNavyAnalysisCount" resultMap="topicWeiBoAuthor" parameterType="java.util.Map">
+		SELECT 
+			ls.user_type userType, IFNULL(COUNT,0) count 
+		FROM (
+			SELECT 
+				0 user_type 
+			UNION ALL
+			SELECT 
+				1 user_type
+			) ls LEFT JOIN (
+				SELECT 
+					user_type,COUNT(*) count
+				FROM 
+					 ${_OTHER_DBNAME}.TOPIC_WEIBO_AUTHOR_${uuid}
+				GROUP BY 
+					user_type 
+			)ls1  ON ls.user_type=ls1.user_type
+  </select>
+   <!--分组统计倾向性-->
+   <select id="getEmotionAnalysisCount" resultMap="topicWeiBoAuthor" parameterType="java.util.Map">
+	  	SELECT 
+	  		ls.KN_ORIENTATION knOrientation, IFNULL(count,0) count 
+	  	FROM (
+			SELECT 
+				1 KN_ORIENTATION 
+			UNION ALL
+			SELECT
+				2 KN_ORIENTATION
+			UNION ALL
+			SELECT 
+				3 KN_ORIENTATION
+			) ls LEFT JOIN (
+			SELECT 
+				KN_ORIENTATION,COUNT(*) count
+			FROM 
+				${_OTHER_DBNAME}.TOPIC_${uuid}
+			WHERE 
+				KN_TYPE='04'	
+			GROUP 
+				BY KN_ORIENTATION 
+			)ls1 ON ls.KN_ORIENTATION=ls1.KN_ORIENTATION
+   </select>
+   <!-- 媒体分析列表 -->
+   <select id="getInfluenceRankingList" resultMap="topicWeiBoAuthor" parameterType="java.util.Map">
+		
+		SELECT  
+			author.name,author.fans_count,COUNT(*) statuses_count
+		FROM  
+			${_OTHER_DBNAME}.TOPIC_WEIBO_AUTHOR_${uuid} author
+	    INNER JOIN  
+	    	${_OTHER_DBNAME}.TOPIC_${uuid} topic 
+		ON 
+			author.id=topic.KT_WEIBOUID
+		WHERE 
+			author.verified_type IN (${verifiedType}) AND author.verified=1
+		GROUP BY 
+			author.id
+		ORDER BY  
+			author.fans_count DESC 
+		LIMIT 10	
+   </select>
+   
+<!--    <select id="getMicroBlogAnalysisTitle" resultMap="topicWeiBoAuthor" parameterType="java.util.Map"> -->
+<!--    		<choose> -->
+<!--                <when test="null==verifiedType or ''==verifiedType "> -->
+<!--                  	SELECT  -->
+<!-- 						IFNULL(SUM(fans_count),0) fans_count -->
+<!-- 				    FROM -->
+<!-- 					 	 ${_OTHER_DBNAME}.TOPIC_WEIBO_AUTHOR_${uuid} -->
+<!--                 </when> -->
+<!--                 <otherwise> -->
+<!--                     SELECT  -->
+<!-- 						IFNULL(SUM(fans_count),0) fans_count -->
+<!-- 					FROM -->
+<!-- 					    ${_OTHER_DBNAME}.TOPIC_WEIBO_AUTHOR_${uuid} WHERE verified_type IN (${verifiedType}) -->
+<!-- 					GROUP BY -->
+<!-- 						 verified_type	 -->
+<!--                 </otherwise> -->
+<!--             </choose> -->
+<!--    </select> -->
+   
+   <select id="getTableDataCount" resultMap="topicWeiBoAuthor" parameterType="java.util.Map">
+	   
+	  <if test="pie==null or pie==''">
+	   SELECT 
+		   	ls.TYPE,IFNULL(count,0) count FROM (
+			SELECT 
+				'政府' TYPE
+			UNION ALL
+			SELECT 
+				'名人' TYPE
+			UNION ALL
+			SELECT 
+				'媒体' TYPE
+		)ls LEFT JOIN (
+	    </if>
+	   SELECT 
+		    CASE
+		        WHEN verified_type IN (0,200,220) THEN '名人'
+		        WHEN verified_type IN (1) THEN '政府'
+		        WHEN verified_type IN (4) THEN '媒体'
+		        <if test="pie!=null and pie!=''">
+		        WHEN verified_type IN (3,2) THEN '企业'
+		        WHEN verified_type IN (8,5) THEN '机构'
+		        WHEN verified_type IN (6,7) THEN '网站'
+		        </if>
+		        ELSE -1 
+		    END TYPE,
+		    <if test="null!=title and ''!=title ">
+				SUM(fans_count)	count	    	
+		    </if>
+		    <if test="null==title or ''==title ">
+				 COUNT(*) count  	
+		    </if>
+		FROM
+		   ${_OTHER_DBNAME}.TOPIC_WEIBO_AUTHOR_${uuid}
+		WHERE
+		    verified = 1
+		<if test="pie==null or pie==''">
+          AND fans_count>=${fansCount}
+        </if>
+		GROUP BY TYPE   ORDER BY count DESC 
+		<if test="pie==null or pie==''">
+		  ) ls1 ON ls.TYPE=ls1.TYPE
+		</if>
+		
+   </select>
+   <select id="getKeyPointMicroBlogList" resultMap="topicWeiBoAuthor" parameterType="java.util.Map">
+	   		SELECT 
+	   			IFNULL(author.avatar_url,'') avatar_url,author.name ,author.fans_count, DATE_FORMAT(topic.KN_CTIME,'%Y-%m-%d %H:%i:%s') KN_CTIME,topic.KN_TITLE,topic.KN_URL,topic.UUID,
+	   			KN_SITE,KV_TRANSPORT
+			FROM 
+				${_OTHER_DBNAME}.TOPIC_WEIBO_AUTHOR_${uuid} author LEFT JOIN  ${_OTHER_DBNAME}.TOPIC_${uuid} topic
+			ON 
+				author.id=topic.KT_WEIBOUID      
+			WHERE 
+				author.verified =1 AND topic.KN_TYPE='04' AND author.verified_type IN (${verifiedType}) 
+				<if test="null!=beginTime and ''!=beginTime">
+				  	<![CDATA[ AND KN_CTIME >= #{beginTime}]]>
+				</if>
+				<if test="null!=endTime and ''!=endTime">
+				  	<![CDATA[ AND KN_CTIME <#{endTime}]]>
+				</if>
+				<if test="null!=infoState and ''!=infoState">
+				  	AND KN_CTIME = #{infoState}
+				</if>   
+			GROUP BY 
+				KN_SOURCE
+			ORDER BY 
+				author.fans_count DESC ,topic.KN_CTIME 
+			LIMIT 20
+		
+    </select>
+    
+    <select id="getBloggerRegionList" resultMap="topicWeiBoAuthor" parameterType="java.util.Map">
+    	SELECT 
+    		 region ,COUNT(1) count
+		FROM
+			 ${_OTHER_DBNAME}.TOPIC_WEIBO_AUTHOR_${uuid}
+		WHERE 
+			region NOT IN('海外','其他','')
+		GROUP BY 
+			region
+		ORDER BY count DESC
+    </select>
+    <select id="getNetizenViewpoint" resultType="java.util.Map" parameterType="java.lang.String">
+	     SELECT 
+		     TOPIC_ID,TYPE,VIEWPOINT,INSERT_TIME 
+		 FROM  
+			yqms2.TOPIC_VIEWPOINT
+		 WHERE 
+			TOPIC_ID=#{_parameter} AND VIEWPOINT != '[]'
+    </select>
+    <select id="getEvenIdName" resultMap="topicWeiBoAuthor"  parameterType="java.lang.String"> 
+      SELECT
+      	 	* 
+      FROM 
+      	   yqms2.YQZB_T_TOPIC
+      WHERE
+        KT_UUID=#{_parameter}
+    </select>
+</mapper>

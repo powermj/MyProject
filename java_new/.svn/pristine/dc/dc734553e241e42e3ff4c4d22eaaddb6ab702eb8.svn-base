@@ -1,0 +1,1234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.EventAnalysisData">
+
+    <resultMap id="eventAnalysisData" type="EventAnalysisData">
+        <id property="infoid" column="UUID" />
+        <result property="sourceType" column="KN_TYPE" />
+        <result property="ctime" column="KN_CTIME" />
+        <result property="collectTime" column="KN_TIME" />
+        <result property="webname" column="KN_SITE" />
+        <result property="title" column="KN_TITLE" />
+        <result property="url" column="KN_URL" />
+        <result property="author" column="KN_SOURCE" />
+        <result property="weiboAuthorId" column="KT_WEIBOUID" />
+        <result property="orientation" column="KN_ORIENTATION" />
+        <result property="referUrl" column="REFER_URL" />
+        <result property="summary" column="KN_ABSTRACT" />
+        <result property="content" column="KN_CONTENT" />
+		<result property="keyword" column="KN_TOPICWORDS" />
+		<result property="hotword" column="KN_TITLESEG" />
+		<result property="simhash" column="SIMHASH" />
+		<result property="infoState" column="KV_STATE" />
+		<result property="forwardCount" column="KV_TRANSPORT" />
+		<result property="replyCount" column="KV_REPLY" />
+		<result property="visitCount" column="KV_VISITCOUNT" />
+		<result property="importanceWeight" column="IMPORTANCE_WEIGHT" />
+		<result property="isWarning" column="IS_WARNING" />
+		<result property="isRead" column="IS_READ" />
+		<result property="isAttention" column="IS_ATTENTION" />
+		<result property="isBriefing" column="IS_BRIEFING" />
+		<result property="isReport" column="IS_REPORT" />
+		<result property="extendField" column="EXTEND_FIELD" />
+		<result property="infoContent" column="INFO_CONTENT" />
+		<result property="mainContent" column="MAIN_CONTENT" />
+		<result property="prevAuthor" column="PREV_AUTHOR" />
+		<result property="allAuthor" column="ALL_AUTHOR" />
+		<result property="id" column="id" />
+		<result property="repeatCount" column="repeatCount" />
+		<result property="regionId" column="REGION_ID" />
+		<result property="verified" column="verified" />
+		
+    </resultMap>
+    
+    <select id="getCount" resultType="java.util.HashMap">
+        <![CDATA[
+        SELECT 
+		    COUNT(*) AS count
+		FROM
+		    ${_OTHER_DBNAME}.TOPIC_${eventId}
+		WHERE
+		    KN_CTIME >= #{beginTime}
+		AND KN_CTIME < #{endTime}
+		]]>
+    </select>
+    
+    <select id="getSummary" resultType="java.util.HashMap">
+        SELECT 
+		    TOPIC_SUMMARY AS summary
+		FROM
+		    ${_OTHER_DBNAME}.TOPIC_${eventId}
+		WHERE 1=1
+        <if test="null!=beginTime and ''!=beginTime">
+            AND KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        </if>  
+        <if test="null!=endTime and ''!=endTime">
+            AND KN_CTIME <![CDATA[ <= ]]> #{endTime}
+        </if>  
+        <if test="null!=infoState and ''!=infoState">
+            AND KV_STATE = #{infoState}
+        </if>     		
+		ORDER BY 
+		     TOPIC_SUMMARY_SCORE desc
+		LIMIT 1
+    </select>
+    
+    <select id="getFirstMediaInfo" resultMap="eventAnalysisData">
+        SELECT 
+		    *
+		FROM
+		    ${_OTHER_DBNAME}.TOPIC_${eventId} a,
+		    (SELECT 
+		        KN_TYPE, MIN(KN_CTIME) mintime
+		    FROM
+		        ${_OTHER_DBNAME}.TOPIC_${eventId}
+		    WHERE
+		      1=1
+            <if test="null!=beginTime and ''!=beginTime">
+                AND KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+            </if>  
+            <if test="null!=endTime and ''!=endTime">
+                AND KN_CTIME <![CDATA[ <= ]]> #{endTime}
+            </if>	
+            <if test="null!=infoState and ''!=infoState">
+                AND KV_STATE = #{infoState}
+            </if>	      
+		    GROUP BY KN_TYPE) b
+		WHERE
+		    a.KN_TYPE = b.KN_TYPE
+		AND a.KN_TYPE != '99'
+		AND a.KN_CTIME = b.mintime 
+        ORDER BY a.KN_CTIME
+    </select>
+    
+    <select id="getFirstInfo" resultMap="eventAnalysisData">
+        SELECT 
+		    a.*,
+		    (SELECT 
+		            COUNT(1)-1
+		        FROM
+		            ${_OTHER_DBNAME}.TOPIC_${eventId}
+		        WHERE
+		            simhash = a.SIMHASH) AS repeatCount
+		FROM
+		    ${_OTHER_DBNAME}.TOPIC_${eventId} a
+		WHERE
+		    a.KN_CTIME = (SELECT 
+		            MIN(KN_CTIME)
+		        FROM
+		            ${_OTHER_DBNAME}.TOPIC_${eventId}
+		            WHERE 1=1
+		            <if test="null!=infoId and ''!=infoId">
+		               AND  UUID = #{infoId}
+		            </if> 
+		             <if test="null!=beginTime and ''!=beginTime">
+		                AND KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+		            </if>  
+		            <if test="null!=endTime and ''!=endTime">
+		                AND KN_CTIME <![CDATA[ <= ]]> #{endTime}
+		            </if>
+		            <if test="null!=infoState and ''!=infoState">
+		                AND KV_STATE = #{infoState}
+		            </if>  
+		            )
+    </select>
+    
+    
+    <select id="getEventVein" resultMap="eventAnalysisData">
+        SELECT 
+		    a.*,b.repeatCount
+		FROM
+		    ${_OTHER_DBNAME}.TOPIC_${eventId} a,
+		    (SELECT 
+		        simhash, MIN(KN_CTIME) mintime,
+		            (SELECT 
+		                    COUNT(1)-1
+		                FROM
+		                    ${_OTHER_DBNAME}.TOPIC_${eventId}
+		                WHERE
+		                    simhash = t.SIMHASH) AS repeatCount
+		    FROM
+		        ${_OTHER_DBNAME}.TOPIC_${eventId} t
+		    WHERE simhash != ''
+		    AND (KN_TYPE = '01' OR KN_TYPE = '05')
+		    <if test="null!=beginTime and ''!=beginTime">
+	            AND t.KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+	        </if>  
+	        <if test="null!=endTime and ''!=endTime">
+	            AND t.KN_CTIME <![CDATA[ <= ]]> #{endTime}
+	        </if>
+	        <if test="null!=infoState and ''!=infoState">
+                AND t.KV_STATE = #{infoState}
+            </if>  
+		    GROUP BY simhash
+		    order by count(1) desc
+		    LIMIT 20) b
+		WHERE
+		    a.KN_CTIME = b.mintime
+		AND a.simhash = b.simhash
+		AND (a.KN_TYPE = '01' OR a.KN_TYPE = '05')
+		ORDER BY a.KN_CTIME
+    </select>
+    
+    <insert id="saveOrUpdateModuleSummary">
+	     <![CDATA[
+	        INSERT INTO YQZB_T_TOPIC_MODULE_SUMMARY
+	           (event_id,module_id,Summary) 
+	        values
+	           (#{eventId},#{moduleId},#{summary}) 
+	        on duplicate key update 
+	           Summary = #{summary}
+	        ]]>
+    </insert>
+    
+    
+    <select id="getSourceTypeTrend" resultType="java.util.HashMap">
+        SELECT 
+            '全部' as KN_TYPE, LEFT(KN_CTIME, 10) ctime, COUNT(1) count
+        FROM
+            ${_OTHER_DBNAME}.TOPIC_${eventId}
+        WHERE KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        AND KN_CTIME <![CDATA[ < ]]> #{endTime}
+        <if test="null!=infoState and ''!=infoState">
+            AND KV_STATE = #{infoState}
+        </if>	
+        GROUP BY  LEFT(KN_CTIME, 10)
+        UNION ALL
+	    SELECT 
+		    KN_TYPE, LEFT(KN_CTIME, 10) ctime, COUNT(1) count
+		FROM
+		    ${_OTHER_DBNAME}.TOPIC_${eventId}
+		WHERE KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+		AND KN_CTIME <![CDATA[ < ]]> #{endTime}
+        <if test="null!=infoState and ''!=infoState">
+            AND KV_STATE = #{infoState}
+        </if>
+		GROUP BY KN_TYPE , LEFT(KN_CTIME, 10)
+    </select>
+    
+    <select id="getSourceTypeTrendByInterval" resultType="java.util.HashMap">
+        SELECT 
+            '全部' as KN_TYPE, 
+            <if test="'hour'==interval">
+	            DATE_FORMAT(STR_TO_DATE(KN_CTIME, '%Y%m%d%H%i%s'),'%Y-%m-%d %H') ctime,
+	        </if>
+	        <if test="'hour'!=interval">
+                DATE_FORMAT(STR_TO_DATE(KN_CTIME, '%Y%m%d%H%i%s'),'%Y-%m-%d') ctime,
+            </if>
+            COUNT(1) count
+        FROM
+            ${_OTHER_DBNAME}.TOPIC_${eventId}
+        WHERE KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        AND KN_CTIME <![CDATA[ < ]]> #{endTime}
+        <if test="null!=infoState and ''!=infoState">
+            AND KV_STATE = #{infoState}
+        </if>   
+        GROUP BY
+            <if test="'hour'==interval">
+                DATE_FORMAT(STR_TO_DATE(KN_CTIME, '%Y%m%d%H%i%s'),'%Y-%m-%d %H')
+            </if>
+            <if test="'hour'!=interval">
+                DATE_FORMAT(STR_TO_DATE(KN_CTIME, '%Y%m%d%H%i%s'),'%Y-%m-%d')
+            </if>
+        UNION ALL
+        SELECT 
+            KN_TYPE,
+            <if test="'hour'==interval">
+                DATE_FORMAT(STR_TO_DATE(KN_CTIME, '%Y%m%d%H%i%s'),'%Y-%m-%d %H') ctime,
+            </if>
+            <if test="'hour'!=interval">
+                DATE_FORMAT(STR_TO_DATE(KN_CTIME, '%Y%m%d%H%i%s'),'%Y-%m-%d') ctime,
+            </if>
+            COUNT(1) count
+        FROM
+            ${_OTHER_DBNAME}.TOPIC_${eventId}
+        WHERE KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        AND KN_CTIME <![CDATA[ < ]]> #{endTime}
+        <if test="null!=infoState and ''!=infoState">
+            AND KV_STATE = #{infoState}
+        </if>
+        GROUP BY KN_TYPE , 
+            <if test="'hour'==interval">
+                DATE_FORMAT(STR_TO_DATE(KN_CTIME, '%Y%m%d%H%i%s'),'%Y-%m-%d %H')
+            </if>
+            <if test="'hour'!=interval">
+                DATE_FORMAT(STR_TO_DATE(KN_CTIME, '%Y%m%d%H%i%s'),'%Y-%m-%d')
+            </if>
+    </select>
+    
+    <select id="getWeiboOrientationStatisticsByInterval" resultType="java.util.HashMap">
+        SELECT 
+            case kn_orientation when 1 then '正面' when 2 then '负面' else '中性' end as orientation,
+            <if test="'hour'==interval">
+                DATE_FORMAT(STR_TO_DATE(KN_CTIME, '%Y%m%d%H%i%s'),'%Y-%m-%d %H') ctime,
+            </if>
+            <if test="'hour'!=interval">
+                DATE_FORMAT(STR_TO_DATE(KN_CTIME, '%Y%m%d%H%i%s'),'%Y-%m-%d') ctime,
+            </if>
+            COUNT(1) count
+        FROM
+            ${_OTHER_DBNAME}.TOPIC_${eventId}
+        WHERE KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        AND KN_CTIME <![CDATA[ < ]]> #{endTime}
+        <if test="null!=infoState and ''!=infoState">
+            AND KV_STATE = #{infoState}
+        </if>
+        GROUP BY orientation , 
+            <if test="'hour'==interval">
+                DATE_FORMAT(STR_TO_DATE(KN_CTIME, '%Y%m%d%H%i%s'),'%Y-%m-%d %H')
+            </if>
+            <if test="'hour'!=interval">
+                DATE_FORMAT(STR_TO_DATE(KN_CTIME, '%Y%m%d%H%i%s'),'%Y-%m-%d')
+            </if>
+    </select>
+    
+    <select id="selectEventAnalysisrepeatCount" resultType="java.util.HashMap">
+        SELECT 
+            COUNT(1)-1 AS repeatCount
+        FROM
+            ${_DBNAME}.TOPIC_${eventAnalysisId}
+        WHERE
+            SIMHASH = #{infoSimhash} AND SIMHASH is not NULL AND SIMHASH <![CDATA[ <> ]]> '' 
+        <if test="null!=beginTime and ''!=beginTime">
+            AND KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        </if>  
+        <if test="null!=endTime and ''!=endTime">
+            AND KN_CTIME <![CDATA[ <= ]]> #{endTime}
+        </if>          
+    </select>
+    
+    <select id="selectMaxId" resultType="int">
+        SELECT 
+            max(id) as maxId
+        FROM
+            ${_DBNAME}.TOPIC_${eventAnalysisId}
+    </select>
+    
+    
+    <!-- 事件分析列表页 -->
+    <select id="selectEventAnalysisDataList" resultMap="eventAnalysisData">
+        SELECT a.* FROM (SELECT id,
+		     UUID,KN_TYPE,KN_TITLE,KN_SOURCE,KN_URL,KN_TIME,KN_CTIME,KN_ABSTRACT,KV_VISITCOUNT,KV_REPLY,KV_TRANSPORT,KV_STATE,KN_SITE,
+  			 KN_ORIENTATION,KN_CONTENT,KN_TITLESEG,KN_TOPICWORDS,KT_WEIBOUID,INFO_CONTENT,MAIN_CONTENT,PREV_AUTHOR,ALL_AUTHOR,SIMHASH,REFER_URL,
+  			 IS_WARNING,IS_ATTENTION,IS_READ,IS_BRIEFING,IS_REPORT,IMPORTANCE_WEIGHT,EXTEND_FIELD,r.REGION_ID,verified
+		FROM
+		    ${_DBNAME}.TOPIC_${eventAnalysisId} t LEFT JOIN (select KV_UUID,GROUP_CONCAT(REGION_ID) as REGION_ID from ${_DBNAME}.TOPIC_REGION_${eventAnalysisId} group by KV_UUID) r ON t.UUID = r.KV_UUID
+			<if test="null!=sourceRegion and ''!=sourceRegion">
+			     join ${_DBNAME}.TOPIC_REGION_${eventAnalysisId} s on t.UUID = s.KV_UUID
+			</if>
+		WHERE
+		    KN_CTIME IS NOT NULL 
+		<if test='null!=sourcetype and sourcetype.indexOf("04") != -1' >     
+		    AND (KN_TYPE <![CDATA[ <> ]]> '04' AND KN_TYPE <![CDATA[ <> ]]> '08')
+		</if>
+		<if test="null!=sourceLevel">
+             and JSON_EXTRACT(t.EXTEND_FIELD, '$.infoSourceLevel') in
+             <foreach collection="sourceLevel" index="index" item="level" open="(" separator="," close=")">
+                #{level}
+             </foreach>
+        </if>       
+		<if test="null!=sourceRegion and ''!=sourceRegion">
+                 AND s.REGION_ID = #{sourceRegion}
+        </if>
+        <if test="null!=webName and ''!=webName">
+                 AND t.KN_SITE = #{webName}
+        </if>
+		<!-- 批量导出 -->    
+        <if test="null!=infoIds">
+            AND UUID in 
+            <foreach collection="infoIds" index="index" item="infoId" open="(" separator="," close=")">
+               #{infoId}
+            </foreach>
+        </if>
+		<if test="null!=sourcetype">
+            AND KN_TYPE in 
+            <foreach collection="sourcetype" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+            </foreach>
+        </if>
+        
+        <if test="null!=infoState and ''!=infoState">
+            AND KV_STATE = #{infoState}
+        </if>    
+        <if test="null!=customFilter and ''!=customFilter">
+            ${customFilter}
+        </if>  
+        <if test="null!=beginTime and ''!=beginTime">
+            AND KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        </if>  
+        <if test="null!=endTime and ''!=endTime">
+            AND KN_CTIME <![CDATA[ <= ]]> #{endTime}
+        </if>  
+        <if test="null!=orientation and ''!=orientation">
+            AND KN_ORIENTATION = #{orientation}
+        </if>  
+        <if test="null!=isRead and ''!=isRead">
+            AND IS_READ = #{isRead}
+        </if>
+        <if test="null!=hotWords and ''!=hotWords">
+            AND SUBSTRING_INDEX(KN_TITLESEG, ',', 1) = #{hotWords}
+        </if> 
+        <if test="null!=searchId and ''!=searchId">
+            AND id <![CDATA[ <= ]]> #{searchId}
+        </if> 
+        
+        <if test='null!=sourcetype and sourcetype.indexOf("04") != -1' >       
+	        UNION 
+	        SELECT id,
+			     UUID,KN_TYPE,KN_TITLE,KN_SOURCE,KN_URL,KN_TIME,KN_CTIME,KN_ABSTRACT,KV_VISITCOUNT,KV_REPLY,KV_TRANSPORT,KV_STATE,KN_SITE,
+	  			 KN_ORIENTATION,KN_CONTENT,KN_TITLESEG,KN_TOPICWORDS,KT_WEIBOUID,INFO_CONTENT,MAIN_CONTENT,PREV_AUTHOR,ALL_AUTHOR,SIMHASH,REFER_URL,
+	  			 IS_WARNING,IS_ATTENTION,IS_READ,IS_BRIEFING,IS_REPORT,IMPORTANCE_WEIGHT,EXTEND_FIELD,r.REGION_ID,verified
+			FROM
+			    ${_DBNAME}.TOPIC_${eventAnalysisId} t LEFT JOIN (select KV_UUID,GROUP_CONCAT(REGION_ID) as REGION_ID from ${_DBNAME}.TOPIC_REGION_${eventAnalysisId} group by KV_UUID) r ON t.UUID = r.KV_UUID
+			     <if test="null!=sourceRegion and ''!=sourceRegion">
+	                 join ${_DBNAME}.TOPIC_REGION_${eventAnalysisId} s on t.UUID = s.KV_UUID
+	            </if>
+			WHERE
+			    KN_CTIME IS NOT NULL AND (KN_TYPE = '04' OR KN_TYPE = '08')
+			<if test="null!=sourceRegion and ''!=sourceRegion">
+                    AND s.REGION_ID = #{sourceRegion}
+            </if>
+            <if test="null!=webName and ''!=webName">
+                    AND t.KN_SITE = #{webName}
+            </if>
+            <if test="null!=sourceLevel">
+                    and JSON_EXTRACT(t.EXTEND_FIELD, '$.infoSourceLevel') in
+                    <foreach collection="sourceLevel" index="index" item="level" open="(" separator="," close=")">
+	                   #{level}
+	                </foreach>
+            </if>
+                
+			<!-- 批量导出 -->    
+	        <if test="null!=infoIds">
+	            AND UUID in 
+	            <foreach collection="infoIds" index="index" item="infoId" open="(" separator="," close=")">
+	               #{infoId}
+	            </foreach>
+	        </if>
+			<if test="null!=sourcetype">
+	            AND KN_TYPE in 
+	            <foreach collection="sourcetype" index="index" item="item" open="(" separator="," close=")">
+	               #{item}
+	            </foreach>
+	        </if>
+	        
+	        <if test="null!=infoState and ''!=infoState">
+	            AND KV_STATE = #{infoState}
+	        </if> 
+	        
+	        
+	        <if test="1==verified">
+              AND verified <![CDATA[ >= ]]> 1
+          	</if>
+          	<if test="-1==verified">
+              AND verified <![CDATA[ < ]]> 1 
+          	</if>
+	        
+	            
+	        <if test="null!=customFilter and ''!=customFilter">
+	            ${customFilter}
+	        </if>  
+	        <if test="null!=beginTime and ''!=beginTime">
+	            AND KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+	        </if>  
+	        <if test="null!=endTime and ''!=endTime">
+	            AND KN_CTIME <![CDATA[ <= ]]> #{endTime}
+	        </if>  
+	        <if test="null!=orientation and ''!=orientation">
+	            AND KN_ORIENTATION = #{orientation}
+	        </if>  
+	        <if test="null!=wechatInfoType and ''!=wechatInfoType">
+	            AND KV_WECHAT_INFO_TYPE = #{wechatInfoType}
+	        </if>
+	        <if test="null!=isRead and ''!=isRead">
+	            AND IS_READ = #{isRead}
+	        </if>
+	        <if test="null!=hotWords and ''!=hotWords">
+	            AND SUBSTRING_INDEX(KN_TITLESEG, ',', 1) = #{hotWords}
+	        </if> 
+	        <if test="null!=searchId and ''!=searchId">
+                AND id <![CDATA[ <= ]]> #{searchId}
+            </if>
+        </if>
+ 		 ) a
+        <if test="2==isRepeat">
+             GROUP BY a.SIMHASH 
+        </if>     
+        <choose>
+          <when test="null!=order and ''!=order"> 
+	        <if test="2==order">
+	            ORDER BY a.KV_VISITCOUNT DESC
+	        </if>  
+	        <if test="3==order">
+	            ORDER BY BY a.KV_REPLY DESC
+	        </if>
+              
+          </when>
+          <otherwise>
+              ORDER BY a.KN_CTIME DESC
+          </otherwise>
+        </choose>  		
+    </select>
+    
+    <resultMap type="java.util.Map" id="customCondition">
+        <result property="field" column="TOPICFIELD"  javaType="String" jdbcType="VARCHAR"/>
+        <result property="searchtype" column="SEARCH_TYPE"  javaType="int" jdbcType="INTEGER"/> 
+    </resultMap> 
+    <!-- 自定义筛选 -->
+     <select id="selectCustomCondition" resultMap="customCondition">
+        SELECT
+			c.TOPICFIELD,
+			a.SEARCH_TYPE
+		FROM
+			WK_T_CUSTOM_CONDITION a,
+			`WK_T_CUSTOM_CONDITION_SUB` b,
+			WK_T_CUSTOM_CONDITION_FIELD c
+		WHERE
+			a.ID = b.CID
+		AND a.field = c. NAME
+		AND b.ID = #{customFiltersId}
+		
+    </select>
+    
+    <resultMap type="java.util.Map" id="customConditionValue">
+        <result property="value" column="VALUE"  javaType="String" jdbcType="VARCHAR"/>
+    </resultMap> 
+    <!-- 自定义筛选 -->
+     <select id="selectCustomConditionValue" resultMap="customConditionValue">
+        SELECT
+		     VALUE		
+		FROM
+			`WK_T_CUSTOM_CONDITION_VALUE`
+		WHERE
+			SID = #{customFiltersId}
+		
+    </select>
+    
+    <select id="getOrientationStatistics" resultType="java.util.HashMap">
+	    SELECT 
+		    sum(KN_ORIENTATION = 1) positive,
+		    sum(KN_ORIENTATION = 2) negative,
+		    sum(KN_ORIENTATION = 3) neutral,
+		    LEFT(kn_ctime, 8) date
+		FROM
+		    ${_OTHER_DBNAME}.TOPIC_${eventId}
+	    WHERE
+            KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        AND KN_CTIME <![CDATA[ < ]]> #{endTime}
+        <if test="null!=infoState and ''!=infoState">
+            AND KV_STATE = #{infoState}
+        </if>
+        <if test="null!=sourceType and ''!=sourceType">
+            AND KN_TYPE = #{sourceType}
+        </if>
+		GROUP BY LEFT(kn_ctime, 8)
+		ORDER BY date
+		
+    </select>
+    
+    <select id="getWordsCloud" resultType="java.util.HashMap">
+        SELECT 
+		    SUBSTRING_INDEX(T.KN_TITLESEG, ',', 1) AS word,
+		    COUNT(*) AS count
+		FROM
+		    ${_OTHER_DBNAME}.TOPIC_${eventId} AS T
+		WHERE
+		    KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+		AND 
+			KN_CTIME <![CDATA[ < ]]> #{endTime}
+		<if test="null!=infoState and ''!=infoState">
+			AND KV_STATE = #{infoState}
+        </if>
+		GROUP BY 
+			word 
+		ORDER BY 
+			count 
+		DESC
+		LIMIT #{top}
+    </select>
+    <!-- 导出列表页 -->
+    <select id="selectExportDataList" resultMap="eventAnalysisData">
+        SELECT 
+            *
+        FROM
+            ${_OTHER_DBNAME}.TOPIC_${eventAnalysisId} 
+        WHERE
+            KN_CTIME IS NOT NULL
+        <!-- 批量导出 -->    
+        <if test="null!=infoIds and infoIds.length != 0">
+            AND UUID in 
+            <foreach collection="infoIds" index="index" item="infoId" open="(" separator="," close=")">
+               #{infoId}
+            </foreach>
+        </if>
+        
+        <if test="null!=sourcetype and sourcetype.length != 0">
+            AND KN_TYPE in 
+            <foreach collection="sourcetype" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+            </foreach>
+        </if>
+        
+        <if test="null!=infoState and ''!=infoState">
+            AND KV_STATE = #{infoState}
+        </if> 
+        <if test="1==verified">
+            AND verified <![CDATA[ >= ]]> 1
+        </if>
+        <if test="-1==verified">
+            AND verified <![CDATA[ < ]]> 1
+        </if>    
+        <if test="null!=customFilter and ''!=customFilter">
+            ${customFilter}
+        </if>  
+        <if test="null!=beginTime and ''!=beginTime">
+            AND KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        </if>  
+        <if test="null!=endTime and ''!=endTime">
+            AND KN_CTIME <![CDATA[ <= ]]> #{endTime}
+        </if>  
+        <if test="null!=orientation and ''!=orientation">
+            AND KN_ORIENTATION = #{orientation}
+        </if>  
+        <if test="null!=wechatInfoType and ''!=wechatInfoType">
+            AND KV_WECHAT_INFO_TYPE = #{wechatInfoType}
+        </if>
+        <choose>
+          <when test="null!=order and ''!=order"> 
+            <if test="2==order">
+                ORDER BY KV_VISITCOUNT DESC
+            </if>  
+            <if test="3==order">
+                ORDER BY BY KV_REPLY DESC
+            </if>
+              
+          </when>
+          <otherwise>
+              ORDER BY KN_CTIME DESC
+          </otherwise>
+        </choose>       
+    </select>
+    
+    <select id="getMediaAnalysis" resultType="java.util.HashMap">
+        SELECT 
+		    KN_TYPE as sourceType, COUNT(1) count
+		FROM
+		    ${_OTHER_DBNAME}.TOPIC_${eventId}
+		WHERE 
+            KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        AND KN_CTIME <![CDATA[ < ]]> #{endTime}
+        <if test="null!=infoState and ''!=infoState">
+            AND KV_STATE = #{infoState}
+        </if>
+		GROUP BY KN_TYPE
+    </select>
+    
+    <select id="getWebNameAnalysis" resultType="java.util.HashMap">
+        <![CDATA[
+        SELECT 
+		    KN_SITE as webName, COUNT(1) count
+		FROM
+		    ${_OTHER_DBNAME}.TOPIC_${eventId}
+		WHERE 
+            KN_CTIME >= #{beginTime}
+        AND KN_CTIME < #{endTime}
+		GROUP BY KN_SITE
+		ORDER BY count DESC
+		LIMIT 10
+        ]]>
+    </select>
+    
+    <select id="exportWebName" resultType="java.util.HashMap">
+        
+        SELECT 
+            KN_SITE as webName,KN_TYPE as sourceType,CASE WHEN KN_JINGWAI='1' THEN '境内' ELSE '境外' END AS isOverseas,WEBNAMEDOMAIN as domain, COUNT(1) articleCount
+        FROM
+            ${_OTHER_DBNAME}.TOPIC_${eventId}
+        WHERE 
+        	1=1
+         <if test="null!=beginTime and ''!=beginTime">
+            AND KN_CTIME >= #{beginTime}
+        </if> 
+         <if test="null!=endTime and ''!=endTime">
+          <![CDATA[  AND KN_CTIME  <  #{endTime} ]]>
+        </if> 
+        GROUP BY KN_SITE
+        ORDER BY articleCount DESC
+        
+    </select>
+    
+    
+    <select id="getSummaryByModuleId" resultType="java.util.HashMap">
+        <![CDATA[
+        SELECT 
+		    S.id AS id,
+		    S.event_id AS eventId,
+		    S.module_id AS moduleId,
+		    S.summary AS summary
+		FROM
+		    YQZB_T_TOPIC_MODULE_SUMMARY S
+		WHERE
+		    S.event_id = #{eventId}
+		AND 
+			S.module_id = #{moduleId}
+		]]>
+    </select>
+    
+    <select id="getTrendSummary" resultType="java.util.HashMap">
+        SELECT
+		    LEFT(T.KN_CTIME,8) AS mostTime,
+		    allData.COUNT AS allCount,
+		    T.KN_TYPE AS sourceType,
+		    COUNT(*) AS sourceTypeCount 
+		FROM
+		    ${_OTHER_DBNAME}.TOPIC_${eventId} T,
+		    (SELECT LEFT(TT.KN_CTIME,8) as mostTime,COUNT(*) AS COUNT
+		        FROM
+		            ${_OTHER_DBNAME}.TOPIC_${eventId} TT
+		        WHERE
+					TT.KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+				AND 
+					TT.KN_CTIME <![CDATA[ < ]]> #{endTime}
+				<if test="null!=infoState and ''!=infoState">
+            		AND TT.KV_STATE = #{infoState}
+        		</if>
+		        GROUP BY
+		            mostTime
+		        ORDER BY
+		            COUNT DESC limit 1) AS allData
+		WHERE
+		    LEFT(T.KN_CTIME,8) = allData.mostTime
+		AND     
+			T.KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+		AND 
+			T.KN_CTIME <![CDATA[ < ]]> #{endTime}
+		<if test="null!=infoState and ''!=infoState">
+       		AND T.KV_STATE = #{infoState}
+   		</if>
+		GROUP BY
+		    sourceType
+		ORDER BY
+		    sourceTypeCount DESC LIMIT 1
+    </select>
+    
+    <select id="getOrientationSummary" resultType="java.util.HashMap">
+        SELECT 
+			KN_ORIENTATION AS mostOri,
+			count(*) AS  mostCount
+		FROM ${_OTHER_DBNAME}.TOPIC_${eventId} AS T
+		WHERE 
+			T.KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+		AND T.KN_CTIME <![CDATA[ < ]]> #{endTime}
+		<if test="null!=infoState and ''!=infoState">
+       		AND T.KV_STATE = #{infoState}
+   		</if>
+		GROUP BY mostOri 
+		ORDER BY mostCount DESC LIMIT 1;
+    </select>
+    
+    <select id="getOrientationSourceType" resultType="java.util.HashMap">
+        SELECT 
+			COUNT(1) AS C,
+			T.KN_TYPE AS sourceType,
+			TT.allCount AS allCount
+		FROM ${_OTHER_DBNAME}.TOPIC_${eventId} AS T,
+			(
+			SELECT 
+				COUNT(1) AS allCount 
+			FROM 
+				${_OTHER_DBNAME}.TOPIC_${eventId} 
+			WHERE 
+				KN_CTIME <![CDATA[ >= ]]> #{beginTime} 
+			AND 
+				KN_CTIME <![CDATA[ < ]]> #{endTime} 
+			<if test="null!=infoState and ''!=infoState">
+				AND KV_STATE = #{infoState}
+			</if>
+			) AS TT
+		WHERE 
+			T.KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+		AND T.KN_CTIME <![CDATA[ < ]]> #{endTime}
+		<if test="null!=infoState and ''!=infoState">
+			AND T.KV_STATE = #{infoState}
+		</if>
+		AND T.KN_ORIENTATION = #{orientation}
+		GROUP BY T.KN_TYPE
+		ORDER BY C
+    </select>
+    
+    <select id="getMediaAnalysisSummary" resultType="java.util.HashMap">
+        SELECT
+		    COUNT(*) AS mostCount,
+		    T.KN_TYPE AS mostSourceType,
+		    TT.allCount AS allCount
+		FROM
+		    ${_OTHER_DBNAME}.TOPIC_${eventId} AS T,
+		    (
+		        SELECT
+		            COUNT(*) AS allCount
+		        FROM
+		            ${_OTHER_DBNAME}.TOPIC_${eventId} 
+		        WHERE 
+		        	KN_CTIME <![CDATA[ >= ]]> #{beginTime} 
+	        	AND 
+	        		KN_CTIME <![CDATA[ < ]]> #{endTime} 
+        		<if test="null!=infoState and ''!=infoState">
+            		AND KV_STATE = #{infoState}
+        		</if>
+	        	
+	        ) AS TT
+		WHERE
+			T.KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+		AND 
+			T.KN_CTIME <![CDATA[ < ]]> #{endTime}
+		<if test="null!=infoState and ''!=infoState">
+			AND T.KV_STATE = #{infoState}
+		</if>
+		GROUP BY
+		    T.KN_TYPE
+		ORDER BY
+		    mostCount DESC limit 1
+    </select>
+    
+    
+    <!-- 事件分析列表页 -->
+    <select id="selectEventAnalysisDataDetail" resultMap="eventAnalysisData">
+        SELECT 
+		    *
+		FROM
+		    ${_DBNAME}.TOPIC_${eventAnalysisId} 
+		WHERE
+		    UUID = #{infoId}
+    </select>
+    
+    <!-- 事件分析列表页other -->
+    <select id="selectEventAnalysisDataDetail_other" resultMap="eventAnalysisData">
+        SELECT 
+		    *
+		FROM
+		    ${_OTHER_DBNAME}.TOPIC_${eventAnalysisId} 
+		WHERE
+		    UUID = #{infoId}
+    </select>
+    
+    <resultMap type="java.util.Map" id="sourceTypeCountMap">
+        <result property="sourceType" column="KN_TYPE"  javaType="String" jdbcType="VARCHAR"/>
+        <result property="num" column="num"  javaType="Integer" jdbcType="INTEGER"/>
+    </resultMap> 
+    
+    <!-- 根据媒体类型分组统计条数 -->
+    <select id="selectCountGroupBySourceType" resultMap="sourceTypeCountMap">
+        SELECT 
+            KN_TYPE,count(1) as num
+        FROM
+            ${_DBNAME}.TOPIC_${eventAnalysisId} 
+        WHERE
+        KN_CTIME IS NOT NULL
+        <if test="null!=searchId and ''!=searchId">
+            AND id <![CDATA[ <= ]]> #{searchId}
+        </if> 
+        <if test="null!=infoState and ''!=infoState">
+            AND KV_STATE = #{infoState}
+        </if> 
+        <if test="null!=customFilter and ''!=customFilter">
+            ${customFilter}
+        </if>  
+        <if test="null!=beginTime and ''!=beginTime">
+            AND KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        </if>  
+        <if test="null!=endTime and ''!=endTime">
+            AND KN_CTIME <![CDATA[ <= ]]> #{endTime}
+        </if> 
+        <if test="null!=isRead and ''!=isRead">
+            AND IS_READ = #{isRead}
+        </if>
+        <if test="null!=hotWords and ''!=hotWords">
+            AND SUBSTRING_INDEX(KN_TITLESEG, ',', 1) = #{hotWords}
+        </if>
+        <if test="null!=orientation and ''!=orientation">
+            AND KN_ORIENTATION = #{orientation}
+        </if> 
+        <if test="null!=webName and ''!=webName">
+             AND KN_SITE = #{webName}
+        </if>          
+        group by KN_TYPE
+    </select>
+    
+    <!-- 根据微博类型统计数量 -->
+    <select id="selectCountGroupByWeiBo" resultMap="sourceTypeCountMap">
+        SELECT 
+            KN_TYPE,count(1) as num
+        FROM
+            ${_DBNAME}.TOPIC_${eventAnalysisId} 
+        WHERE
+        KN_CTIME IS NOT NULL and (KN_TYPE = '04' OR KN_TYPE = '08')
+        <if test="null!=searchId and ''!=searchId">
+            AND id <![CDATA[ <= ]]> #{searchId}
+        </if> 
+        <if test="null!=infoState and ''!=infoState">
+            AND KV_STATE = #{infoState}
+        </if> 
+        <if test="1==verified">
+            AND verified <![CDATA[ >= ]]> 1
+       	</if>
+       	<if test="-1==verified">
+            AND verified <![CDATA[ < ]]> 1 
+       	</if>   
+        <if test="null!=customFilter and ''!=customFilter">
+            ${customFilter}
+        </if>  
+        <if test="null!=beginTime and ''!=beginTime">
+            AND KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        </if>  
+        <if test="null!=endTime and ''!=endTime">
+            AND KN_CTIME <![CDATA[ <= ]]> #{endTime}
+        </if> 
+        <if test="null!=wechatInfoType and ''!=wechatInfoType">
+            AND KV_WECHAT_INFO_TYPE = #{wechatInfoType}
+        </if>
+        <if test="null!=isRead and ''!=isRead">
+            AND IS_READ = #{isRead}
+        </if>
+        <if test="null!=hotWords and ''!=hotWords">
+            AND SUBSTRING_INDEX(KN_TITLESEG, ',', 1) = #{hotWords}
+        </if>
+        <if test="null!=orientation and ''!=orientation">
+            AND KN_ORIENTATION = #{orientation}
+        </if> 
+        <if test="null!=webName and ''!=webName">
+             AND KN_SITE = #{webName}
+        </if>          
+        group by KN_TYPE
+    </select>
+    
+    <resultMap type="java.util.Map" id="orientationCountMap">
+        <result property="orientation" column="KN_ORIENTATION"  javaType="String" jdbcType="VARCHAR"/>
+        <result property="num" column="num"  javaType="Integer" jdbcType="INTEGER"/>
+    </resultMap> 
+    
+    <!-- 根据倾向性分组统计条数 -->
+    <select id="selectCountGroupByOrientation" resultMap="orientationCountMap">
+        SELECT 
+            KN_ORIENTATION,count(1) as num
+        FROM
+            ${_DBNAME}.TOPIC_${eventAnalysisId} 
+        WHERE
+        KN_CTIME IS NOT NULL
+        <if test="null!=searchId and ''!=searchId">
+            AND id <![CDATA[ <= ]]> #{searchId}
+        </if> 
+        <if test="null!=infoState and ''!=infoState">
+            AND KV_STATE = #{infoState}
+        </if> 
+  
+        <if test="null!=customFilter and ''!=customFilter">
+            ${customFilter}
+        </if>  
+        <if test="null!=beginTime and ''!=beginTime">
+            AND KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        </if>  
+        <if test="null!=endTime and ''!=endTime">
+            AND KN_CTIME <![CDATA[ <= ]]> #{endTime}
+        </if> 
+        <if test="null!=isRead and ''!=isRead">
+            AND IS_READ = #{isRead}
+        </if>
+        <if test="null!=hotWords and ''!=hotWords">
+            AND KN_TITLESEG = #{hotWords}
+        </if>
+        <if test="null!=webName and ''!=webName">
+             AND KN_SITE = #{webName}
+        </if>          
+        <if test="null!=weiBoList">
+            AND (( 
+                    KN_TYPE in 
+		            <foreach collection="weiBoList" index="index" item="item" open="(" separator="," close=")">
+		               #{item}
+		            </foreach>
+		            <if test="1==verified">
+		              AND verified <![CDATA[ >= ]]> 1
+		          	</if>
+		          	<if test="-1==verified">
+		              AND verified <![CDATA[ < ]]> 1 
+		          	</if> 
+                    <if test="null!=wechatInfoType and ''!=wechatInfoType">
+			            AND KV_WECHAT_INFO_TYPE = #{wechatInfoType}
+			        </if> 
+			     ) 
+			       <if test="null!=sourcetype">
+			            OR KN_TYPE in 
+			            <foreach collection="sourcetype" index="index" item="item" open="(" separator="," close=")">
+			               #{item}
+			            </foreach>
+                    </if>
+                )    
+         </if>
+         <if test="(null==weiBoList or weiBoList.length==0) and null!=sourcetype">
+            AND KN_TYPE in 
+            <foreach collection="sourcetype" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+            </foreach>
+         </if>
+         group by KN_ORIENTATION
+    </select>
+    
+    <!-- 根据倾向性分组统计条数 -->
+    <select id="selectCountGroupByIsRepeat" resultType="java.util.HashMap">
+        SELECT 
+            count(*) as allCount,count(distinct(SIMHASH)) as repeatAllCount
+        FROM
+            ${_DBNAME}.TOPIC_${eventAnalysisId} 
+        WHERE
+        KN_CTIME IS NOT NULL
+        <if test="null!=searchId and ''!=searchId">
+            AND id <![CDATA[ <= ]]> #{searchId}
+        </if> 
+        <if test="null!=infoState and ''!=infoState">
+            AND KV_STATE = #{infoState}
+        </if> 
+        <if test="null!=customFilter and ''!=customFilter">
+            ${customFilter}
+        </if>  
+        <if test="null!=beginTime and ''!=beginTime">
+            AND KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        </if>  
+        <if test="null!=endTime and ''!=endTime">
+            AND KN_CTIME <![CDATA[ <= ]]> #{endTime}
+        </if> 
+        <if test="null!=isRead and ''!=isRead">
+            AND IS_READ = #{isRead}
+        </if>
+        <if test="null!=orientation and ''!=orientation">
+            AND KN_ORIENTATION = #{orientation}
+        </if> 
+        <if test="null!=hotWords and ''!=hotWords">
+            AND SUBSTRING_INDEX(KN_TITLESEG, ',', 1) = #{hotWords}
+        </if>
+        <if test="null!=webName and ''!=webName">
+             AND KN_SITE = #{webName}
+        </if>        
+         <if test="null!=weiBoList">
+            AND (( 
+                    KN_TYPE in 
+                    <foreach collection="weiBoList" index="index" item="item" open="(" separator="," close=")">
+                       #{item}
+                    </foreach>
+                    <if test="1==verified">
+                        AND verified <![CDATA[ >= ]]> 1
+                    </if>
+                    <if test="-1==verified">
+                        AND verified <![CDATA[ < ]]> 1
+                    </if> 
+                    <if test="null!=wechatInfoType and ''!=wechatInfoType">
+                        AND KV_WECHAT_INFO_TYPE = #{wechatInfoType}
+                    </if> 
+                  )
+                   <if test="null!=sourcetype">
+                        OR KN_TYPE in 
+                        <foreach collection="sourcetype" index="index" item="item" open="(" separator="," close=")">
+                           #{item}
+                        </foreach>
+                    </if>
+                 )
+         </if>
+         <if test="(null==weiBoList or weiBoList.length == 0) and null!=sourcetype">
+            AND KN_TYPE in 
+            <foreach collection="sourcetype" index="index" item="item" open="(" separator="," close=")">
+               #{item}
+            </foreach>
+         </if>
+    </select>
+    
+    <!-- 相同信息列表-->
+    <select id="selectSameEventAnalysisDataList" resultMap="eventAnalysisData">
+        SELECT 
+            *
+        FROM
+            ${_DBNAME}.TOPIC_${eventAnalysisId}
+        WHERE
+            KN_CTIME IS NOT NULL AND UUID <![CDATA[ <> ]]>  #{eventAnalysisInfoId}
+        <if test="null!=simhash and ''!= simhash">
+            AND SIMHASH = #{simhash}
+        </if>
+        <if test="null!=beginTime and ''!=beginTime">
+            AND KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        </if>  
+        <if test="null!=endTime and ''!=endTime">
+            AND KN_CTIME <![CDATA[ <= ]]> #{endTime}
+        </if>          
+        ORDER BY KN_CTIME DESC,id DESC LIMIT 100
+    </select>
+    
+    <!-- 相同信息列表-->
+    <select id="selectSameExportDataList" resultMap="eventAnalysisData">
+        SELECT 
+            t.*,r.REGION_ID
+        FROM
+            ${_DBNAME}.TOPIC_${eventAnalysisId} t
+    LEFT JOIN (select KV_UUID,GROUP_CONCAT(REGION_ID) as REGION_ID from ${_DBNAME}.TOPIC_REGION_${eventAnalysisId} group by KV_UUID) r ON t.UUID = r.KV_UUID
+        WHERE
+            KN_CTIME IS NOT NULL 
+        <if test="null!=simhash and ''!= simhash">
+            AND SIMHASH = #{simhash}
+        </if>
+        <if test="null!=beginTime and ''!=beginTime">
+            AND t.KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        </if>  
+        <if test="null!=endTime and ''!=endTime">
+            AND t.KN_CTIME <![CDATA[ <= ]]> #{endTime}
+        </if>                  
+        ORDER BY KN_CTIME DESC,id DESC
+    </select>
+    
+     <resultMap id="weiboEntity" type="WeiboEntity">
+        <id property="id" column="uuid" />
+        <result property="auther" column="author" />
+        <result property="retweeted_status_url" column="refer_url" />
+        <result property="time" column="kn_ctime" />
+        <result property="influence" column="influence" />
+        <result property="followers_count" column="fans_count" />
+        <result property="allPeople" column="all_author" />
+        <result property="statuses_count" column="statuses_count" />
+        <result property="region" column="region" />
+        <result property="avatarUrl" column="avatar_url" />
+        <result property="authorId" column="authorId" />
+        <result property="kn_abstract" column="kn_abstract" />
+        <result property="url" column="url" />
+    </resultMap>
+    
+    <!-- 获取传播路径数据 -->
+     <select id="getPropagatePath" resultMap="weiboEntity">
+        SELECT 
+            a.uuid,
+		    a.KN_SOURCE AS author,
+		    a.refer_url,
+		    a.all_author,
+		    a.kn_ctime,
+		    b.influence,
+		    b.fans_count,
+		    b.statuses_count as statuses_count,
+		    a.kn_url as url,
+		    b.region,
+		    b.avatar_url,
+		    cast(a.KT_WEIBOUID as char) as authorId,
+		    trim(a.kn_abstract) as kn_abstract 
+		FROM
+		    ${_OTHER_DBNAME}.TOPIC_${eventId} a,
+		    ${_OTHER_DBNAME}.TOPIC_WEIBO_AUTHOR_${eventId} b
+		WHERE
+		    a.KT_WEIBOUID = b.id
+		    AND a.ALL_AUTHOR != ''
+        <if test="null!=beginTime and ''!=beginTime">
+            AND a.KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        </if>  
+        <if test="null!=endTime and ''!=endTime">
+            AND a.KN_CTIME <![CDATA[ <= ]]> #{endTime}
+        </if> 
+        <if test="null!=infoState and ''!=infoState">
+            AND a.KV_STATE = #{infoState}
+        </if> 		    
+		order by refer_url;
+    </select>
+    
+    <select id="getTopicName" resultType = "java.util.HashMap">
+        select 
+            KT_NAME 
+        from 
+            YQZB_T_TOPIC 
+        where kt_uuid = #{eventId};
+    </select>
+    
+    
+    <!-- 博主数量及粉丝数和 -->
+    <resultMap type="java.util.Map" id="weiboAuthorMap">
+        <result property="allAuthor" column="all_author"  javaType="long" jdbcType="BIGINT"/>
+        <result property="allFans" column="all_fans"  javaType="long" jdbcType="BIGINT"/> 
+    </resultMap> 
+    
+    <select id="getWeiboAuthorMap" resultMap="weiboAuthorMap">
+        SELECT 
+	        count(1) as all_author,
+	        sum(fans_count) as all_fans
+        FROM
+            ${_OTHER_DBNAME}.TOPIC_WEIBO_AUTHOR_${eventId}
+    </select>
+    
+    
+    <!-- 首发网站-->
+    <select id="selectFirstWebName" resultMap="eventAnalysisData">
+        SELECT 
+            *
+        FROM
+            ${_DBNAME}.TOPIC_${eventAnalysisId}
+        WHERE
+            KN_CTIME IS NOT NULL
+        <if test="null!=simhash and ''!= simhash">
+            AND SIMHASH = #{simhash}
+        </if>
+        <if test="null!=beginTime and ''!=beginTime">
+            AND KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        </if>  
+        <if test="null!=endTime and ''!=endTime">
+            AND KN_CTIME <![CDATA[ <= ]]> #{endTime}
+        </if>                  
+        ORDER BY KN_CTIME ASC,id asc LIMIT 1
+    </select>
+    
+  <!-- 查询事件分析所属地-->
+    <select id="selectEventAnalysisRegionName" resultType="java.util.HashMap">
+        SELECT 
+            id,name
+        FROM
+            area_info.allsite_locationinfo
+        WHERE
+         
+         <choose>
+          <when test="null!=regionIds"> 
+	          id in 
+	          <foreach collection="regionIds" index="index" item="regionId" open="(" separator="," close=")">
+	             #{regionId}
+	          </foreach>
+          </when>
+          <otherwise>
+               1=-1
+          </otherwise>
+        </choose>  
+    </select>  
+    
+    
+    <select id="eventAnalysisrepeatCount" resultType="java.util.HashMap">
+        SELECT 
+            COUNT(1)-1 AS repeatCount
+        FROM
+            ${_OTHER_DBNAME}.TOPIC_${eventId}
+        WHERE
+            SIMHASH = #{infoSimhash} AND SIMHASH is not NULL AND SIMHASH <![CDATA[ <> ]]> '' 
+        <if test="null!=beginTime and ''!=beginTime">
+            AND KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        </if>  
+        <if test="null!=endTime and ''!=endTime">
+            AND KN_CTIME <![CDATA[ <= ]]> #{endTime}
+        </if>              
+    </select>
+    
+    <select id="getAuthorArticles" resultMap="eventAnalysisData">
+        SELECT id,
+             UUID,KN_TYPE,KN_TITLE,KN_SOURCE,KN_URL,KN_TIME,KN_CTIME,KN_ABSTRACT,KV_VISITCOUNT,KV_REPLY,KV_TRANSPORT,KV_STATE,KN_SITE,
+             KN_ORIENTATION,KN_CONTENT,KN_TITLESEG,KN_TOPICWORDS,KT_WEIBOUID,INFO_CONTENT,MAIN_CONTENT,PREV_AUTHOR,ALL_AUTHOR,SIMHASH,REFER_URL,
+             IS_WARNING,IS_ATTENTION,IS_READ,IS_BRIEFING,IS_REPORT,IMPORTANCE_WEIGHT,EXTEND_FIELD
+        FROM
+            ${_OTHER_DBNAME}.TOPIC_${eventId}
+        WHERE
+            KT_WEIBOUID = #{authorId}
+        <if test="null!=beginTime and ''!=beginTime">
+            AND KN_CTIME <![CDATA[ >= ]]> #{beginTime}
+        </if>  
+        <if test="null!=endTime and ''!=endTime">
+            AND KN_CTIME <![CDATA[ <= ]]> #{endTime}
+        </if>              
+    </select>
+    
+    
+
+</mapper>

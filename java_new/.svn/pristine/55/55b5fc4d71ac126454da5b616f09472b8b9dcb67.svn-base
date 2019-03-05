@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.SourceType">
+
+    <resultMap id="sourceTypeMap" type="SourceType">
+    	<result property="sourceCode" column="sourceCode"/>
+        <result property="sourceName" column="sourceName"/>
+    </resultMap>
+	
+   <select id="getAllSourceType" resultMap="sourceTypeMap">
+		SELECT
+			sourceCode,
+			sourceName
+		FROM
+			ms_source_type
+		ORDER BY
+			sourceIndex
+	</select> 
+	
+</mapper>

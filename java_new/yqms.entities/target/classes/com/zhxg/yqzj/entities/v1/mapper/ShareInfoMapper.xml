@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.ShareInfo">
+
+	<resultMap id="shareInfo" type="ShareInfo">
+		<id property="id" column="id" />
+		<result property="userid" column="userid" />
+		<result property="url" column="url" />
+		<result property="type" column="type" />
+		<result property="pid" column="pid" />
+		<result property="time" column="time" />
+		<result property="snapshotUrl" column="snapshot_url" />
+		<result property="state" column="state" />
+	</resultMap>
+
+	<select id="getList" resultMap="shareInfo">
+
+	</select>
+
+	<insert id="insertShareInfo">
+		INSERT INTO
+		  `yqms2`.`ms_share_info` (`userid`, `url`, `type`, `pid`,`snapshot_url`)
+		VALUES 
+		  (#{userid}, #{url}, #{type}, #{pid}, #{snapshotUrl})
+	</insert>
+
+</mapper>

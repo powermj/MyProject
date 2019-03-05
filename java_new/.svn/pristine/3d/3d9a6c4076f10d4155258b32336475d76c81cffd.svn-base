@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.ReportTemplate">
+	
+	<resultMap id="reportTemplate" type="com.zhxg.yqzj.entities.v1.ReportTemplate">
+		<id property="id" column="id" />
+		<result property="userid" column="userid" />
+		<result property="type" column="type" />
+		<result property="template" column="template" />
+	</resultMap>
+
+	<select id="getReportTemplateList"  parameterType = "java.util.Map"  resultMap="reportTemplate">
+		SELECT 
+		      * 
+		FROM 
+		      report.report_template 
+		WHERE 
+		      userid = #{userid}
+	</select>
+	
+	<insert id="insertReportTemplate" parameterType = "java.util.Map">
+	    insert into report_template
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="_KUID != null" >
+	        userid,
+	      </if>
+	      <if test="type != null" >
+	        type,
+	      </if>
+	      <if test="template != null" >
+	        template
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="_KUID != null" >
+	        #{_KUID},
+	      </if>
+	      <if test="type != null" >
+	        #{type},
+	      </if>
+	      <if test="template != null">
+	      	#{template}
+	      </if>
+	    </trim>
+	</insert>
+	
+	<resultMap id="reportWeekTemplate" type="com.zhxg.yqzj.entities.v1.ReportTemplate">
+        <id property="id" column="id" />
+        <result property="userid" column="userid" />
+        <result property="type" column="type" />
+        <result property="templateName" column="templateName" />
+        <result property="template" column="template" />
+        <result property="templateImg" column="templateImg" />
+        <result property="templateType" column="templateType" />
+        <result property="reportSelected" column="reportSelected" />
+        
+    </resultMap>
+	
+	<select id="getAllWeekReportTemplate"  parameterType = "java.util.Map"  resultMap="reportWeekTemplate">
+		SELECT 
+              a.id,
+              a.userid,
+              a.type,
+              a.templateName,
+              a.templateImg,
+              a.templateType,
+              case  when b.KU_ID is null then 0 else 1 end as reportSelected
+        FROM 
+              yqms2.report_template a left join WK_T_USERBASEINFO b on b.ku_type = #{receiveReportType} and b.KU_VALUE = a.id and (b.KU_ID = #{_KUID} or b.KU_ID is null)
+        where
+            a.templateType = #{templateType}
+        and a.type = #{type}
+        and (a.userid = #{userid} or  a.userid = 0)
+        order by reportSelected desc,a.userid,a.id desc
+    </select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

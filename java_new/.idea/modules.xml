@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/yqms.iml" filepath="$PROJECT_DIR$/yqms.iml" />
+      <module fileurl="file://$PROJECT_DIR$/yqms.app.api/yqms.app.api.iml" filepath="$PROJECT_DIR$/yqms.app.api/yqms.app.api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/yqms.core/yqms.core.iml" filepath="$PROJECT_DIR$/yqms.core/yqms.core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/yqms.dao/yqms.dao.iml" filepath="$PROJECT_DIR$/yqms.dao/yqms.dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/yqms.entities/yqms.entities.iml" filepath="$PROJECT_DIR$/yqms.entities/yqms.entities.iml" />
+      <module fileurl="file://$PROJECT_DIR$/yqms.service/yqms.service.iml" filepath="$PROJECT_DIR$/yqms.service/yqms.service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/yqms.web.api/yqms.web.api.iml" filepath="$PROJECT_DIR$/yqms.web.api/yqms.web.api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/yqms.web.fgw/yqms.web.fgw.iml" filepath="$PROJECT_DIR$/yqms.web.fgw/yqms.web.fgw.iml" />
+    </modules>
+  </component>
+</project>

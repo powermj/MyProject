@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.RegionReportInfo">
+
+	<!-- 获取用户下所有数据分类 -->
+	<resultMap type="com.zhxg.yqzj.entities.v1.RegionReportInfo" id="RegionReportInfo">
+		<result property="infoUuid" column="KR_UUID"/>
+		<result property="kvUuid" column="KV_UUID"/>
+		<result property="title" column="KV_TITLE"/>
+		<result property="summary" column="KV_ABSTRACT"/>
+		<result property="webName" column="KV_WEBNAME"/>
+		<result property="sourceType" column="KV_SOURCETYPE"/>
+		<result property="author" column="KV_AUTHOR"/>
+		<result property="infoUrl" column="KV_URL"/>
+		<result property="orientation" column="ORIENTATION"/>
+		<result property="publishTime" column="KR_CTIME"/>
+		<result property="keyWord" column="KEYWORD"/>
+		<result property="isWarning" column="ISYJ"/>
+		<result property="isAttention" column="ISMYATTENTION"/>
+		<result property="isRead" column="ISREAD"/>
+		<result property="visitCount" column="KV_VISITCOUNT"/>
+		<result property="replyCount" column="KV_REPLY"/>
+		<result property="infoSimhash" column="KV_SIMHASH"/>
+		<result property="authorPic" column="KV_WBAUTHORPIC"/>
+		<result property="imgUrl" column="KV_IMGURL"/>
+		<result property="vedioUrl" column="KV_VEDEOURL"/>
+		<result property="importanceWeight" column="IMPORTANCE_WEIGHT"/>
+		<result property="extendField" column="KV_EXTEND_FIELD"/>
+	</resultMap>
+	
+	<select id="getRegionByKruuid" parameterType = "java.util.Map" resultMap="RegionReportInfo">
+			SELECT 
+				KR_UUID,
+				KV_UUID,
+				KV_TITLE,
+				KV_ABSTRACT,
+				KV_WEBNAME,
+				KV_SOURCETYPE,
+				KV_AUTHOR,
+				KV_URL,
+				ORIENTATION,
+				KR_CTIME,
+				KEYWORD,
+				ISYJ,
+				ISMYATTENTION,
+				ISREAD,
+				KV_VISITCOUNT,
+				KV_REPLY,
+				KV_SIMHASH,
+				KV_WBAUTHORPIC,
+				KV_IMGURL,
+				KV_VEDEOURL,
+				IMPORTANCE_WEIGHT,
+				KV_EXTEND_FIELD
+			FROM 
+				LocationREF.T_${PROVINCEID}_${DBTABLETIME}
+			WHERE  
+				KR_UUID IN
+			<if test="krUuidArr != null and krUuidArr.length != 0">
+				<foreach collection="krUuidArr" item="krUuid" index="index" open="(" separator="," close=")">
+					#{krUuid}
+				</foreach>
+			</if>
+	</select>
+</mapper>

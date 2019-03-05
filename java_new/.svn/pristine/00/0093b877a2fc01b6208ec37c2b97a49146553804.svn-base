@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.MyFocus">
+	<!-- 	根据信息id查询详情 -->
+	<select id="selectList" parameterType = "java.util.Map" resultType = "java.util.Map">
+		SELECT     tb1.KM_UUID,
+		           tb1.KV_UUID,
+		           tb1.KV_TITLE,
+		           tb2.KV_CONTENT,
+		           tb1.KV_URL,
+		           tb1.KV_SITE,
+		           tb1.KV_SOURCE,
+		           tb1.KV_ORIENTATION,
+		           tb1.KV_VISITCOUNT,
+		           DATE_FORMAT(tb1.KV_CTIME,'%Y-%m-%d %H:%i:%s') AS KV_CTIME
+		FROM       ${_DBNAME}.WK_T_MYATTENTION_INFO tb1
+		LEFT JOIN  ${_DBNAME}.WK_T_MYATTENTION_INFOCNT tb2 ON tb1.KM_UUID = tb2.KM_UUID
+		WHERE      1 = 1
+		<if test="kvIdList != null and kvIdList != ''">
+			AND tb1.KV_UUID IN
+			<foreach collection="kvIdList" index="index" item="item" open="(" separator="," close=")">        
+				#{item}    
+			</foreach>
+		</if>
+		
+		<if test="kmIdList != null and kmIdList != ''">
+			AND tb1.KM_UUID IN
+			<foreach collection="kmIdList" index="index" item="item" open="(" separator="," close=")">        
+				#{item}    
+			</foreach>
+		</if>
+	</select>
+	
+	<!-- 	查询我的关注列表，不包含内容 -->
+	<select id="selectBasicList" parameterType = "java.util.Map" resultType = "java.util.Map">
+		SELECT tb.*  
+		FROM   ${_DBNAME}.WK_T_MYATTENTION_INFO tb
+		WHERE  1 = 1
+		AND    tb.KM_UUID IN
+	    <foreach collection="kmIdList" index="index" item="item" open="(" separator="," close=")">        
+		    #{item}    
+	    </foreach>
+	</select>
+    <!-- 	查询关注的信息内容 -->
+    <select id="selectContent" parameterType = "java.util.Map" resultType = "java.lang.String">
+    	SELECT tb.KV_CONTENT
+		FROM   ${_DBNAME}.WK_T_MYATTENTION_INFOCNT tb
+		WHERE  1 = 1
+		AND    tb.KM_UUID = #{kmId}
+		limit 1
+    </select>
+</mapper>

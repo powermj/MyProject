@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.UserBaseInfo">
+
+	<!-- 获取移动云用户状态信息 -->
+	<resultMap type="com.zhxg.yqzj.entities.v1.UserBaseInfo" id="UserBaseInfos">
+		<id column="kuUuid" property="KU_UUID"/>
+		<result property="kuId" column="KU_ID" />
+		<result column="kuType" property="KU_TYPE"/>
+		<result column="kuValue" property="KU_VALUE"/>
+	</resultMap>
+	<!-- 获取用户所有信息 -->
+	<select id="getUserBaseInfo" parameterType = "java.util.Map" resultMap="UserBaseInfos">
+		select 
+			T1.KU_UUID,
+			T1.KU_ID,
+			T1.KU_TYPE,
+			T1.KU_VALUE
+		from 
+			WK_T_USERBASEINFO T1
+		where 
+			T1.KU_ID = #{_KUID}
+	</select>
+	
+	<!-- 修改用户关键词及行业信息 -->
+	<update id="updateUserServiceInfo" parameterType="java.util.Map">
+		update
+			WK_T_USERSERVICE T2
+		set
+			T2.KU_KEYWORDNUM = #{keyWordNum},
+			<if test="null != kuAreaSet and '' != kuAreaSet">
+			T2.KU_AREASET = #{kuAreaSet},
+			</if>
+			T2.KU_INDUSTRY = #{departmentId}
+		where 
+			T2.KU_ID = #{_KUID}
+	</update>
+	
+	<!-- 修改用户名称,手机号码,用户类型 -->
+	<update id="updateUserInfo" parameterType="java.util.Map">
+		update
+			WK_T_USER T3
+		set
+			T3.KU_NAME = #{customerName},
+			T3.KU_SEX = #{customerType}
+		where 
+			T3.KU_ID = #{_KUID}
+	</update>
+	
+	<!-- 修改用户地域信息 -->
+	<update id="updateUserAreaNewInfo" parameterType="java.util.Map">
+		<![CDATA[
+            INSERT INTO 
+                WK_T_USER_AREA_NEW (ku_id,province_id,city_id,level) 
+            VALUES 
+                (#{_KUID},#{provinceId},#{cityId},#{level}) 
+            ON DUPLICATE KEY UPDATE 
+                province_id = #{provinceId},
+                city_id = #{cityId},
+                level = #{level}
+            ]]>
+	</update>
+	
+	<!-- 获取某个状态下的用户的信息 -->
+	<select id="getUserBaseInfoByType" parameterType = "java.util.Map" resultMap="UserBaseInfos">
+		select 
+			T4.KU_UUID,
+			T4.KU_ID,
+			T4.KU_TYPE,
+			T4.KU_VALUE
+		from 
+			WK_T_USERBASEINFO T4
+		where 
+			T4.KU_ID = #{_KUID}
+		and
+			T4.KU_TYPE = #{kuType}
+		and 
+			T4.KU_VALUE = #{kuValue}
+	</select>
+	
+	<!-- 获取移动云用户秘书版本 -->
+	<select id="getMobileCloudVersion" parameterType = "String" resultType="String">
+		select 
+			T5.KU_VERSION
+		from 
+			WK_T_USERSERVICE T5
+		where 
+			T5.KU_ID = #{_KUID}
+	</select>
+	
+	<!-- 获取移动云用户品牌词开关状态 -->
+	<select id="getMobileCloudAreaSet" parameterType = "String" resultType="String">
+		select 
+			KU_AREASET
+		from 
+			WK_T_USERSERVICE
+		where 
+			KU_ID = #{_KUID}
+	</select>
+	
+	<!-- 删除用户第一次登陆信息 -->
+	<delete id="delFirstLoginInfo" parameterType = "java.util.Map">
+		DELETE
+		FROM
+			WK_T_USERBASEINFO
+		WHERE
+			KU_ID = #{_KUID}
+		AND 
+			KU_TYPE = 'KU_FIRSTLOGIN'
+		AND 
+			KU_VALUE = '1'
+	</delete>
+	
+	<!-- 删除用户进入引导所需信息 -->
+	<delete id="delFirstGuideInfo" parameterType = "java.util.Map">
+		DELETE
+		FROM
+			WK_T_USERBASEINFO
+		WHERE
+			KU_ID = #{_KUID}
+		AND 
+			KU_TYPE = 'KU_ISGUIDE'
+		AND 
+			KU_VALUE = '1'
+	</delete>
+	
+	<!-- 查询二级行业id -->
+	<select id="getMobileCloudDepartmentId" parameterType = "String" resultType="String">
+		select 
+			KU_INDUSTRY
+		from 
+			WK_T_USERSERVICE
+		where 
+			KU_ID = #{_KUID}
+	</select>
+	
+	<!-- 获取移动云用户类型 -->
+	<select id="getMobileCloudSex" parameterType = "String" resultType="String">
+		select 
+			KU_SEX
+		from 
+			WK_T_USER
+		where 
+			KU_ID = #{_KUID}
+	</select>
+	
+	<!-- 修改用户版本 和 关键词数量 -->
+    <update id="updateUserVerKeyNum" parameterType="java.util.Map">
+        update
+            WK_T_USERSERVICE 
+        set
+            KU_VERSION = #{version},
+            KU_KEYWORDNUM = #{KU_KEYWORDNUM},
+            KU_TRYSDATE = #{KU_TRYSDATE}
+        where 
+            KU_ID = #{KU_ID}
+    </update>
+    
+    <!-- 停用用户 -->
+    <update id="cancelUser" parameterType="java.util.Map">
+        update
+            WK_T_USERSERVICE 
+        set
+           KU_USERSTATUS = 2,
+           KU_TRYSDATE = #{KU_TRYSDATE}
+        where 
+            KU_ID = #{KU_ID}
+    </update>
+    
+    <!-- 查询二级行业id -->
+	<select id="getLableIndustryId" parameterType = "String" resultType="String">
+		select 
+			KC_LABLEID
+		from 
+			WK_T_CLASSIFICATION
+		where 
+			KC_ID = #{kcId}
+	</select>
+	
+	<!-- copySubjectInfo -->
+    <select id="copySubjectInfo" parameterType="java.util.Map" resultType="String">
+		SELECT
+		    KU_VALUE
+		FROM
+		    WK_T_USERBASEINFO
+		WHERE
+		    KU_TYPE = 'COPY_SUBJECT_INFO'
+		AND KU_ID = #{userid}
+    </select>
+    
+    <insert id="saveUserReceiveMail" parameterType="java.util.Map">
+		INSERT INTO WK_T_USERBASEINFO 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			KU_ID,
+			KU_TYPE,
+			KU_VALUE
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{_KUID},
+			'DAY_REPORT_RECEIVEMAIL',
+			#{receiveMail}
+		</trim>
+		 ON DUPLICATE KEY UPDATE KU_VALUE = #{receiveMail}
+    </insert>
+    
+    <insert id="saveUserReceiveReportId" parameterType="java.util.Map">
+		INSERT INTO WK_T_USERBASEINFO 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			KU_ID,
+			KU_TYPE,
+			KU_VALUE
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{_KUID},
+			'DAY_REPORT_ID',
+			#{templateId}
+		</trim>
+		 ON DUPLICATE KEY UPDATE KU_VALUE = #{templateId}
+    </insert>
+    
+    <!-- 获取用户日报模板ID -->
+    <select id="getUserDefaultTemplate" parameterType = "String" resultType="String">
+        select 
+            KU_VALUE
+        from 
+            WK_T_USERBASEINFO
+        where 
+            KU_TYPE = 'DAY_REPORT_ID'
+        AND
+            KU_ID = #{_KUID}
+    </select>
+    
+    <select id="getUserReceiveMail" parameterType="java.util.Map" resultType="String">
+    	SELECT
+		    KU_VALUE
+		FROM
+		    WK_T_USERBASEINFO
+		WHERE
+		    KU_TYPE = 'DAY_REPORT_RECEIVEMAIL'
+		AND KU_ID = #{_KUID}
+    </select>
+    
+    
+    <insert id="insertHotKeywordFilter" parameterType="java.util.Map">
+		INSERT INTO WK_T_USERBASEINFO(		
+			KU_ID,
+			KU_TYPE,
+			KU_VALUE
+		) values (
+			#{userid},
+			'HOT_KEYWORD_FILTER',
+			#{hotKeyword}
+		)
+    </insert>
+    
+    <update id="updateHotKeywordFilter" parameterType="java.util.Map">
+		update
+            WK_T_USERBASEINFO 
+        set
+           KU_VALUE =#{hotKeyword}
+        where 
+             KU_TYPE = 'HOT_KEYWORD_FILTER'
+		AND KU_ID = #{userid}
+    </update>
+    
+    <select id="selectHotKeywordFilter" parameterType="java.util.Map" resultType="String">
+    	SELECT
+		    KU_VALUE
+		FROM
+		    WK_T_USERBASEINFO
+		WHERE
+		    KU_TYPE = 'HOT_KEYWORD_FILTER'
+		AND KU_ID = #{userid}
+    </select>
+    
+    <delete id="delHotKeywordFilter" parameterType="java.util.Map">
+    	DELETE
+		FROM
+			WK_T_USERBASEINFO
+		WHERE
+		    KU_TYPE = 'HOT_KEYWORD_FILTER'
+		AND KU_ID = #{userid}
+    </delete>
+    
+    <!-- 获取用户周报模板ID -->
+    <select id="getUserWeekReceviveTime" parameterType = "String" resultType="String">
+        select 
+            KU_VALUE
+        from 
+            WK_T_USERBASEINFO
+        where 
+            KU_TYPE = #{receiveTimeType}
+        AND
+            KU_ID = #{userid}
+    </select>
+    
+    <select id="getUserWeekReceiveMail" parameterType="java.util.Map" resultType="String">
+    	SELECT
+		    KU_VALUE
+		FROM
+		    WK_T_USERBASEINFO
+		WHERE
+		    KU_TYPE = #{receiveMailType}
+		AND KU_ID = #{userid}
+    </select>
+    
+    
+    <!-- 获取用户周报订阅状态 -->
+    <select id="getUserWeekSubcribeStatus" parameterType = "String" resultType="int">
+        select 
+            KU_VALUE
+        from 
+            WK_T_USERBASEINFO
+        where 
+            KU_TYPE = #{subcribeStatusType}
+        AND
+            KU_ID = #{userid}
+    </select>
+    
+    <!-- 获取用户周报模板ID -->
+    <select id="getUserWeekDefaultTemplate" parameterType = "String" resultType="String">
+        select 
+            KU_VALUE
+        from 
+            WK_T_USERBASEINFO
+        where 
+            KU_TYPE = #{receiveReportType}
+        AND
+            KU_ID = #{userid}
+    </select>
+    
+    <insert id="saveUserWeekReceiveReportId" parameterType="java.util.Map">
+		INSERT INTO WK_T_USERBASEINFO 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			KU_ID,
+			KU_TYPE,
+			KU_VALUE
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{userid},
+			#{receiveReportType},
+			#{templateId}
+		</trim>
+		 ON DUPLICATE KEY UPDATE KU_VALUE = #{templateId}
+    </insert>
+    
+    <insert id="saveUserWeekSubcribeStatus" parameterType="java.util.Map">
+		INSERT INTO WK_T_USERBASEINFO 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			KU_ID,
+			KU_TYPE,
+			KU_VALUE
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{_KUID},
+			#{subcribeStatusType},
+			#{status}
+		</trim>
+		 ON DUPLICATE KEY UPDATE KU_VALUE = #{status}
+    </insert>
+    
+    <insert id="saveUserWeekReceviveTime" parameterType="java.util.Map">
+		INSERT INTO WK_T_USERBASEINFO 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			KU_ID,
+			KU_TYPE,
+			KU_VALUE
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{userid},
+			#{receiveTimeType},
+			#{receiveTime}
+		</trim>
+		 ON DUPLICATE KEY UPDATE KU_VALUE = #{receiveTime}
+    </insert>
+    
+    
+    <insert id="saveUserWeekReceviveEmail" parameterType="java.util.Map">
+		INSERT INTO WK_T_USERBASEINFO 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			KU_ID,
+			KU_TYPE,
+			KU_VALUE
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{userid},
+			#{receiveMailType},
+			#{receiveMail}
+		</trim>
+		 ON DUPLICATE KEY UPDATE KU_VALUE = #{receiveMail}
+    </insert>
+    
+    
+    <select id="getUserWeekReportCondition" parameterType = "String" resultType="String">
+        select 
+            KU_VALUE
+        from 
+            WK_T_USERBASEINFO
+        where 
+            KU_TYPE = #{reportConditionType}
+        AND
+            KU_ID = #{userid}
+    </select>
+    
+     <insert id="saveUserWeekReportCondition" parameterType="java.util.Map">
+		INSERT INTO WK_T_USERBASEINFO 
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			KU_ID,
+			KU_TYPE,
+			KU_VALUE
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			#{userid},
+			#{reportConditionType},
+			#{condition}
+		</trim>
+		 ON DUPLICATE KEY UPDATE KU_VALUE = #{condition}
+    </insert>
+    
+    <insert id="insertUserInfo" parameterType="java.util.Map">
+		INSERT INTO WK_T_USERBASEINFO(		
+			KU_ID,
+			KU_TYPE,
+			KU_VALUE
+		) values (
+			#{userid},
+			#{type},
+			#{value}
+		)
+    </insert>
+    
+   <update id="modifyUserInfo" parameterType="java.util.Map">
+		update
+            WK_T_USERBASEINFO 
+        set
+           KU_VALUE =#{value}
+        where 
+             KU_TYPE = #{type}
+		AND KU_ID = #{userid}
+    </update>
+    
+    <select id="selectUserInfo" parameterType="java.util.Map" resultType="String">
+    	SELECT
+		    KU_VALUE
+		FROM
+		    WK_T_USERBASEINFO
+		WHERE
+		    KU_TYPE = #{type}
+		AND KU_ID = #{userid}
+    </select>
+    
+    <delete id="deleteUserInfo" parameterType="java.util.Map">
+    	DELETE
+		FROM
+			WK_T_USERBASEINFO
+		WHERE
+		    KU_TYPE = #{type}
+		AND KU_ID = #{userid}
+    </delete>
+</mapper>

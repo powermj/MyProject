@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.AllReportData">
+
+	<!-- 获取用户下所有数据分类 -->
+	<resultMap type="com.zhxg.yqzj.entities.v1.AllReportData" id="AllReportDatas">
+		<result property="infoUuid" column="infoUuid"/>
+		<result property="kvUuid" column="kvUuid"/>
+		<result property="title" column="title"/>
+		<result property="summary" column="summary"/>
+		<result property="content" column="content"/>
+		<result property="webName" column="webName"/>
+		<result property="sourceType" column="sourceType"/>
+		<result property="author" column="author"/>
+		<result property="infoUrl" column="infoUrl"/>
+		<result property="orientation" column="orientation"/>
+		<result property="publishTime" column="publishTime"/>
+		<result property="keyWord" column="keyWord"/>
+		<result property="isWarning" column="isWarning"/>
+		<result property="isAttention" column="isAttention"/>
+		<result property="isRead" column="isRead"/>
+		<result property="visitCount" column="visitCount"/>
+		<result property="replyCount" column="replyCount"/>
+		<result property="infoSimhash" column="infoSimhash"/>
+		<result property="authorPic" column="authorPic"/>
+		<result property="domain" column="domain"/>
+		<result property="imgUrl" column="imgUrl"/>
+		<result property="vedioUrl" column="vedioUrl"/>
+		<result property="importanceWeight" column="importanceWeight"/>
+		<result property="extendField" column="extendField"/>
+		<result property="enterTime" column="enterTime"/>
+		<result property="classifyId" column="classifyId"/>
+		<result property="isExport" column="isExport"/>
+	</resultMap>
+	
+	<select id="getAllReports" parameterType="java.util.Map" resultMap="AllReportDatas">
+		SELECT
+			infoUuid,
+			title,
+			summary,
+			content,
+			webName,
+			sourceType,
+			author,
+			infoUrl,
+			orientation,
+			publishTime,
+			keyWord,
+			isWarning,
+			isAttention,
+			isRead,
+			visitCount,
+			replyCount,
+			infoSimhash,
+			authorPic,
+			domain,
+			imgUrl,
+			vedioUrl,
+			importanceWeight,
+			extendField,
+			enterTime,
+			classifyId,
+			isExport
+		FROM
+			${_DBNAME}.AllReportData
+		WHERE 
+			1=1
+		<if test="sourceTypeArr != null and sourceTypeArr.length != 0">
+			AND sourceType IN 
+			<foreach collection="sourceTypeArr" index="index" item="sourceType" open="(" separator="," close=")">
+				#{sourceType}
+			</foreach>
+		</if>
+		<if test="orientationArr != null and orientationArr.length != 0">
+			AND orientation IN 
+			<foreach collection="orientationArr" index="index" item="orientation" open="(" separator="," close=")">
+				#{orientation}
+			</foreach>
+		</if>
+		<if test="classifyIdArr != null and classifyIdArr.length != 0">
+			AND classifyId IN 
+			<foreach collection="classifyIdArr" index="index" item="classifyId" open="(" separator="," close=")">
+				#{classifyId}
+			</foreach>
+		</if>
+		<if test="isExport != null and isExport != ''">
+			AND isExport = #{isExport}
+		</if>
+		<if test="publishTimeType != null and publishTimeType != ''">
+			<![CDATA[
+			AND publishTime >= #{publishBeginTime}
+			AND publishTime < #{publishEndTime}
+			]]>
+		</if>
+		<if test="enterTimeType != null and enterTimeType != ''">
+			<![CDATA[
+			AND enterTime >= #{enterBeginTime}
+			AND enterTime < #{enterEndTime}
+			]]>
+		</if>
+		<if test='orderType == 1 '>
+			ORDER BY  publishTime DESC
+		</if>
+		<if test='orderType == 2 '>
+			ORDER BY  enterTime DESC
+		</if>
+	</select>
+	
+	<!-- 批量修改倾向性 -->
+	<update id="updateReportOrientations" parameterType = "java.util.Map">
+		update 
+			${_DBNAME}.AllReportData
+		set
+			orientation = #{orientation}
+		where
+			infoUuid in 
+		<if test="infoUuidArr != null and infoUuidArr.length != 0">
+			<foreach collection="infoUuidArr" item="infoUuid" index="index" open="(" separator="," close=")">
+				#{infoUuid}
+			</foreach>
+		</if>
+	</update>
+	
+	<!-- 批量修改倾向性 -->
+	<update id="updateReportClassifyIds" parameterType = "java.util.Map">
+		update 
+			${_DBNAME}.AllReportData
+		set
+			classifyId = #{classifyId}
+		where
+			infoUuid in 
+		<if test="infoUuidArr != null and infoUuidArr.length != 0">
+			<foreach collection="infoUuidArr" item="infoUuid" index="index" open="(" separator="," close=")">
+				#{infoUuid}
+			</foreach>
+		</if>
+	</update>
+	
+	<!-- 批量删除数据信息 -->
+	<delete id="deleteReportDatas" parameterType = "java.util.Map">
+		delete from
+			${_DBNAME}.AllReportData
+		where
+			infoUuid in 
+		<if test="infoUuidArr != null and infoUuidArr.length != 0">
+			<foreach collection="infoUuidArr" item="infoUuid" index="index" open="(" separator="," close=")">
+				#{infoUuid}
+			</foreach>
+		</if>
+	</delete>
+	
+	<insert id="insertReportData" parameterType = "java.util.Map">
+	    insert into ${_DBNAME}.AllReportData
+	    <trim prefix="(" suffix=")" suffixOverrides="," >
+	      <if test="infoUuid != null" >
+	        infoUuid,
+	      </if>
+	      <if test="title != null" >
+	        title,
+	      </if>
+	      <if test="summary != null" >
+	        summary,
+	      </if>
+	      <if test="content != null and content != ''" >
+	        content,
+	      </if>
+	      <if test="contentXml != null and contentXml != ''" >
+	        contentXml,
+	      </if>
+	      <if test="webName != null" >
+	        webName,
+	      </if>
+	      <if test="sourceType != null" >
+	        sourceType,
+	      </if>
+	      <if test="author != null" >
+	        author,
+	      </if>
+	      <if test="infoUrl != null" >
+	        infoUrl,
+	      </if>
+	      <if test="orientation != null" >
+	        orientation,
+	      </if>
+	      <if test="publishTime != null" >
+	        publishTime,
+	      </if>
+	      <if test="keyWord != null" >
+	        keyWord,
+	      </if>
+	      <if test="isWarning != null" >
+	        isWarning,
+	      </if>
+	      <if test="isAttention != null" >
+	        isAttention,
+	      </if>
+	      <if test="isRead != null" >
+	        isRead,
+	      </if>
+	      <if test="visitCount != null" >
+	        visitCount,
+	      </if>
+	      <if test="replyCount != null" >
+	        replyCount,
+	      </if>
+	      <if test="infoSimhash != null" >
+	        infoSimhash,
+	      </if>
+	      <if test="authorPic != null" >
+	        authorPic,
+	      </if>
+	      <if test="domain != null" >
+	        domain,
+	      </if>
+	      <if test="imgUrl != null" >
+	        imgUrl,
+	      </if>
+	      <if test="vedioUrl != null" >
+	        vedioUrl,
+	      </if>
+	      <if test="importanceWeight != null" >
+	        importanceWeight,
+	      </if>
+	      <if test="extendField != null" >
+	        extendField,
+	      </if>
+	      <if test="enterTime != null" >
+	        enterTime,
+	      </if>
+	      <if test="classifyId != null" >
+	        classifyId,
+	      </if>
+	      <if test="isExport != null" >
+	        isExport
+	      </if>
+	    </trim>
+	    <trim prefix="values (" suffix=")" suffixOverrides="," >
+	      <if test="infoUuid != null" >
+	        #{infoUuid},
+	      </if>
+	      <if test="title != null" >
+	        #{title},
+	      </if>
+	      <if test="summary != null" >
+	        #{summary},
+	      </if>
+	      <if test="content != null" >
+	        #{content},
+	      </if>
+	      <if test="contentXml != null and contentXml != ''" >
+	        #{contentXml},
+	      </if>
+	      <if test="webName != null" >
+	        #{webName},
+	      </if>
+	      <if test="sourceType != null" >
+	        #{sourceType},
+	      </if>
+	      <if test="author != null" >
+	        #{author},
+	      </if>
+	      <if test="infoUrl != null" >
+	        #{infoUrl},
+	      </if>
+	      <if test="orientation != null" >
+	        #{orientation},
+	      </if>
+	      <if test="publishTime != null" >
+	        #{publishTime},
+	      </if>
+	      <if test="keyWord != null" >
+	        #{keyWord},
+	      </if>
+	      <if test="isWarning != null" >
+	        #{isWarning},
+	      </if>
+	      <if test="isAttention != null" >
+	        #{isAttention},
+	      </if>
+	      <if test="isRead != null" >
+	        #{isRead},
+	      </if>
+	      <if test="visitCount != null" >
+	        #{visitCount},
+	      </if>
+	      <if test="replyCount != null" >
+	        #{replyCount},
+	      </if>
+	      <if test="infoSimhash != null" >
+	        #{infoSimhash},
+	      </if>
+	      <if test="authorPic != null" >
+	        #{authorPic},
+	      </if>
+	      <if test="domain != null" >
+	        #{domain},
+	      </if>
+	      <if test="imgUrl != null" >
+	        #{imgUrl},
+	      </if>
+	      <if test="vedioUrl != null" >
+	        #{vedioUrl},
+	      </if>
+	      <if test="importanceWeight != null" >
+	        #{importanceWeight},
+	      </if>
+	      <if test="extendField != null" >
+	        #{extendField},
+	      </if>
+	      <if test="enterTime != null" >
+	        #{enterTime},
+	      </if>
+	      <if test="classifyId != null" >
+	        #{classifyId},
+	      </if>
+	      <if test="isExport != null" >
+	        #{isExport}
+	      </if>
+	    </trim>
+	</insert>
+	
+	<select id="getRepeatUuid" parameterType = "java.util.Map"  resultType="string">
+		SELECT
+			infoUuid
+		FROM 
+			${_DBNAME}.AllReportData
+		WHERE  
+			infoUuid IN
+		<if test="infoUuidArr != null and infoUuidArr.length != 0">
+			<foreach collection="infoUuidArr" item="infoUuid" index="index" open="(" separator="," close=")">
+				#{infoUuid}
+			</foreach>
+		</if>
+	</select>
+	
+	<select id="getReportByClassify" parameterType="java.util.Map" resultType="int">
+		SELECT
+			COUNT(infoUuid)
+		FROM 
+			${_DBNAME}.AllReportData
+		WHERE
+			classifyId = #{classifyId}	
+	</select>
+	
+	<select id="getReportIdByClassify" parameterType="java.util.Map" resultType="string">
+		SELECT
+			infoUuid
+		FROM 
+			${_DBNAME}.AllReportData
+		WHERE
+			classifyId = #{classifyId}	
+	</select>
+	
+	<resultMap type="com.zhxg.yqzj.entities.v1.Info" id="exportInfoList">
+		<result property="infoUuid" column="infoUuid"/>
+		<result property="title" column="title"/>
+		<result property="summary" column="summary"/>
+		<result property="content" column="content"/>
+		<result property="webName" column="webName"/>
+		<result property="sourceType" column="sourceType"/>
+		<result property="author" column="author"/>
+		<result property="infoUrl" column="infoUrl"/>
+		<result property="orientation" column="orientation"/>
+		<result property="publishTime" column="publishTime"/>
+		<result property="keyword" column="keyWord"/>
+		<result property="visitCount" column="visitCount"/>
+		<result property="replyCount" column="replyCount"/>
+		<result property="domain" column="domain"/>
+		<result property="enterTime" column="enterTime"/>
+		<result property="classifyId" column="classifyId"/>
+	</resultMap>
+	
+	<select id="getDataForExport" parameterType="java.util.Map" resultMap="exportInfoList">
+		SELECT
+			infoUuid,
+			title,
+			summary,
+			content,
+			webName,
+			sourceType,
+			author,
+			infoUrl,
+			orientation,
+			publishTime,
+			keyWord,
+			visitCount,
+			replyCount,
+			domain,
+			enterTime,
+			classifyId
+		FROM
+			${_DBNAME}.AllReportData
+		WHERE 
+			1=1
+		<if test="sourceType != null and sourceType.length != 0">
+            AND sourceType IN 
+            <foreach collection="sourceType" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="orientation != null and orientation.length != 0">
+            AND orientation IN 
+            <foreach collection="orientation" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="classifyIds != null and classifyIds.length != 0">
+            AND classifyId IN 
+            <foreach collection="classifyIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+		<if test="publishBeginTime != null and publishBeginTime != ''">
+            <![CDATA[
+            AND publishTime >= #{publishBeginTime}
+            ]]>
+        </if>
+         <if test="publishEndTime != null and publishEndTime != ''">
+            <![CDATA[
+            AND publishTime < #{publishEndTime}
+            ]]>
+        </if>
+        <if test="enterBeginTime != null and enterBeginTime != ''">
+            <![CDATA[
+            AND enterTime >= #{enterBeginTime}
+            ]]>
+        </if>
+       <if test="enterEndTime != null and enterEndTime != ''">
+            <![CDATA[
+            AND enterTime < #{enterEndTime}
+            ]]>
+       </if>
+       <if test="isExport != null and isExport != ''">
+            AND isExport = #{isExport}
+        </if>
+       <if test='orderType == "1" or orderType==""'>
+			ORDER BY  publishTime DESC
+		</if>
+		<if test='orderType == "2" '>
+			ORDER BY  publishTime ASC
+		</if> 
+	</select>
+	
+	<select id="getEchartDataList" parameterType = "java.util.Map" resultType = "java.util.Map">
+	   SELECT 
+	       ${field}
+	   FROM 
+	       ${_DBNAME}.AllReportData
+	   WHERE 
+	       1=1
+	    <if test="sourceType != null and sourceType.length != 0">
+            AND sourceType IN 
+            <foreach collection="sourceType" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="orientation != null and orientation.length != 0">
+            AND orientation IN 
+            <foreach collection="orientation" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="classifyIds != null and classifyIds.length != 0">
+            AND classifyId IN 
+            <foreach collection="classifyIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="isExport != null and isExport != ''">
+            AND isExport = #{isExport}
+        </if>
+        <if test="publishBeginTime != null and publishBeginTime != ''">
+            <![CDATA[
+            AND publishTime >= #{publishBeginTime}
+            ]]>
+        </if>
+         <if test="publishEndTime != null and publishEndTime != ''">
+            <![CDATA[
+            AND publishTime < #{publishEndTime}
+            ]]>
+        </if>
+        <if test="enterBeginTime != null and enterBeginTime != ''">
+            <![CDATA[
+            AND enterTime >= #{enterBeginTime}
+            ]]>
+        </if>
+	   <if test="enterEndTime != null and enterEndTime != ''">
+            <![CDATA[
+            AND enterTime < #{enterEndTime}
+            ]]>
+       </if>
+       GROUP BY 
+	       ${group}
+	   ${union}
+	   ORDER BY 
+	       ${order}
+	   <if test="limit != null and limit != ''">
+	   LIMIT 
+	       ${limit}
+	   </if>
+	</select>
+	
+	<select id="getEchartDataDistance" parameterType = "java.util.Map" resultType = "java.util.Map">
+       SELECT 
+           max(publishTime) maxTime ,min(publishTime) as minTime,TIMESTAMPDIFF(Hour,min(publishTime),max(publishTime)) as distance
+       FROM 
+           ${_DBNAME}.AllReportData
+       WHERE 
+           1=1
+        <if test="sourceType != null and sourceType.length != 0">
+            AND sourceType IN 
+            <foreach collection="sourceType" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="orientation != null and orientation.length != 0">
+            AND orientation IN 
+            <foreach collection="orientation" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="classifyIds != null and classifyIds.length != 0">
+            AND classifyId IN 
+            <foreach collection="classifyIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="isExport != null and isExport != ''">
+            AND isExport = #{isExport}
+        </if>
+        <if test="publishBeginTime != null and publishBeginTime != ''">
+            <![CDATA[
+            AND publishTime >= #{publishBeginTime}
+            ]]>
+        </if>
+         <if test="publishEndTime != null and publishEndTime != ''">
+            <![CDATA[
+            AND publishTime < #{publishEndTime}
+            ]]>
+        </if>
+        <if test="enterBeginTime != null and enterBeginTime != ''">
+            <![CDATA[
+            AND enterTime >= #{enterBeginTime}
+            ]]>
+        </if>
+       <if test="enterEndTime != null and enterEndTime != ''">
+            <![CDATA[
+            AND enterTime < #{enterEndTime}
+            ]]>
+       </if>    
+    </select>
+	
+	
+	<select id="getInfoDetail" parameterType="java.util.Map" resultMap="AllReportDatas">
+		SELECT
+			infoUuid,
+			title,
+			summary,
+			content,
+			contentXml,
+			webName,
+			sourceType,
+			author,
+			infoUrl,
+			orientation,
+			publishTime,
+			keyWord,
+			isWarning,
+			isAttention,
+			isRead,
+			visitCount,
+			replyCount,
+			infoSimhash,
+			authorPic,
+			domain,
+			imgUrl,
+			vedioUrl,
+			importanceWeight,
+			extendField,
+			enterTime,
+			classifyId,
+			isExport
+		FROM
+			${_DBNAME}.AllReportData
+		WHERE 
+			infoUuid = #{infoUuid}
+	</select>
+	
+	<update id="setInfoStatus" parameterType="java.util.Map">
+		update
+			${_DBNAME}.AllReportData
+		set
+			isExport = 1
+		where
+			infoUuid in	
+			<foreach collection="infoUuidArr" index="index" item="infoUuid" open="(" separator="," close=")">
+				#{infoUuid}
+			</foreach>
+	</update>
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.TopicReportInfo">
+
+	<!-- 获取用户下所有数据分类 -->
+	<resultMap type="com.zhxg.yqzj.entities.v1.TopicReportInfo" id="TopicReportInfo">
+		<result property="infoUuid" column="UUID"/>
+		<result property="title" column="KN_TITLE"/>
+		<result property="summary" column="KN_ABSTRACT"/>
+		<result property="content" column="KN_CONTENT"/>
+		<result property="webName" column="KN_SITE"/>
+		<result property="sourceType" column="KN_TYPE"/>
+		<result property="author" column="KN_AUTHOR"/>
+		<result property="infoUrl" column="KN_URL"/>
+		<result property="orientation" column="KN_ORIENTATION"/>
+		<result property="publishTime" column="KN_CTIME"/>
+		<result property="keyWord" column="KN_TOPICWORDS"/>
+		<result property="isWarning" column="IS_WARNING"/>
+		<result property="isAttention" column="IS_ATTENTION"/>
+		<result property="isRead" column="IS_READ"/>
+		<result property="visitCount" column="KV_VISITCOUNT"/>
+		<result property="replyCount" column="KV_REPLY"/>
+		<result property="infoSimhash" column="SIMHASH"/>
+		<result property="domain" column="WEBNAMEDOMAIN"/>
+		<result property="importanceWeight" column="IMPORTANCE_WEIGHT"/>
+		<result property="extendField" column="EXTEND_FIELD"/>
+	</resultMap>
+	
+	<select id="getTopicByUuid" parameterType = "java.util.Map" resultMap="TopicReportInfo">
+			SELECT 
+				UUID,
+				KN_TITLE,
+				KN_ABSTRACT,
+				KN_CONTENT,
+				KN_SITE,
+				KN_TYPE,
+				KN_AUTHOR,
+				KN_URL,
+				KN_ORIENTATION,
+				KN_CTIME,
+				KN_TOPICWORDS,
+				IS_WARNING,
+				IS_ATTENTION,
+				IS_READ,
+				KV_VISITCOUNT,
+				KV_REPLY,
+				SIMHASH,
+				WEBNAMEDOMAIN,
+				IMPORTANCE_WEIGHT,
+				EXTEND_FIELD
+			FROM 
+				${_OTHER_DBNAME}.TOPIC_${eventId}
+			WHERE  
+				UUID IN
+			<if test="uuidArr != null and uuidArr.length != 0">
+				<foreach collection="uuidArr" item="topicUuid" index="index" open="(" separator="," close=")">
+					#{topicUuid}
+				</foreach>
+			</if>
+	</select>
+</mapper>

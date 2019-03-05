@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhxg.framework.base.curd.impl.BaseDaoImpl">
+	<!-- 基础CRUD -->
+	<!-- 新增 -->
+	<insert id="create">${value}</insert>
+	<!-- 根据ID更新单条数据 -->
+	<update id="updateById">${value}</update>
+	<!-- 根据ID查询单条数据 -->
+	<select id="readOneById" resultType="hashmap">${value}</select>
+	<!-- 根据ID删除单条数据 -->
+	<delete id="delOneById">${value}</delete>
+	<!-- 根据ID，逻辑删除单条数据 -->
+	<delete id="delOneByIdLogically">${value}</delete>
+	<!-- 批量操作 -->
+	<!-- 批量新增 -->
+	<insert id="batchCreate">${value}</insert>
+	<!-- 批量更新 -->
+	<insert id="batchUpdate">${value}</insert>
+	
+	<!-- 根据账号ID获取用户信息 -->
+	<select id="getUserInfoByAccountIds" resultType="hashmap">
+		SELECT
+		    a.account_id accountId,
+			a.userid userId,
+			u.KU_DBNAME dbHost
+		FROM
+			yqms2.WK_T_USER u,yqms2.ms_account a
+		WHERE 
+		    u.ku_id = a.userid
+		AND
+			a.account_id
+		IN
+		<foreach collection="list" item="userIds" open="(" separator="," close=")">  
+			#{userIds}
+		</foreach>
+	</select>
+	
+	<!-- 根据用户ID获取用户信息 -->
+    <select id="getUserInfoByUserIds" resultType="hashmap">
+        SELECT
+            u.ku_id as accountId,
+            u.ku_id userId,
+            u.KU_DBNAME dbHost
+        FROM
+            yqms2.WK_T_USER u
+        WHERE 
+            u.ku_id
+        IN
+        <foreach collection="list" item="userIds" open="(" separator="," close=")">  
+            #{userIds}
+        </foreach>
+    </select>
+	
+	<resultMap type="java.util.Map" id="lastIdMap">
+		<result property="id" column="id"  javaType="int" jdbcType="INTEGER"/>  
+	</resultMap>  
+	<select id="getLastInsertId" resultMap="lastIdMap">
+		SELECT LAST_INSERT_ID() AS id
+	</select>
+	
+</mapper>

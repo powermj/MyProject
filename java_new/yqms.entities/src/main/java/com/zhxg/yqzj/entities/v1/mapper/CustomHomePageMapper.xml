@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.CustomHomePage">
+
+    <resultMap id="customHomePage" type="CustomHomePage">
+        <result property="ico" column="ico" />
+        <result property="logo" column="logo" />      
+        <result property="label" column="label" />
+        <result property="name" column="name" />
+        <result property="welcome" column="welcome" />
+        <result property="pic" column="pic" />
+        <result property="qq" column="qq" />
+        <result property="nav" column="nav" />
+    </resultMap>
+
+
+
+
+
+
+<!-- 首页自定义数据 -->
+	<select id="getUserCustomHomePageData_self" resultType="java.util.Map">
+	    SELECT
+			KD_TYPE,KD_VALUE
+		FROM
+			${_DBNAME}.WK_T_DEFINEDHOME
+		WHERE 1=1 
+		
+		<if test="dataType != null" >
+        	and KD_DATATYPE= #{dataType}
+        </if>
+        <if test='"1" == type' >
+        	and KD_TYPE <![CDATA[ <> ]]> 'nav'
+        </if>
+        <if test='"nav" == type' >
+        	and KD_TYPE = 'nav'
+        </if>	
+        <if test="null != kdType" >
+        	and KD_TYPE = #{kdType}
+        </if>
+        
+        
+        	
+	</select>
+
+
+
+	<select id="getUserNavData" resultType="java.util.Map">
+
+		SELECT
+			*
+		FROM
+			(
+				SELECT
+					*
+				FROM
+					(
+						SELECT
+							b.KB_ID id,
+							b.KB_NAME `name`,
+							a.KM_ID navid,
+							a.KU_TYPE type,
+							a.KU_ORDER navsort,
+							a.KU_STATUS navstatus,
+							b.KB_CLASS,
+							b.KB_METHOD,
+							a.KU_RENAME,
+							1 subClass,
+							'00' AS kk_type,
+							'' AS appModuleImageUrl,
+							'' AS appModuleImageUpdateTime,
+							'' AS appModuleImageLastUpdateTime,
+							'[]' AS filterDomain,
+							'[]' AS filterRegion,
+							b.KB_ORDER
+						FROM
+							WK_T_USERNAV a,
+							WK_T_BARNEW b
+						WHERE
+							a.KM_ID = b.KB_ID
+						AND KU_TYPE = 0
+						AND a.KU_ID = #{_KUID}
+						UNION ALL
+							SELECT
+								b.KC_UUID id,
+								b.KC_NAME `name`,
+								a.KM_ID navid,
+								a.KU_TYPE type,
+								a.KU_ORDER navsort,
+								a.KU_STATUS navstatus,
+								'',
+								'',
+								a.KU_RENAME,
+								3 subClass,
+								CASE b.kc_isold
+							WHEN 0 THEN
+								'01'
+							ELSE
+								'13'
+							END AS kk_type,
+							'' AS appModuleImageUrl,
+							'' AS appModuleImageUpdateTime,
+							'' AS appModuleImageLastUpdateTime,
+							'[]' AS filterDomain,
+							'[]' AS filterRegion,
+							99
+						FROM
+							WK_T_USERNAV a,
+							WK_T_USERCLASSIFY b
+						WHERE
+							KM_ID = KC_UUID
+						AND KU_TYPE = 1
+						AND b.KU_ID = #{_KUID}
+						UNION ALL
+							SELECT
+								b.KS_ID id,
+								b.Kk_NAME `name`,
+								a.KM_ID navid,
+								a.KU_TYPE type,
+								a.KU_ORDER navsort,
+								a.KU_STATUS navstatus,
+								'',
+								'',
+								a.KU_RENAME,
+								4 subClass,
+								CASE c.kc_isold
+							WHEN 0 THEN
+								'01'
+							ELSE
+								'13'
+							END AS kk_type,
+							'' AS appModuleImageUrl,
+							'' AS appModuleImageUpdateTime,
+							'' AS appModuleImageLastUpdateTime,
+							IFNULL(b.KS_FILTER_DOMAIN,'[]') AS filterDomain,
+							IFNULL(b.KS_FILTER_REGION,'[]') AS filterRegion,
+							99
+						FROM
+							WK_T_USERNAV a,
+							WT_K_SUBRELATION b,
+							WK_T_USERCLASSIFY c
+						WHERE
+							b.ks_sid = c.kc_uuid
+						AND a.KM_ID = b.KS_ID
+						AND KU_TYPE = 1
+						AND b.KU_ID = #{_KUID}
+						UNION ALL
+							SELECT
+								s.id,
+								s.`name`,
+								s.navid,
+								s.type,
+								s.navsort,
+								s.navstatus,
+								KB_CLASS,
+								KB_METHOD,
+								s.KU_RENAME,
+								subClass,
+								ifnull(s.kktype, c.kk_type) AS kk_type,
+								'' AS appModuleImageUrl,
+								'' AS appModuleImageUpdateTime,
+								'' AS appModuleImageLastUpdateTime,
+								s.filterDomain,
+								s.filterRegion,
+								99
+							FROM
+								(
+									SELECT
+										b.KS_ID id,
+										b.Kk_NAME `name`,
+										a.KM_ID navid,
+										a.KU_TYPE type,
+										a.KU_ORDER navsort,
+										a.KU_STATUS navstatus,
+										'' AS KB_CLASS,
+										'' AS KB_METHOD,
+										a.KU_RENAME,
+										2 subClass,
+										b.ks_sid,
+										b.kk_type AS kktype,
+										IFNULL(b.KS_FILTER_DOMAIN,'[]') AS filterDomain,
+										IFNULL(b.KS_FILTER_REGION,'[]') AS filterRegion
+									FROM
+										WK_T_USERNAV a,
+										WT_K_SUBRELATION b
+									WHERE
+										a.KM_ID = b.KS_ID
+									AND KU_TYPE = 2
+									AND b.KU_ID = #{_KUID}
+								) s
+							LEFT JOIN WK_T_KEYWS c ON s.ks_sid = c.kk_id
+					) t
+				ORDER BY
+					navsort
+			) temp
+		ORDER BY
+			KB_ORDER
+
+	</select>
+	
+	
+	<select id="getUserBarNewData" resultType="java.util.Map">
+	    SELECT
+			*
+		FROM
+			(
+				SELECT
+					KB_ID id,
+					KB_NAME `name`,
+					'' navid,
+					'0' type,
+					KB_ID navsort,
+					'0' navstatus,
+					KB_CLASS,
+					KB_METHOD,
+					'' KU_RENAME,
+					'1' subClass,
+					KB_ORDER,
+					'00' AS kk_type,
+					'' AS appModuleImageUrl,
+					'' AS appModuleImageUpdateTime,
+					'' AS appModuleImageLastUpdateTime
+				FROM
+					`WK_T_BARNEW`
+				UNION ALL
+					SELECT
+						KC_UUID id,
+						KC_NAME `name`,
+						'',
+						'1' type,
+						'',
+						'0',
+						'',
+						'',
+						'',
+						'3' subClass,
+						99,
+						'00' AS kk_type,
+						'' AS appModuleImageUrl,
+						'' AS appModuleImageUpdateTime,
+						'' AS appModuleImageLastUpdateTime
+					FROM
+						`WK_T_USERCLASSIFY`
+					WHERE
+						KU_ID = #{_KUID}
+					AND KC_STATE = '1'
+			) temp
+		ORDER BY
+			KB_ORDER
+	</select>
+	
+	
+	
+	
+	<select id="getUserInfo" resultType="java.util.Map">
+	    SELECT
+			KU_SEX AS userSex,
+			KU_HOMEQUERY AS homeQuery,
+			KU_TVISOPEN AS tvIsOpen,
+			KU_ANSWER AS answer,
+			KU_WEIXINCHECK AS weiXinCheck,
+			KU_OPENSMALLVIDEO AS openSmallVideo,
+			KU_COMPANY AS company,
+			KU_REGDATE AS regDate
+		FROM
+			WK_T_USER a,
+			WK_T_USERSERVICE b
+		WHERE
+			a.KU_ID = b.KU_ID
+		AND a.KU_ID = #{_KUID}		
+	</select>
+	
+	
+	<select id="userBaseInfo" resultType="java.util.Map">
+	    SELECT
+			KU_TYPE AS type,
+			KU_VALUE AS value
+		FROM
+			WK_T_USERBASEINFO
+		WHERE
+			KU_ID = #{_KUID}
+	</select>
+	
+	
+	<delete id="restoreDefaultData_self" >
+	   	DELETE
+		FROM
+			${_DBNAME}.WK_T_DEFINEDHOME
+		WHERE
+			KD_DATATYPE =#{type}
+  </delete>
+
+<insert id="insertCustomData_self" parameterType="java.util.Map" >
+    insert into ${_DBNAME}.WK_T_DEFINEDHOME
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="dataType != null" >
+        KD_TYPE,
+      </if>
+      <if test="value != null" >
+        KD_VALUE,
+      </if>
+      <if test="type != null" >
+        KD_DATATYPE,
+      </if>     
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >    
+      <if test="dataType != null" >
+        #{dataType,jdbcType=VARCHAR},
+      </if>
+       <if test="value != null" >
+        #{value,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null" >
+        #{type},
+      </if> 
+    </trim>
+  </insert>
+
+<select id="getHeadLinesList" resultType="java.util.Map">
+    SELECT cover,title,poster,url,site_name siteName,publish_time pushTime,content_abstract contentAbstract
+    FROM yqms2.homepage_headlines_info 
+    <if test="null!=_parameter and ''!=_parameter">
+    <bind name="typeName" value="_parameter+'%'"/>
+     WHERE site_name LIKE #{typeName}
+    </if>
+    ORDER BY publish_time DESC
+</select>
+<select id="getSubjectListByUserId" resultType="java.util.Map" parameterType="java.lang.Integer">
+    SELECT KS_ID ksId,KS_PID ksPid,KS_SID ksSid,KS_CTIME ksCtime,KU_ID kuId,KK_NAME kkName,KS_TYPE ksType 
+    FROM yqms2.WT_K_SUBRELATION
+    WHERE KU_ID=#{userId} AND KK_TYPE='01'
+    ORDER BY KS_CTIME DESC 
+</select>
+<select id="getSourceTypeCount" resultType="java.util.Map" parameterType="java.util.Map">
+	SELECT KV_SOURCETYPE sourceType, SUM(CASE  WHEN ORIENTATION=1 THEN num ELSE 0 END) positiveCount,
+	SUM(CASE  WHEN ORIENTATION=2 THEN num ELSE 0 END) negativeCount,
+	SUM(CASE  WHEN ORIENTATION=3 THEN num ELSE 0 END) neutralCount 
+	FROM ( 
+	SELECT KV_SOURCETYPE,ORIENTATION,COUNT(DISTINCT KV_URL) num FROM ${_DBNAME}.WK_T_VALIDATION_REF
+	WHERE KR_CTIME >= #{startTime} AND KR_CTIME <![CDATA[<]]> #{endTime}
+      <if test="null!=subjectList and subjectList.size>0">
+           and KR_KEYWORDID in
+           <foreach collection="subjectList" item="subject" separator="," open="(" close=")">
+              #{subject.ksId}
+           </foreach> 
+      </if>
+	GROUP BY KV_SOURCETYPE ,ORIENTATION ) ls GROUP BY KV_SOURCETYPE
+</select>
+
+
+
+ <update id="updateCustomData_self" parameterType="java.util.Map" >
+    update ${_DBNAME}.WK_T_DEFINEDHOME
+    <set >
+      <if test="value != null" >
+        KD_VALUE = #{value},
+      </if>    
+    </set>
+    where KD_TYPE = #{dataType}
+  </update>
+
+
+
+ <select id="getSubjectTree" resultType="java.util.Map">
+	   SELECT
+			id,
+			`name`,
+			kssid,
+			CASE pId
+		WHEN '0' THEN
+			uuid
+		ELSE
+			pId
+		END AS pId,
+		 ksindex,
+		 kcindex,
+		 kstype,
+		 KU_ID,
+		 region
+		FROM
+			(
+				SELECT
+					s.KS_ID id,
+					s.KK_NAME `name`,
+					s.KS_PID pId,
+					s.KC_UUID uuid,
+					s.KS_SID kssid,
+					s.KS_INDEX ksindex,
+					s.Kc_INDEX kcindex,
+					s.KS_TYPE kstype,
+					s.KU_ID,
+					s.KS_FILTER_REGION AS region
+				FROM
+					yqms2.WT_K_SUBRELATION s,
+					yqms2.WK_T_KEYWS k
+				WHERE
+					s.KS_SID = k.KK_ID
+				AND k.KU_ID = #{_KUID}
+				AND s.KU_ID = k.KU_ID
+				AND k.KK_TYPE = '01'
+				UNION
+					SELECT
+						s.KS_ID id,
+						s.KK_NAME `name`,
+						s.KS_PID pId,
+						s.KC_UUID uuid,
+						s.KS_SID kssid,
+						s.KS_INDEX ksindex,
+						s.Kc_INDEX kcindex,
+						s.KS_TYPE kstype,
+						s.KU_ID,
+						s.KS_FILTER_REGION AS region
+					FROM
+						yqms2.WT_K_SUBRELATION s
+					WHERE
+						s.KU_ID = #{_KUID}
+					AND (
+						s.KK_TYPE = '01'
+						OR (KS_PID != '0' OR KC_UUID != '0')
+					)
+					UNION
+						SELECT
+							KC_UUID id,
+							KC_NAME `name`,
+							'0' AS pId,
+							'0' AS uuid,
+							'0' AS kssid,
+							kc_sort ksindex,
+							0 AS kcindex,
+							'2' AS kstype,
+							KU_ID,
+							'[]' AS region
+						FROM
+							yqms2.WK_T_USERCLASSIFY
+						WHERE
+							KU_ID = #{_KUID}
+						AND KC_ISOLD = '0'
+						AND KC_TYPE = '0'
+			) h
+		ORDER BY
+			(
+				CASE kstype
+				WHEN 2 THEN
+					2
+				ELSE
+					1
+				END
+			) DESC,
+			ksindex,
+			kcindex
+	</select>
+
+	<delete id="delUserNav" >
+	   	delete from yqms2.WK_T_USERNAV where ku_id =#{_KUID}
+  	</delete>
+  
+  
+  <update id="updateUserClassfy" parameterType="java.util.Map" >
+    update yqms2.WT_K_SUBRELATION set KS_ISTOP = '0' where ku_id = #{_KUID}
+  </update>
+  
+  <update id="updateSubrelation" parameterType="java.util.Map" >
+    update yqms2.WK_T_USERCLASSIFY set kc_state = '0' where ku_id = #{_KUID}
+  </update>
+
+</mapper>

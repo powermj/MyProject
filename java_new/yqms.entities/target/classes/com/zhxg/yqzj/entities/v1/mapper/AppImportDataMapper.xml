@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.AppImportData">
+
+    <resultMap id="appImportData" type="AppImportData">
+        <result property="id" column="id"/>
+        <result property="appWords" column="appwords" />
+        <result property="appPictures" column="apppictures" />
+        <result property="appVoices" column="appvoices" />
+        <result property="appUserId" column="appuserid" />
+        <result property="inputDate" column="inputdate" />
+        <result property="model" column="model" />
+        <result property="edition" column="edition" />
+        <result property="valid" column="valid" />
+        <result property="appUserName" column="appusername" />
+    </resultMap>
+	
+	<!-- 添加上传数据 -->
+	<insert id="insertAppData" parameterType="com.zhxg.yqzj.entities.v1.AppImportData">
+		<selectKey keyProperty="id" resultType="int" >  
+            select LAST_INSERT_ID()  
+        </selectKey> 
+		<![CDATA[
+        INSERT INTO 
+            `yqms2`.`app_import_data` (
+            `appwords`, 
+            `apppictures`, 
+            `appvoices`, 
+            `appuserid`, 
+            `inputdate`, 
+            `model`, 
+            `edition`, 
+            `valid`,
+            `appusername`)
+        VALUES (
+            #{appWords},
+            #{appPictures},
+            #{appVoices},
+            #{appUserId},
+            #{inputDate},
+            #{model},
+            #{edition},
+            #{valid},
+            #{appUserName}
+        )
+            ]]>
+	</insert>
+	
+	<!-- 添加app竞品使用情况 -->
+    <insert id="saveAppUsageStatistics" parameterType="com.zhxg.yqzj.entities.v1.UsageStatistics">
+        <![CDATA[
+        INSERT INTO 
+	        `yqms2`.`app_usage_statistics` (
+	        `package_name`, 
+	        `label`, 
+	        `frequency`, 
+	        `length`, 
+	        `date`, 
+	        `userid`, 
+	        `device_name`)
+         VALUES (
+	         #{packageName}, 
+	         #{label}, 
+	         #{frequency}, 
+	         #{length}, 
+	         #{date}, 
+	         #{userId}, 
+	         #{deviceName}
+         )
+         ON DUPLICATE KEY UPDATE 
+             `frequency`=#{frequency},
+             `length`=#{length}
+            ]]>
+    </insert>
+	
+</mapper>

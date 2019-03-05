@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.VideoInfo">
+	<resultMap id="videoInfo" type="VideoInfo">
+		<id property="id" column="id" />
+		<result property="infoId" column="info_id" />
+		<result property="originalLink" column="original_link" />
+		<result property="infoSource" column="info_source" />
+		<result property="infoContent" column="info_content" />
+		<result property="keyword" column="keyword" />
+		<result property="isRead" column="is_read" />
+		<result property="isWarning" column="is_warning" />
+		<result property="orientation" column="orientation" />
+		<result property="subjectId" column="subject_id" />
+		<result property="coverImageLink" column="cover_image_link" />
+		<result property="videoOriginalLink" column="url" />
+		<result property="isCommentData" column="is_comment_data" />
+		<result property="frequencyOfPlay" column="frequency_of_play" />
+		<result property="numberOfPoints" column="number_of_points" />
+		<result property="releaseTime" column="release_time" />
+		<result property="acquisitionTime" column="acquisition_time" />
+		<result property="author" column="author" />
+		<result property="authorHeadLink" column="author_head_link" />
+		<result property="authorFansCount" column="author_fans_count" />
+		<result property="authorNumberOfWorks" column="author_number_of_works" />
+		<result property="simHash" column="simhash" />
+		<result property="simHashCount" column="simhash_count"/>
+		<result property="isDelete" column="is_delete" />
+		<result property="commentContent" column="comment_content"/>
+		<result property="authorKey" column="author_key"/>
+	</resultMap>
+
+	<select id="getDetailsInfo" resultMap="videoInfo" parameterType="java.util.Map">
+		SELECT * FROM ${_DBNAME}.WK_T_VIDEO_INFO WHERE id=#{id}
+	</select>
+	<sql id="simHashListWhere">
+	           <if test="null!=sourceIdList and sourceIdList.size>0">
+                AND info_source IN
+                <foreach collection="sourceIdList" item="sourceId" separator="," open="(" close=")">
+                    #{sourceId}
+                </foreach>
+            </if>
+            <if test="null!=orientationList and orientationList.size>0">
+                AND orientation IN
+                <foreach collection="orientationList" item="orientation" separator="," open="(" close=")">
+                    #{orientation}
+                </foreach>
+            </if>
+            <if test="null!=simHashList and simHashList.size>0">
+                AND simhash IN
+                <foreach collection="simHashList" item="sh" separator="," open="(" close=")">
+                    #{sh}
+                </foreach>
+            </if>
+            <if test="null!=subjectIdList and subjectIdList.size>0">
+             AND subject_id IN
+                <foreach collection="subjectIdList" item="sjId" separator="," open="(" close=")">
+                    #{sjId}
+                </foreach>
+            </if>
+            <if test="null!=simHash and ''!=simHash and 1!=simHash and 0!=simHash">
+             AND simhash=#{simHash}
+            </if>
+            <if test="null!=bTime and ''!=bTime">
+             AND release_time <![CDATA[>=]]>#{bTime}
+            </if>
+            <if test="null!=eTime and ''!=eTime">
+             AND release_time <![CDATA[<=]]>#{eTime}
+            </if>
+            <if test="null!=isRead">
+             AND is_read=#{isRead}
+            </if>
+            <if test="null!=isWarning">
+             AND is_warning=#{isWarning}
+            </if>
+            <if test="null!=isCommentData">
+             AND is_comment_data=#{isCommentData}
+            </if>
+            <if test="null!=author and ''!=author ">
+              AND author  LIKE '%${author}%'
+            </if>
+             <if test="null!=infoContent   and ''!=infoContent">
+              AND info_content  LIKE '%${infoContent}%'
+            </if>
+            <if test="null!=subjectId and ''!=subjectId">
+             AND subject_id=#{subjectId}
+            </if>
+            
+	
+	</sql>
+
+	<select id="getSimHashList"  resultType="videoInfo" parameterType="java.util.Map">
+        SELECT simhash,COUNT(*) simhash_count
+        FROM ${_DBNAME}.WK_T_VIDEO_INFO
+        <where>
+          <if test="simHashCount !='shc'">
+            <include refid="simHashListWhere"/>
+          </if>
+          <if test="simHashCount =='shc'">
+                AND simhash IN
+                <foreach collection="simHashList" item="sh" separator="," open="(" close=")">
+                    #{sh}
+                </foreach>
+                
+            <if test="null!=subjectIdList and subjectIdList.size>0">
+             AND subject_id IN
+                <foreach collection="subjectIdList" item="sjId" separator="," open="(" close=")">
+                    #{sjId}
+                </foreach>
+            </if> 
+                
+          </if>
+            <if test="null==isWarning">
+                AND is_delete=0
+            </if>
+            <if test="null!=id and id>0">
+                AND id<![CDATA[ <> ]]>#{id}
+            </if>
+        </where>
+        GROUP BY simhash
+          <if test="simHashCount !='shc'">
+            ORDER BY release_time DESC
+          </if>
+       
+	</select>
+	
+	
+	<select id="getNotSimHashList" resultMap="videoInfo" parameterType="java.util.Map">
+		SELECT *
+		FROM ${_DBNAME}.WK_T_VIDEO_INFO
+		<where>
+		  <if test="simHashCount!='shc'">
+		    <include refid="simHashListWhere"/>
+		  </if>
+		   <if test="simHashCount =='shc'">
+                AND simhash IN
+                <foreach collection="simHashList" item="sh" separator="," open="(" close=")">
+                    #{sh}
+                </foreach>
+             <if test="null!=subjectIdList and subjectIdList.size>0">
+             AND subject_id IN
+                <foreach collection="subjectIdList" item="sjId" separator="," open="(" close=")">
+                    #{sjId}
+                </foreach>
+            </if>
+          </if>
+			<if test="null==isWarning">
+                AND is_delete=0
+            </if>
+              <if test="null!=id and  id>0">
+                AND id<![CDATA[ <> ]]>#{id}
+            </if>
+		</where>
+		   <if test="simHashCount !='shc'">
+            ORDER BY release_time DESC
+          </if>
+	</select>
+	<update id="updateBatchWarning" parameterType="java.util.Map">
+	   UPDATE ${_DBNAME}.WK_T_VIDEO_INFO SET is_warning=1 WHERE id IN
+	   <foreach collection="idList" item="id" separator="," open="(" close=")">
+          #{id}
+       </foreach>
+	</update>
+	<delete id="deleteBatch" parameterType="java.util.Map">
+	   DELETE FROM ${_DBNAME}.WK_T_VIDEO_INFO 
+	   <where>
+		   <if test="null!=idList and idList.length>0">
+		     id IN
+		         <foreach collection="idList" item="id" separator="," open="(" close=")">
+		          #{id}
+		        </foreach>
+	        </if>
+	        <if test="null!=subjectId and ''!=subjectId">
+	          AND subject_id =#{subjectId}
+	        </if>
+	         <if test="null!=simHash and ''!=simHash ">
+	          AND simhash =#{simHash}  
+	        </if>
+	         <if test="null!=isWarning">
+              AND is_warning=#{isWarning}
+            </if>
+            <if test="null!=isDelete">
+              AND is_delete=#{isDelete}
+            </if>
+      </where> 
+	</delete>
+	
+	<update id="updateVideoInfo" parameterType="java.util.Map">
+	     UPDATE ${_DBNAME}.WK_T_VIDEO_INFO
+	     <set>
+	        <if test="null!=isWarning ">
+	           is_warning=#{isWarning},
+	        </if>
+	        <if test="null!=isDelete">
+               is_delete=#{isDelete},
+            </if>
+            <if test="isRead!=null">
+               is_read=#{isRead},
+            </if>
+	     </set>
+	    <where>
+           <if test="null!=idList and idList.length>0">
+             AND id IN
+                 <foreach collection="idList" item="ids" separator="," open="(" close=")">
+                  #{ids}
+                </foreach>
+            </if>
+            <if test="null!=isWarningWhere ">
+               AND is_warning=#{isWarningWhere}
+            </if>
+              <if test="null!=isDeleteWhere">
+               AND is_delete=#{isDeleteWhere}
+            </if>
+            <if test="null!=subjectId and ''!=subjectId  ">
+               AND subject_id =#{subjectId}
+            </if>
+             <if test="null!=simHash and ''!=simHash ">
+                AND simhash =#{simHash}  
+            </if>
+            <if test="null!=id">
+                AND id=#{id}
+            </if>
+      </where>
+	</update>
+   <select id="getSubjectName" resultType="java.lang.String" parameterType="java.lang.String">
+        SELECT KK_NAME FROM yqms2.WT_K_SUBRELATION WHERE KS_ID=#{_parameter}
+   </select>
+	
+	
+	<select id="getPlatformProportion" resultType="java.util.Map" parameterType="java.util.Map">
+	
+		SELECT COUNT(1) AS count,info_source AS id FROM ${_DBNAME}.WK_T_VIDEO_INFO 
+		<where>
+			<include refid="simHashListWhere"/>
+		</where>
+		AND is_delete=0
+		GROUP BY info_source ORDER BY count DESC
+	</select>
+	
+	<select id="getMaxAndMinCTime" resultType="java.util.Map" parameterType="java.util.Map">
+	
+		SELECT DATE_FORMAT(MAX(release_time),'%Y-%m-%d %H:%i:%s') AS maxTime,DATE_FORMAT(MIN(release_time),'%Y-%m-%d %H:%i:%s') AS minTime FROM ${_DBNAME}.WK_T_VIDEO_INFO
+		<where>
+			<include refid="simHashListWhere"/>
+		</where>
+		AND is_delete=0
+	</select>
+	
+	
+	<select id="getTrendOfPubOpinion" resultType="java.util.Map" parameterType="java.util.Map">
+	
+			SELECT COUNT(1) AS value,
+			<if test="1 == groupType ">
+				DATE_FORMAT(release_time, '%Y') AS `name`
+			</if>
+			<if test="2 == groupType ">
+				DATE_FORMAT(release_time, '%Y-%m') AS `name`
+			</if>
+			<if test="3 == groupType ">
+				DATE_FORMAT(release_time, '%Y-%m-%d') AS `name`
+			</if>
+			<if test="4 == groupType ">
+				CONCAT(DATE_FORMAT(release_time, '%Y-%m-%d %H'),':00') AS `name`
+			</if>
+			 FROM ${_DBNAME}.WK_T_VIDEO_INFO 
+		<where>
+			<include refid="simHashListWhere"/>
+		</where>
+		AND is_delete=0
+		<if test="1 == groupType ">
+				GROUP BY DATE_FORMAT(release_time, '%Y')
+			</if>
+			<if test="2 == groupType ">
+				GROUP BY DATE_FORMAT(release_time, '%Y-%m')
+			</if>
+			<if test="3 == groupType ">
+				GROUP BY DATE_FORMAT(release_time, '%Y-%m-%d')
+			</if>
+			<if test="4 == groupType ">
+				GROUP BY DATE_FORMAT(release_time, '%Y-%m-%d %H')
+			</if>
+	  	ORDER BY `name` ASC	
+	</select>
+	
+	
+	<select id="getOriCount" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT COUNT(1) AS count, orientation AS id FROM ${_DBNAME}.WK_T_VIDEO_INFO	
+		<where>
+			<include refid="simHashListWhere"/>
+		</where>
+		AND is_delete=0
+		GROUP BY orientation 
+	</select>
+	
+	
+	<select id="getWordsCloud" resultType="java.util.Map" parameterType="java.util.Map">
+		SELECT SUBSTRING_INDEX(keyword, ',', 1) AS word,
+		    COUNT(*) AS count
+		FROM ${_DBNAME}.WK_T_VIDEO_INFO	
+		<where>
+			<include refid="simHashListWhere"/>
+		</where>
+		AND is_delete=0
+		GROUP BY word 
+		ORDER BY count DESC
+		LIMIT 20
+	</select>
+	
+	
+	<select id="getSubjectIdList" resultType="java.lang.String" parameterType="java.util.Map">
+		SELECT KS_ID FROM yqms2.WT_K_SUBRELATION WHERE KU_ID=#{_KUID} AND KK_TYPE=19 AND KS_TYPE <![CDATA[ <> ]]> 2
+	</select>
+	
+
+	
+</mapper>

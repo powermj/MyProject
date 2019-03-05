@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhxg.yqzj.entities.v1.WarningReportInfo">
+
+	<!-- 获取用户下所有数据分类 -->
+	<resultMap type="com.zhxg.yqzj.entities.v1.WarningReportInfo" id="WarningReportInfo">
+		<result property="infoUuid" column="KS_UUID"/>
+		<result property="kvUuid" column="KV_UUID"/>
+		<result property="title" column="KS_TITLE"/>
+		<result property="summary" column="KV_ABSTRACT"/>
+		<result property="content" column="KV_CONTENT"/>
+		<result property="webName" column="KV_WEBNAME"/>
+		<result property="sourceType" column="kS_SOURCETYPE"/>
+		<result property="author" column="KV_ARG3"/>
+		<result property="infoUrl" column="KS_URL"/>
+		<result property="orientation" column="KV_ORIENTATION"/>
+		<result property="publishTime" column="KS_CTIME"/>
+		<result property="keyWord" column="KV_ARG1"/>
+		<result property="isRead" column="ISREAD"/>
+		<result property="infoSimhash" column="KS_SIMHASH"/>
+	</resultMap>
+	
+	<select id="getWarningByKsuuid" parameterType = "java.util.Map" resultMap="WarningReportInfo">
+			SELECT 
+				KS_UUID,
+				KV_UUID,
+				KS_TITLE,
+				KV_ABSTRACT,
+				KV_CONTENT,
+				KV_WEBNAME,
+				kS_SOURCETYPE,
+				KV_ARG3,
+				KS_URL,
+				KV_ORIENTATION,
+				KS_CTIME,
+				KV_ARG1,
+				ISREAD,
+				KS_SIMHASH
+			FROM 
+				${_DBNAME}.YQZB_T_YJXX
+			WHERE  
+				KS_UUID IN
+			<if test="ksUuidArr != null and ksUuidArr.length != 0">
+				<foreach collection="ksUuidArr" item="ksUuid" index="index" open="(" separator="," close=")">
+					#{ksUuid}
+				</foreach>
+			</if>
+	</select>
+</mapper>
